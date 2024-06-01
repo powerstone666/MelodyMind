@@ -5,7 +5,7 @@ import Sidebar from "./navbar/sidebar"
 
 function App() {
  const[selected, setSelected] = useState('home')
-
+const [songid,setSongid]=useState(null);
   return (
     <>
      <div className="flex">

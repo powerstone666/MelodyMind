@@ -4,6 +4,7 @@ import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
 
 function Landing({selected,setSelected}){
+  
     const isAboveMedium = useMediaQuery('(min-width: 768px)');
     const rendercomponents=()=>{
         switch(selected){
@@ -37,7 +38,7 @@ function Landing({selected,setSelected}){
     
     }
 return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen flex flex-col">
         <Navbar selected={selected} setSelected={setSelected}/>
         {rendercomponents()}
         {isAboveMedium ?(
@@ -45,7 +46,7 @@ return (
         <AudioPlayerr/>
         </div>
         ):(
-            <div className="fixed bottom-20 w-full">
+            <div className="fixed  w-full z-40">
         <AudioPlayerr/>
         </div>
         )
