@@ -1,4 +1,6 @@
+import AlbumFull from "./Albumsongs/albumfull";
 import AudioPlayerr from "./AudioPlayer/audioplayer";
+import Discover from "./Discover/discover";
 import Home from "./Home/home";
 import Searchfunc from "./Search/search";
 import Navbar from "./navbar/navbar";
@@ -12,9 +14,9 @@ function Landing({selected,setSelected}){
             case "home":
                 return <Home/>
             case "discover":
-                return <h1>Discover</h1>
+                return <Discover/>
             case "albums":
-                return <h1>Albums</h1>
+                return <AlbumFull/>
             case "artist":
                 return <h1>Artist</h1>
             case "recently":

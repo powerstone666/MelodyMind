@@ -7,9 +7,10 @@ import useMediaQuery from '../useMedia';
 import axios from 'axios';
 function AudioPlayerr(id){
   const isAboveMedium = useMediaQuery('(min-width:768px)');
-  const [music, setMusic] = useState("https://aac.saavncdn.com/988/90435b10865dcbbac2f4a53cc237e097_320.mp4");
+  const [music, setMusic] = useState("");
    const {songid,setSongid}=useContext(Context);
    const [names,setNames]=useState("");
+   //https://aac.saavncdn.com/988/90435b10865dcbbac2f4a53cc237e097_320.mp4
   const response = async () => {
     try {
       const options = {

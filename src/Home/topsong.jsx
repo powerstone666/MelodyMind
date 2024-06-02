@@ -11,7 +11,7 @@ function Topsongs({ names }) {
     const [musicInfo, setMusicInfo] = useState([]);
     const [limit, setLimit] = useState(5);
     const isAboveMedium = useMediaQuery('(min-width:768px)');
-    
+    const [loading,setLoading]=useState(true)
     // Function to handle expanding to show more results
     const expandResults = () => {
         setLimit(musicInfo.length);
@@ -31,6 +31,7 @@ function Topsongs({ names }) {
                     name: song.name,
                     image: song.image[1]
                 })));
+                setLoading(false)
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -45,6 +46,7 @@ function Topsongs({ names }) {
 
     return (
         <div className='flex p-4 flex-3 gap-5 mb-12 cursor-pointer'>
+            {!loading?(
             <div className="flex flex-wrap">
             {isAboveMedium ? (
     <>
@@ -71,6 +73,9 @@ function Topsongs({ names }) {
 )}
 
             </div>
+            ):(
+                   <span className='text-red text-3xl font-bold'>Loading.....</span>
+            )}
         </div>
     );
 }

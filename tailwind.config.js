@@ -19,7 +19,8 @@ export default {
     },
             backgroundImage: (theme)=>( {
               "gradient-rainbow": "linear-gradient(81.66deg, #00b5ee 7.21%, #ff45a4 45.05%, #ffba00 79.07%)",
-              "gradient-rainblue": "linear-gradient(90deg, #24cbff 14.53%, #fc59ff 69.36%, #ffbd0c 117.73%)"
+              "gradient-rainblue": "linear-gradient(90deg, #24cbff 14.53%, #fc59ff 69.36%, #ffbd0c 117.73%)",
+              "gradient-album": "linear-gradient(90deg, #0E9EEF 14.53%, #412C3A 69.36%)"
             }),
             fontFamily: {
               playfair: ["Playfair Display", "serif"],

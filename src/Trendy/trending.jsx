@@ -11,7 +11,7 @@ function Trending({names}) {
     const [musicInfo, setMusicInfo] = useState([]);
     const [limit, setLimit] = useState(5);
     const isAboveMedium = useMediaQuery('(min-width:768px)');
-    
+    const [loading,setLoading]=useState(true)
     // Function to handle expanding to show more results
     const expandResults = () => {
         setLimit(musicInfo.length);
@@ -40,7 +40,7 @@ function Trending({names}) {
                     album:song.album.name,
                     year:song.year
                 })));
-           
+             setLoading(false)
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -55,8 +55,10 @@ function Trending({names}) {
 
     return (
         <>
+        {!loading ? (
+        <>
         {isAboveMedium?(
-        <div className='mb-12 h-full  flex flex-col '>
+        <div className=' h-full  flex flex-col '>
       {musicInfo.slice(0, limit).map((song, index) => (
     <div className='w-4/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer' key={song.id}  onClick={()=>play(song.id)}>
         <h1 className='text-2xl w-12'>#{index + 1}</h1> {/* Fixed width for index */}
@@ -93,6 +95,10 @@ function Trending({names}) {
         
         )
     }
+    </>
+    ):(
+        <span className='text-red text-3xl font-bold'>Loading.....</span>
+    )}
     </>
     );
 }
