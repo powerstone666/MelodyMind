@@ -1,5 +1,6 @@
 import AudioPlayerr from "./AudioPlayer/audioplayer";
 import Home from "./Home/home";
+import Searchfunc from "./Search/search";
 import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
 
@@ -21,7 +22,7 @@ function Landing({selected,setSelected}){
             case "liked":
                 return <h1>Liked</h1>
             case "search":
-                return <h1>Search</h1>
+                return <Searchfunc/>
             case "about":
                 return <h1>About</h1>
             case "contact":

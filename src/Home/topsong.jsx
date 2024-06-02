@@ -11,7 +11,7 @@ function Topsongs({ names }) {
     const [musicInfo, setMusicInfo] = useState([]);
     const [limit, setLimit] = useState(5);
     const isAboveMedium = useMediaQuery('(min-width:768px)');
-
+    
     // Function to handle expanding to show more results
     const expandResults = () => {
         setLimit(musicInfo.length);
@@ -35,9 +35,9 @@ function Topsongs({ names }) {
                 console.error('Error fetching data:', error);
             }
         };
-
+    
         fetchData();
-    }, []);
+    }, [names]);
 
     const play = (id) => {
         setSongid(id);
@@ -61,7 +61,7 @@ function Topsongs({ names }) {
         )}
     </>
 ) : (
-    musicInfo.slice(0, limit).map((song) => (
+    musicInfo.slice(0, 3).map((song) => (
         <div className="flex flex-col items-center" key={song.id} onClick={() => play(song.id)}>
             <div className="h-24 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
                 <img src={song.image.url} alt={song.title} className="h-24 w-24 object-cover border-0 rounded-md" />

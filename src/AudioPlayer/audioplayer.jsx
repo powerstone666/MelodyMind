@@ -9,6 +9,7 @@ function AudioPlayerr(id){
   const isAboveMedium = useMediaQuery('(min-width:768px)');
   const [music, setMusic] = useState("https://aac.saavncdn.com/988/90435b10865dcbbac2f4a53cc237e097_320.mp4");
    const {songid,setSongid}=useContext(Context);
+   const [names,setNames]=useState("");
   const response = async () => {
     try {
       const options = {
@@ -16,6 +17,9 @@ function AudioPlayerr(id){
         url: `http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/songs/${songid}`
       };
       const res = await axios.request(options);
+  
+      const name=res.data.data[0].name;
+      setNames(name);
       const url = res.data.data[0].downloadUrl[4].url;
       setMusic(url);
     } catch (error) {
@@ -31,9 +35,11 @@ function AudioPlayerr(id){
     <div>
       {isAboveMedium ? (
         <div className='fixed bottom-0 w-full bg-deep-blue'>
+          <h1>{names}</h1>
           <AudioPlayer
+
             src={music}
-            onPlay={e => console.log("onPlay")}
+           autoPlay
             className='bg-deep-blue w-5/6'
           />
         </div>

@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import menubar from '../assets/menu.svg';
 import useMediaQuery from '../useMedia';
-
+import { Context } from '../main';
 import close from '../assets/close-icon.svg';
-import search from '../assets/searchicon.svg';
-
+import searchicon from '../assets/searchicon.svg';
+import Search from '../Search/search';
 function Navbar({selected, setSelected}) {
+    const {search,setSearch}=useContext(Context)
     const isAboveMedium = useMediaQuery('(min-width: 768px)');
     const [isMenuToggled, setIsMenuToggled] = useState(false);
     const selectedStyle = `text-red  `;
+    const searchquery=(e)=>{
+        setSearch(e.target.value);
+       
+    }
+    const handleClick=(e)=>{
+        if(e.key==='Enter')
+        {
+             setSearch(e.target.value);
+             setSelected("search")
+        }
+    }
+    const clearSearch = () => {
+        setSearch(""); // Clear the search query
+      };
+    
     return (
         <>
             {isAboveMedium ? (
@@ -16,8 +32,9 @@ function Navbar({selected, setSelected}) {
                     <nav className='z-40 w-full p-4'>
                         <ul className="flex items-center gap-12 justify-center hover:cursor-pointer">
                             <li className='flex rounded-md bg-grey w-96 h-8'>
-                                <img src={search} alt='search icon' className='p-2'/>
-                                <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none "/>
+                                <img src={searchicon} alt='search icon' className='p-2' onClick={()=>{setSelected("search")}}/>
+                                <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none " onChange={(e)=>searchquery(e)} value={search} onKeyDown={handleClick}/>
+                                <button className='text-blue' onClick={clearSearch}>X</button>
                             </li>
                             <li className={`${selected==='about' ? selectedStyle:"hover:text-red"}`} onClick={()=>{setSelected("about")}}>About</li>
                             <li className={`${selected==='contact' ? selectedStyle:"hover:text-red"}`} onClick={()=>{setSelected("contact")}}>Contact</li>
