@@ -33,7 +33,7 @@ function Navbar({selected, setSelected}) {
                         <ul className="flex items-center gap-12 justify-center hover:cursor-pointer">
                             <li className='flex rounded-md bg-grey w-96 h-8'>
                                 <img src={searchicon} alt='search icon' className='p-2' onClick={()=>{setSelected("search")}}/>
-                                <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none " onChange={(e)=>searchquery(e)} value={search} onKeyDown={handleClick}/>
+                                <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none " onChange={(e)=>searchquery(e)} value={search} onKeyDown={handleClick} onClick={()=>{setSelected("search")}}/>
                                 <button className='text-blue' onClick={clearSearch}>X</button>
                             </li>
                             <li className={`${selected==='about' ? selectedStyle:"hover:text-red"}`} onClick={()=>{setSelected("about")}}>About</li>

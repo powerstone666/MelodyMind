@@ -6,18 +6,14 @@ function Newrelease(){
   return (
     <>
     {isAboveMedium ?(
-        <div className='overflow-y h-screen w-full' style={{overflowX:"scroll"}}>
-       <Topsongs names={"hindi2024"}/>
-       
-     </div>
-    ):(
-        <div className='overflow-y h-screen w-full' style={{overflowX:"scroll"}}>
-    
       
-
+       <Topsongs names={"hindi2024"}/>
+ 
+    ):(
+       
+    
           <Topsongs names={"hindi2024"}/>
           
-        </div>
     )
 }
     </>
