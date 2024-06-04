@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { Context } from '../main';
 import useMediaQuery from '../useMedia';
 
-function Topsongs({ names }) {
+function Result({ names }) {
     const { setSongid } = useContext(Context);
     const [musicInfo, setMusicInfo] = useState([]);
     const [limit, setLimit] = useState(5);
@@ -80,4 +80,4 @@ function Topsongs({ names }) {
     );
 }
 
-export default Topsongs;
+export default Result;

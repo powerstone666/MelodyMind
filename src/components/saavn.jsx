@@ -9,7 +9,8 @@ export const topsongs=async ()=>{
         url: "http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/songs/ayedilhaimushkil"
       };
       const res = await axios.request(options);
-      setMusic(res.data.data);
+      setMusic(res.data.data.songs.result);
+      console.log(music)
   }
   catch(e)
   {

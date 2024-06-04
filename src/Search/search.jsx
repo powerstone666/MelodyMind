@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../main";
-import Topsongs from "../Home/topsong";
+
 import useMediaQuery from "../useMedia";
-import Trending from "../Trendy/trending";
+import Result from "../Search/result";
 
 function Searchfunc() {
   const { search,setSearch } = useContext(Context);
@@ -19,12 +19,12 @@ const searchquery=(e)=>{
    
 }
   return (
-    <div>
+    <div className="h-screen mb-12"  style={{overflowY: "scroll", scrollbarWidth: "none", msOverflowStyle: "none"}}>
     {isAboveMedium ? (
         <>
             <h1 className="p-4 text-xl font-bold">Search <span className="text-red">Results....</span></h1>
             {rerender && search && (
-                <Topsongs names={search} />
+                <Result names={search} />
             )}
         </>
     ) : (
@@ -34,7 +34,7 @@ const searchquery=(e)=>{
              <button className="w-16 border-0 rounded-md bg-red text-black" >search</button>
                 </div>
                 {rerender && search && (
-                <Trending names={search} />
+                <Result names={search} />
             )}
         </div>
     )}
