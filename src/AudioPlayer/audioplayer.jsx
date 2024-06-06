@@ -29,12 +29,19 @@ function AudioPlayerr(id){
     response();
   }, [songid]);
 
-  const handleNext=async()=>{
-    setPrev([...prev,songid]);
-    const res=await searchSuggestion(songid);
-    localStorage.setItem('songid',res)
-    setSongid(res);
-  }
+  const handleNext = async () => {
+    setPrev([...prev, songid]);
+    const res = await searchSuggestion(songid);
+    
+    let i = 0;
+    while (i < 10 && prev.includes(res.data[i].id)) {
+      i++;
+    }
+    
+    localStorage.setItem('songid', res.data[i].id);
+    setSongid(res.data[i].id);
+  };
+  
   const handleprev=()=>{
     const last=prev.pop();
     localStorage.setItem('songid',last)
@@ -51,8 +58,9 @@ function AudioPlayerr(id){
              showSkipControls
              onClickNext={handleNext}
               onClickPrevious={handleprev}
+              onEnded={handleNext}
             src={music}
-           
+            
             className='bg-deep-blue w-5/6'
           />
         </div>
@@ -62,7 +70,7 @@ function AudioPlayerr(id){
             src={music}
             showSkipControls
             onClickNext={handleNext}
-            onPlay={e => console.log("onPlay")}
+            onEnded={handleNext}
             className='bg-deep-blue w-5/6'
           />
         </div>

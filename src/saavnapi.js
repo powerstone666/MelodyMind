@@ -18,6 +18,7 @@ export const MelodyMusicsongs=async(names)=>{
 }
 
 export const searchResult=async(songid)=>{
+    if(songid){
     const options = {
         method: 'GET',
         url: `https://saavn.dev/api/songs/${songid}`
@@ -25,6 +26,7 @@ export const searchResult=async(songid)=>{
       const res = await axios.request(options);
       return res;
     }
+}
 
 export const searchSuggestion=async(songid)=>{
     const options = {
@@ -34,7 +36,8 @@ export const searchSuggestion=async(songid)=>{
       
       try {
         const { data } = await axios.request(options);
-        return data.data[0].id;
+      
+        return data;
       } catch (error) {
         console.error(error);
       }
