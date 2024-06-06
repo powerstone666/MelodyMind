@@ -47,9 +47,21 @@ export const searchSuggestion=async(songid)=>{
     export const albumsongs=async()=>{
         const options = {
             method: 'GET',
-            url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/albums',
-            params: {query: 'Bollywood',limit:30}
+            url: 'https://saavn.dev/api/search/albums',
+            params: {query: 'Bollywood',limit:50}
           };
         const res = await axios.request(options);
         return res;
     }
+    export const artist=async()=>{
+        const options = {
+            method: "GET",
+            url: "https://saavn.dev/api/search/artists",
+            params: { query: "songs",limit:50 },
+          };
+          const res = await axios.request(options);
+
+          return res;
+    }
+
+    
