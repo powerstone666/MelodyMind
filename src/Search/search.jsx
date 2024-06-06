@@ -3,6 +3,7 @@ import { Context } from "../main";
 
 import useMediaQuery from "../useMedia";
 import Result from "../Search/result";
+import Topsongs from "../Home/topsong";
 
 function Searchfunc() {
   const { search,setSearch } = useContext(Context);
@@ -10,7 +11,7 @@ function Searchfunc() {
   const isAboveMedium = useMediaQuery('(min-width:768px)');
   // Listen for changes in the search state
   useEffect(() => {
-    // Set rerender to true whenever search changes
+
     setRerender(true);
   }, [search]); // Update the dependency array to include search
  
@@ -23,18 +24,23 @@ const searchquery=(e)=>{
     {isAboveMedium ? (
         <>
             <h1 className="p-4 text-xl font-bold">Search <span className="text-red">Results....</span></h1>
-            {rerender && search && (
+            {rerender && search ? (
                 <Result names={search} />
+            ):(
+              <Topsongs names={"Top songs"} />
             )}
         </>
     ) : (
-        <div className="">
+        <div className="h-screen">
             <div className="flex">
             <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none " onChange={(e)=>searchquery(e)} value={search} />
              <button className="w-16 border-0 rounded-md bg-red text-black" >search</button>
                 </div>
-                {rerender && search && (
+                {rerender && search ? (
                 <Result names={search} />
+            ):(
+              <Topsongs names={"Top songs"} />
+            
             )}
         </div>
     )}

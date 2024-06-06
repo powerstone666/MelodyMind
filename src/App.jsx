@@ -4,8 +4,8 @@ import Sidebar from "./navbar/sidebar"
 
 
 function App() {
- const[selected, setSelected] = useState('home')
-const [songid,setSongid]=useState(null);
+ const[selected, setSelected] = useState(localStorage.getItem("selected")||"home");
+
   return (
     <>
      <div className="flex">

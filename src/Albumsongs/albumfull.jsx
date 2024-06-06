@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useContext } from 'react';
 import { Context } from '../main';
+import { MelodyMusicsongs, albumsongs, searchResult } from '../saavnapi';
 function AlbumFull({names}){
   
     const isAboveMedium = useMediaQuery('(min-width:768px)');
@@ -16,35 +17,12 @@ function AlbumFull({names}){
         setLimit(musicInfo.length);
     };
  
-        const fetchData = async (id) => {
-            try {
-                const options = {
-                    method: 'GET',
-                    url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/songs',
-                    params: { query:id }
-
-                };
-                const res = await axios.request(options);
-               
-                setSongid(res.data.data.results[0].id)
-                   
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-     
    
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const options = {
-                    method: 'GET',
-                    url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/albums',
-                    params: {query: 'Bollywood',limit:30}
-                  };
-                const res = await axios.request(options);
-             
+                const res=await albumsongs();
                 setMusicInfo(res.data.data.results.map((song) => ({
                     id: song.id,
                     name: song.name,
@@ -63,9 +41,10 @@ function AlbumFull({names}){
         fetchData();
     }, [names]);
  
-    const play = (id) => {
-      
-       fetchData(id);
+    const play = async(id) => {
+        const res=await MelodyMusicsongs(id);
+       localStorage.setItem('songid',res[0].id)
+        setSongid(res[0].id)
     };
      return(
         <>

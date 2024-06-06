@@ -22,14 +22,14 @@ function Sidebar({selected,setSelected}){
                 <div className=" align-middle justify-center items-center p-8 hover:cursor-pointer">
                 <h1 className='text-red mb-4'>Menu</h1>
                 <div className='p-2 flex'>
-                <img src={home} alt='search icon' className='mr-2'/><h1 className={`${selected==='home' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{setSelected("home")}}>Home</h1></div>
-                <div  className='p-2 flex'><img src={discover} alt='search icon' className='mr-2'/><h1 className={`${selected==='discover' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{setSelected("discover")}}>Discover</h1></div>
-                <div  className='p-2 flex'><img src={albums} alt='search icon' className="mr-2"/><h1 className={`${selected==='albums' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{setSelected("albums")}}>Albums</h1></div>
-                <div  className='p-2 flex'><img src={artist} alt='search icon' className='mr-2'/><h1 className={`${selected==='artist' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{setSelected("artist")}}>Artist</h1></div>
+                <img src={home} alt='search icon' className='mr-2'/><h1 className={`${selected==='home' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{localStorage.setItem("selected","home");setSelected("home")}}>Home</h1></div>
+                <div  className='p-2 flex'><img src={discover} alt='search icon' className='mr-2'/><h1 className={`${selected==='discover' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{localStorage.setItem("selected","discover");setSelected("discover")}}>Discover</h1></div>
+                <div  className='p-2 flex'><img src={albums} alt='search icon' className="mr-2"/><h1 className={`${selected==='albums' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{localStorage.setItem("selected","albums");setSelected("albums")}}>Albums</h1></div>
+                <div  className='p-2 flex'><img src={artist} alt='search icon' className='mr-2'/><h1 className={`${selected==='artist' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{localStorage.setItem("selected","artist");setSelected("artist")}}>Artist</h1></div>
                 <h1 className='text-red mb-4 mt-4'>Library</h1>
-                <div  className='p-2 flex'><img src={recent} alt='search icon' className='mr-2'/><h1 className={`${selected==='recently' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{setSelected("recently")}}>Recently</h1></div>
+                <div  className='p-2 flex'><img src={recent} alt='search icon' className='mr-2'/><h1 className={`${selected==='recently' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{localStorage.setItem("selected","recently");setSelected("recently")}}>Recently</h1></div>
                 <div  className='p-2 flex'><img src={liked} alt='search icon' className='mr-2'/>
-                <h1 className={`${selected==='liked' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{setSelected("liked")}}>Liked</h1>
+                <h1 className={`${selected==='liked' ? selectedStyle:"hover:text-red"} text-2xl`} onClick={()=>{localStorage.setItem("selected","liked");setSelected("liked")}}>Liked</h1>
                 </div>
                 <h1 className='text-red mb-4 mt-2'>General</h1>
                 <div  className='p-2 flex'><img src={logout} alt='search icon' className='mr-2'/><h1 className={`${selected==='logout' ? selectedStyle:"hover:text-red"} text-2xl`}>Logout</h1></div>
@@ -38,23 +38,23 @@ function Sidebar({selected,setSelected}){
         ):(
        <footer className='fixed bottom-0 w-full bg-deep-blue h-20 z-40'>
        <nav className='flex gap-8 p-2 items-center justify-center'>
-             <div onClick={()=>{setSelected("home")}}>
+             <div onClick={()=>{localStorage.setItem("selected","home");setSelected("home")}}>
                  <img src={home} alt='search icon' className='p-2'/>
                  <h2 className={`${selected==='home' ? selectedStyle:"hover:text-red"} `} >Home</h2>
              </div>
-             <div onClick={()=>{setSelected("discover")}}>
+             <div onClick={()=>{localStorage.setItem("selected","discover");setSelected("discover")}}>
                  <img src={discover} alt='search icon' className='p-2'/>
                  <h2 className={`${selected==='discover' ? selectedStyle:"hover:text-red"} `} >Discover</h2>
              </div>
-             <div onClick={()=>{setSelected("albums")}}>
+             <div onClick={()=>{localStorage.setItem("selected","albums");setSelected("albums")}}>
                  <img src={albums} alt='search icon' className='p-2 '/>
                  <h2 className={`${selected==='albums' ? selectedStyle:"hover:text-red"} `} >Albums</h2>
              </div>
-             <div onClick={()=>{setSelected("liked")}}>
+             <div onClick={()=>{localStorage.setItem("selected","liked");setSelected("liked")}}>
                  <img src={library} alt='search icon' className='p-2'/>
                  <h2 className={`${selected==='liked' ? selectedStyle:"hover:text-red"} `} >Library</h2>
              </div>
-             <div onClick={()=>{setSelected("search")}}>
+             <div onClick={()=>{localStorage.setItem("selected","search");setSelected("search")}}>
                  <img src={search} alt='search icon' className='p-2'/>
                  <h2 className={`${selected==='search' ? selectedStyle:"hover:text-red"} `}>search</h2>
              </div>

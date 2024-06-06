@@ -5,7 +5,7 @@ import React, { useContext } from 'react';
 import { useState, useEffect } from 'react';
 import { Context } from '../main';
 import useMediaQuery from '../useMedia';
-
+import { MelodyMusicsongs } from '../saavnapi';
 function Result({ names }) {
     const { setSongid } = useContext(Context);
     const [musicInfo, setMusicInfo] = useState([]);
@@ -20,13 +20,8 @@ function Result({ names }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const options = {
-                    method: 'GET',
-                    url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/songs',
-                    params: { query: names ? names : 'topsongs' }
-                };
-                const res = await axios.request(options);
-                setMusicInfo(res.data.data.results.map((song) => ({
+               const res=await MelodyMusicsongs(names)
+                setMusicInfo(res.map((song) => ({
                     id: song.id,
                     name: song.name,
                     image: song.image[1]
@@ -41,6 +36,7 @@ function Result({ names }) {
     }, [names]);
 
     const play = (id) => {
+        localStorage.setItem('songid',id)
         setSongid(id);
     };
 
@@ -63,16 +59,18 @@ function Result({ names }) {
         )}
     </>
 ) : (
-    musicInfo.slice(0, 3).map((song) => (
-        <div className="flex flex-col items-center" key={song.id} onClick={() => play(song.id)}>
-            <div className="h-24 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
-                <img src={song.image.url} alt={song.title} className="h-24 w-24 object-cover border-0 rounded-md" />
+    musicInfo.slice(0, 10).map((song) => (
+        <div className="flex flex-col items-center p-4" key={song.id} onClick={() => play(song.id)}>
+            <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <img src={song.image.url} alt={song.title} className="h-18 w-18 object-cover border-0 rounded-md" />
+                <h1 className="text-center font-bold text-white text-sm">{song.name}</h1>
             </div>
         </div>
     ))
-)}
+    
+)
 
-            </div>
+}  </div>
             ):(
                    <span className='text-red text-3xl font-bold'>Loading.....</span>
             )}

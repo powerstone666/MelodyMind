@@ -18,6 +18,7 @@ function Navbar({selected, setSelected}) {
         if(e.key==='Enter')
         {
              setSearch(e.target.value);
+             localStorage.setItem("selected","search");
              setSelected("search")
         }
     }
@@ -32,15 +33,18 @@ function Navbar({selected, setSelected}) {
                     <nav className='z-40 w-full p-4'>
                         <ul className="flex items-center gap-12 justify-center hover:cursor-pointer">
                             <li className='flex rounded-md bg-grey w-96 h-8'>
-                                <img src={searchicon} alt='search icon' className='p-2' onClick={()=>{setSelected("search")}}/>
-                                <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none " onChange={(e)=>searchquery(e)} value={search} onKeyDown={handleClick} onClick={()=>{setSelected("search")}}/>
+                                <img src={searchicon} alt='search icon' className='p-2' onClick={()=>{localStorage.setItem("selected","search");setSelected("search")}}/>
+                                <input type="text" placeholder="Search For Musics, Artists, Albums..." className="p-4 h-8 w-80 bg-transparent outline-none " onChange={(e)=>searchquery(e)} value={search} onKeyDown={handleClick} onClick={()=>{localStorage.setItem("selected","search");setSelected("search")}}/>
+                                {search && (
                                 <button className='text-blue' onClick={clearSearch}>X</button>
+                                )
+                            }
                             </li>
-                            <li className={`${selected==='about' ? selectedStyle:"hover:text-red"}`} onClick={()=>{setSelected("about")}}>About</li>
-                            <li className={`${selected==='contact' ? selectedStyle:"hover:text-red"}`} onClick={()=>{setSelected("contact")}}>Contact</li>
-                            <li className={`${selected==='mood' ? selectedStyle:"hover:text-red"}`} onClick={()=>{setSelected("mood")}}>Mood Analyse</li>
-                            <button className='bg-deep-grey w-24 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red' onClick={()=>{setSelected("login")}}>Login</button>
-                            <button className='bg-red w-24 h-8 border-0 rounded-md text-deep-grey hover:shadow-md hover:shadow-deep-blue' onClick={()=>{setSelected("signup")}}>Sign Up</button>
+                            <li className={`${selected==='about' ? selectedStyle:"hover:text-red"}`} onClick={()=>{localStorage.setItem("selected","about");setSelected("about")}}>About</li>
+                            <li className={`${selected==='contact' ? selectedStyle:"hover:text-red"}`} onClick={()=>{localStorage.setItem("selected","contact");setSelected("contact")}}>Contact</li>
+                            <li className={`${selected==='mood' ? selectedStyle:"hover:text-red"}`} onClick={()=>{localStorage.setItem("selected","mood");setSelected("mood")}}>Mood Analyse</li>
+                            <button className='bg-deep-grey w-24 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red' onClick={()=>{localStorage.setItem("selected","login");setSelected("login")}}>Login</button>
+                            <button className='bg-red w-24 h-8 border-0 rounded-md text-deep-grey hover:shadow-md hover:shadow-deep-blue' onClick={()=>{localStorage.setItem("selected","signup");setSelected("signup")}}>Sign Up</button>
                         </ul>
                     </nav>
                 </section>
@@ -64,13 +68,13 @@ function Navbar({selected, setSelected}) {
                     <h1 className="bg-gradient-rainbow text-transparent bg-clip-text text-2xl p-6 font-bold text-red">MelodyMind</h1>
                     <div className="align-middle justify-center items-center p-8 hover:cursor-pointer">
                      
-                        <div className='p-2' onClick={()=>{setSelected("about")}}><h1 className={`${selected==='about' ? selectedStyle:"hover:text-red"}text-xl`} >About</h1></div>
-                        <div className='p-2' onClick={()=>{setSelected("contact")}}><h1 className={`${selected==='contact' ? selectedStyle:"hover:text-red"}text-xl`}>Contact</h1></div>
-                        <div className='p-2'onClick={()=>{setSelected("mood")}}><h1 className={`${selected==='mood' ? selectedStyle:"hover:text-red"}text-xl`} >Mood Analyser</h1></div>
-                        <div className='p-2'onClick={()=>{setSelected("recently")}}><h1 className={`${selected==='recently' ? selectedStyle:"hover:text-red"}text-xl`} >Recently</h1></div>
+                        <div className='p-2' onClick={()=>{localStorage.setItem("selected","about");setSelected("about")}}><h1 className={`${selected==='about' ? selectedStyle:"hover:text-red"}text-xl`} >About</h1></div>
+                        <div className='p-2' onClick={()=>{localStorage.setItem("selected","contact");setSelected("contact")}}><h1 className={`${selected==='contact' ? selectedStyle:"hover:text-red"}text-xl`}>Contact</h1></div>
+                        <div className='p-2'onClick={()=>{localStorage.setItem("selected","mood");setSelected("mood")}}><h1 className={`${selected==='mood' ? selectedStyle:"hover:text-red"}text-xl`} >Mood Analyser</h1></div>
+                        <div className='p-2'onClick={()=>{localStorage.setItem("selected","recently");setSelected("recently")}}><h1 className={`${selected==='recently' ? selectedStyle:"hover:text-red"}text-xl`} >Recently</h1></div>
                       
-                        <div onClick={()=>{setSelected("login")}}><button className='p-2 text-xl text-blue' >Login</button></div>
-                        <div onClick={()=>{setSelected("login")}}><button className='p-2 text-xl text-orange-500'>Sign Up</button></div>
+                        <div onClick={()=>{localStorage.setItem("selected","login");setSelected("login")}}><button className='p-2 text-xl text-blue' >Login</button></div>
+                        <div onClick={()=>{localStorage.setItem("selected","signup");setSelected("signup")}}><button className='p-2 text-xl text-orange-500'>Sign Up</button></div>
                         <div className='p-2 text-xl'>logout</div>
                     </div>
                 </section>

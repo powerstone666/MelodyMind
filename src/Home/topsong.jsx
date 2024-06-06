@@ -5,6 +5,7 @@ import React, { useContext } from 'react';
 import { useState, useEffect } from 'react';
 import { Context } from '../main';
 import useMediaQuery from '../useMedia';
+import { MelodyMusicsongs } from '../saavnapi';
 
 function Topsongs({ names }) {
     const { setSongid } = useContext(Context);
@@ -20,17 +21,14 @@ function Topsongs({ names }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const options = {
-                    method: 'GET',
-                    url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/songs',
-                    params: { query: names ? names : 'topsongs' }
-                };
-                const res = await axios.request(options);
-                setMusicInfo(res.data.data.results.map((song) => ({
+               const res=await MelodyMusicsongs(names)
+               if(res){
+                setMusicInfo(res.map((song) => ({
                     id: song.id,
                     name: song.name,
                     image: song.image[1]
                 })));
+            }
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -41,6 +39,7 @@ function Topsongs({ names }) {
     }, [names]);
 
     const play = (id) => {
+        const a=localStorage.setItem('songid',id)
         setSongid(id);
     };
 

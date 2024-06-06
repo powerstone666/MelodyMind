@@ -7,9 +7,9 @@ import { createContext } from 'react'
 export const Context = createContext();
 
  const Appwrapper=()=>{
-  const [songid,setSongid]=useState("");
-  const [search,setSearch]=useState("");
-  const [singer,setSinger]=useState("");
+  const [songid,setSongid]=useState(localStorage.getItem("songid")||"");
+  const [search,setSearch]=useState(null);
+  const [singer,setSinger]=useState(null);
   return(
     <Context.Provider value={{songid,setSongid,search,setSearch}}>
     <App songid={songid} setSongid={setSongid} search={search} setSearch={setSearch} singer={singer} setSinger={setSinger}/>
