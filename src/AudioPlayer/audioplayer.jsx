@@ -88,14 +88,7 @@ if ('mediaSession' in navigator) {
     // Check if the Media Session API is supported
     if ("mediaSession" in navigator) {
 
-      // Set media session action handlers
-      navigator.mediaSession.setActionHandler("play", () => {
-        setIsPlaying(true);
-      });
-
-      navigator.mediaSession.setActionHandler("pause", () => {
-        setIsPlaying(false);
-      });
+     
        navigator.mediaSession.setActionHandler('nexttrack', function() {
     // Handle next track action
                  handleNext();
@@ -129,8 +122,6 @@ if ('mediaSession' in navigator) {
           <AudioPlayer
             src={music}
             showSkipControls
-            onPlay={isPlaying}
-            onPause={isPlaying}
             onClickNext={handleNext}
               autoPlay
             onEnded={handleNext}
