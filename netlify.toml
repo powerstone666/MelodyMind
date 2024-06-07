@@ -1,3 +1,6 @@
 [build]
-  command = "npm install --force && npm run build"
+  command = "npm install --legacy-peer-deps && npm run build"
   publish = "build"
+
+[build.environment]
+  NODE_VERSION = "react@19.0.0-beta-26f2496093-20240514"
