@@ -22,14 +22,17 @@ function Albums() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
        const res=await albumsongs();
-        setMusicInfo(
+       setLoading(false);
+            setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
             artist: song.artists.primary[0].name,
             image: song.image[1],
           }))
+         
         );
         setLoading(false);
       } catch (error) {
