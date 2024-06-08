@@ -16,13 +16,7 @@ function Discover() {
           className="overflow-y-auto h-screen w-full mb-12"
           style={{ overflowX: "scroll", minWidth: "100%" }}
         >
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Weekly Top <span className="text-red font-bold">Songs</span>
-            </h1>
-            <Topsongs />
-          </div>
-          <div className="mb-8">
+             <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
               New Releases <span className="text-red font-bold">Songs</span>
             </h1>
@@ -36,9 +30,9 @@ function Discover() {
           </div>
           <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
-              Popular <span className="text-red font-bold">Artists</span>
+              Weekly Top <span className="text-red font-bold">Songs</span>
             </h1>
-            <Artist />
+            <Topsongs />
           </div>
           <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
@@ -46,33 +40,43 @@ function Discover() {
             </h1>
             <Albums />
           </div>
+          <div className="mb-8">
+            <h1 className="text-3xl p-4 m-5">
+              Popular <span className="text-red font-bold">Artists</span>
+            </h1>
+            <Artist />
+          </div>
+       
         </div>
       ) : (
         <div
           className="overflow-y h-screen w-full"
           style={{ overflowX: "scroll" }}
         >
+           <h1 className="text-xl p-2 m-0">
+            New Releases <span className="text-red font-bold">Songs</span>
+          </h1>
+          <Newrelease />
+          
+          <h1 className="text-xl p-2 m-0">
+            Trending <span className="text-red font-bold">Songs</span>
+          </h1>
+          <h1 className="text-xl p-2 m-0">
+            Popular<span className="text-red font-bold">Albums</span>
+          </h1>
+          <Albums />
+          <Topsongs names={"trending songs 2024"} />
           <h1 className="text-xl p-2 m-0">
             Weekly Top <span className="text-red font-bold">Songs</span>{" "}
           </h1>
 
           <Topsongs />
-          <h1 className="text-xl p-2 m-0">
-            New Releases <span className="text-red font-bold">Songs</span>
-          </h1>
-          <Newrelease />
-          <h1 className="text-xl p-2 m-0">
-            Trending <span className="text-red font-bold">Songs</span>
-          </h1>
-          <Topsongs names={"trending songs 2024"} />
+         
           <h1 className="text-xl p-2 m-0">
             Popular<span className="text-red font-bold">Artists</span>
           </h1>
           <Artist />
-          <h1 className="text-xl p-2 m-0">
-            Popular<span className="text-red font-bold">Albums</span>
-          </h1>
-          <Albums />
+        
           <div className="h-2/6"></div>
         </div>
       )}

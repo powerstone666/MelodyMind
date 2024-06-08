@@ -1,11 +1,21 @@
 
 import axios from 'axios';
+var  sharedLanguage= '';
+export const getLanguages=async(languages)=>{
+    try {
+       sharedLanguage =languages;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+export const languages=()=>sharedLanguage;
 export const MelodyMusicsongs=async(names)=>{
     try {
+        const language=languages();
         const options = {
             method: 'GET',
             url: 'https://saavn.dev/api/search/songs',
-            params: { query: names ? names : 'topsongs',
+            params: { query: names ? language+" "+names : `topsongs ${language}`,
             limit: 50
              }
         };
@@ -16,7 +26,23 @@ export const MelodyMusicsongs=async(names)=>{
         console.error('Error fetching data:', error);
     }
 }
+export const Searchsongs=async(names)=>{
+  try {
+      const language=languages();
+      const options = {
+          method: 'GET',
+          url: 'https://saavn.dev/api/search/songs',
+          params: { query: names ? names : `topsongs ${language}`,
+          limit: 50
+           }
+      };
+      const res = await axios.request(options);
+      return res.data.data.results;
 
+  } catch (error) {
+      console.error('Error fetching data:', error);
+  }
+}
 export const searchResult=async(songid)=>{
     if(songid){
     const options = {
@@ -45,23 +71,33 @@ export const searchSuggestion=async(songid)=>{
     }
 
     export const albumsongs=async()=>{
+      try{
+        const language=languages();
         const options = {
             method: 'GET',
             url: 'https://saavn.dev/api/search/albums',
-            params: {query: 'Bollywood',limit:50}
+            params: {query: language,limit:50}
           };
         const res = await axios.request(options);
         return res;
+      }catch(error){
+          console.error('Error fetching data:', error);
+      }
     }
     export const artist=async()=>{
+      try{
+        const language=languages();
         const options = {
             method: "GET",
             url: "https://saavn.dev/api/search/artists",
-            params: { query: "songs",limit:50 },
+            params: { query:"Top Artists",limit:50 },
           };
           const res = await axios.request(options);
 
           return res;
+        }catch(error){
+          console.error('Error fetching data:', error);
+        }
     }
 
     

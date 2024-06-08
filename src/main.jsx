@@ -10,8 +10,9 @@ const Appwrapper = () => {
   const [songid, setSongid] = useState(localStorage.getItem("songid") || "");
   const [search, setSearch] = useState("");
   const [singer, setSinger] = useState("");
+  const [languages, setLanguage] = useState(localStorage.getItem("languages") );
   return (
-    <Context.Provider value={{ songid, setSongid, search, setSearch }}>
+    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage }}>
       <App
         songid={songid}
         setSongid={setSongid}
@@ -19,6 +20,8 @@ const Appwrapper = () => {
         setSearch={setSearch}
         singer={singer}
         setSinger={setSinger}
+        languages={languages}
+        setLanguage={setLanguage}
       />
     </Context.Provider>
   );

@@ -1,12 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import menubar from "../assets/menu.svg";
 import useMediaQuery from "../useMedia";
 import { Context } from "../main";
 import close from "../assets/close-icon.svg";
 import searchicon from "../assets/searchicon.svg";
 import Search from "../Search/search";
+import { getLanguages } from "../saavnapi";
 function Navbar({ selected, setSelected }) {
-  const { search, setSearch } = useContext(Context);
+  
+  const { search, setSearch, setLanguage, languages} = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
   const selectedStyle = `text-red  `;
@@ -23,7 +25,15 @@ function Navbar({ selected, setSelected }) {
   const clearSearch = () => {
     setSearch(""); // Clear the search query
   };
-
+  const handleLanguageChange =(event) => {
+    const selectedLanguage = event.target.value;
+    setLanguage(selectedLanguage);
+    localStorage.setItem("languages", selectedLanguage);
+    window.location.reload();
+  };
+  useEffect(() => {
+  getLanguages(languages)
+  },[languages]);
   return (
     <>
       {isAboveMedium ? (
@@ -91,6 +101,31 @@ function Navbar({ selected, setSelected }) {
               >
                 Mood Analyse
               </li>
+              <select
+                className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none`}
+                value={languages}
+                onChange={handleLanguageChange}
+              >
+              
+                <option className="bg-deep-grey" value="hindi">
+                  Hindi
+                </option>
+                <option className="bg-deep-grey" value="english">
+                  English
+                </option>
+                <option className="bg-deep-grey" value="tamil">
+                  Tamil
+                </option>
+                <option className="bg-deep-grey" value="telugu">
+                  Telugu
+                </option>
+                <option className="bg-deep-grey" value="urdu">
+                  Urdu
+                </option>
+                <option className="bg-deep-grey" value="punjabi">
+                  Punjabi
+                </option>
+              </select>
               <button
                 className="bg-deep-grey w-24 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
                 onClick={() => {
@@ -122,6 +157,33 @@ function Navbar({ selected, setSelected }) {
                   MelodyMind
                 </h1>
               </li>
+              <li>
+              <select
+                className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none`}
+                value={languages}
+                onChange={handleLanguageChange}
+              >
+              
+                <option className="bg-deep-grey" value="hindi">
+                  Hindi
+                </option>
+                <option className="bg-deep-grey" value="english">
+                  English
+                </option>
+                <option className="bg-deep-grey" value="tamil">
+                  Tamil
+                </option>
+                <option className="bg-deep-grey" value="telugu">
+                  Telugu
+                </option>
+                <option className="bg-deep-grey" value="urdu">
+                  Urdu
+                </option>
+                <option className="bg-deep-grey" value="punjabi">
+                  Punjabi
+                </option>
+              </select>
+              </li>
               <img
                 src={menubar}
                 alt="menu icon"
@@ -146,6 +208,7 @@ function Navbar({ selected, setSelected }) {
           <h1 className="bg-gradient-rainbow text-transparent bg-clip-text text-2xl p-6 font-bold text-red">
             MelodyMind
           </h1>
+          
           <div className="align-middle justify-center items-center p-8 hover:cursor-pointer">
             <div
               className="p-2"

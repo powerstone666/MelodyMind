@@ -19,7 +19,7 @@ function Searchfunc() {
   };
   return (
     <div
-      className="h-screen mb-12"
+      className="h-screen mb-16"
       style={{
         overflowY: "scroll",
         scrollbarWidth: "none",

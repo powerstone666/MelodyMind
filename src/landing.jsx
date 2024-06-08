@@ -5,7 +5,7 @@ import Home from "./Home/home";
 import Searchfunc from "./Search/search";
 import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
-
+import ArtistPage from "./Playlist/artistpage";
 function Landing({ selected, setSelected }) {
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const rendercomponents = () => {
@@ -17,7 +17,7 @@ function Landing({ selected, setSelected }) {
       case "albums":
         return <AlbumFull />;
       case "artist":
-        return <h1>Artist</h1>;
+        return <ArtistPage/>;
       case "recently":
         return <h1>Recently</h1>;
       case "liked":

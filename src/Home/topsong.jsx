@@ -6,13 +6,14 @@ import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
-
+import he from "he";
 function Topsongs({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
+  const {language}=useContext(Context);
   // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
@@ -26,7 +27,7 @@ function Topsongs({ names }) {
           setMusicInfo(
             res.map((song) => ({
               id: song.id,
-              name: song.name,
+              name: he.decode(song.name),
               image: song.image[1],
             }))
           );

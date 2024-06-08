@@ -5,13 +5,15 @@ import React, { useContext } from "react";
 import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
-import { MelodyMusicsongs } from "../saavnapi";
+import { MelodyMusicsongs, Searchsongs } from "../saavnapi";
+import he from "he";
 function Result({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
+
   // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
@@ -20,11 +22,11 @@ function Result({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await MelodyMusicsongs(names);
+        const res = await Searchsongs(names);
         setMusicInfo(
           res.map((song) => ({
             id: song.id,
-            name: song.name,
+            name: he.decode(song.name),
             image: song.image[1],
           }))
         );
@@ -77,9 +79,9 @@ function Result({ names }) {
               )}
             </>
           ) : (
-            musicInfo.slice(0, 10).map((song) => (
+            musicInfo.slice(0, 40).map((song) => (
               <div
-                className="flex flex-col items-center p-4"
+                className="flex flex-col-3 items-center p-4 mb-5"
                 key={song.id}
                 onClick={() => play(song.id)}
               >

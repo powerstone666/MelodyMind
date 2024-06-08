@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useContext } from "react";
 import { Context } from "../main";
+import he from "he";
 import { MelodyMusicsongs, albumsongs, artist, searchResult } from "../saavnapi";
 function AlbumFull({ names }) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -24,7 +25,7 @@ function AlbumFull({ names }) {
         setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
-            name: song.name,
+            name: he.decode(song.name),
             image: song.image[1],
             artist: song.artists.primary[0].name,
             year: song.year,

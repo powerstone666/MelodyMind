@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs, albumsongs, searchResult } from "../saavnapi";
-
+import he from "he";
 function Albums({ names }) {
   const { setSongid } = useContext(Context);
   const [limit, setLimit] = useState(5);
@@ -36,7 +36,7 @@ function Albums({ names }) {
         setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
-            name: song.name,
+            name: he.decode(song.name),
             artist: song.artists.primary[0].name,
             image: song.image[1],
           }))

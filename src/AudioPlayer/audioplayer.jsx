@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import axios from "axios";
+import he from "he";
 import { searchResult, searchSuggestion } from "../saavnapi";
 
 function AudioPlayerComponent() {
@@ -38,14 +39,12 @@ if ('mediaSession' in navigator) {
  
 
 
-
   const fetchSongData = async () => {
     try {
       const res = await searchResult(songid);
-       console.log(res);
        setArray(res.data.data[0].album.name);
        setimage(res.data.data[0].image[1].url);
-      const name = res.data.data[0].name;
+      const name = he.decode(res.data.data[0].name);
       setNames(name);
       const url = res.data.data[0].downloadUrl[4].url;
       setMusic(url);

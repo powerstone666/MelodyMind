@@ -66,7 +66,7 @@ function Home() {
           <h1 className="text-xl p-2 m-2">
             Trending <span className="text-red font-bold">Songs</span>
           </h1>
-          <Topsongs names={"trending songs 2024"} />
+          <Topsongs names={"songs"} />
           <h1 className="text-xl p-2 m-2">
             Popular<span className="text-red font-bold">Artists</span>
           </h1>

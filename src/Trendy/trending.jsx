@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
-
+import he from "he";
 function Trending({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -26,14 +26,14 @@ function Trending({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-       const res=await MelodyMusicsongs("trending songs2024");
+       const res=await MelodyMusicsongs("topsongs");
         setMusicInfo(
           res.map((song) => ({
             id: song.id,
-            name: song.name,
+            name: he.decode(song.name),
             image: song.image[1],
             duration: formatDuration(song.duration),
-            album: song.album.name,
+            album: he.decode(song.album.name),
             year: song.year,
           }))
         );
