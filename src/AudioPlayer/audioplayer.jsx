@@ -111,7 +111,7 @@ if ('mediaSession' in navigator) {
             onClickNext={handleNext}
             onClickPrevious={handlePrev}
             onEnded={handleNext}
-            src={music?music:null}
+            src={null}
             className="bg-deep-blue w-5/6"
             listenInterval={100}
           />

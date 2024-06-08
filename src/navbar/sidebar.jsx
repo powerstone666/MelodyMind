@@ -10,9 +10,12 @@ import liked from "../assets/liked.svg";
 import logout from "../assets/logout.svg";
 import recent from "../assets/recent.svg";
 import AudioPlayer from "../AudioPlayer/audioplayer";
-function Sidebar({ selected, setSelected }) {
+import { useContext } from "react";
+import { Context } from "../main";
+function Sidebar() {
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const selectedStyle = `text-red  `;
+  const {selected,setSelected}=useContext(Context)
   return (
     <>
       {isAboveMedium ? (

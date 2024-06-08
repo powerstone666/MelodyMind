@@ -6,7 +6,11 @@ import Searchfunc from "./Search/search";
 import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
 import ArtistPage from "./Playlist/artistpage";
-function Landing({ selected, setSelected }) {
+import Inneralbum from "./Albumsongs/inneralbum";
+import { useContext } from "react";
+import { Context } from "./main";
+function Landing() {
+  const {selected,setSelected}=useContext(Context)
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const rendercomponents = () => {
     switch (selected) {
@@ -16,6 +20,8 @@ function Landing({ selected, setSelected }) {
         return <Discover />;
       case "albums":
         return <AlbumFull />;
+      case "innerAlbum":
+      return <Inneralbum />;
       case "artist":
         return <ArtistPage/>;
       case "recently":

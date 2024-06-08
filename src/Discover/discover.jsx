@@ -61,11 +61,11 @@ function Discover() {
           <h1 className="text-xl p-2 m-0">
             Trending <span className="text-red font-bold">Songs</span>
           </h1>
+          <Topsongs names={"trending songs 2024"} />
           <h1 className="text-xl p-2 m-0">
             Popular<span className="text-red font-bold">Albums</span>
           </h1>
           <Albums />
-          <Topsongs names={"trending songs 2024"} />
           <h1 className="text-xl p-2 m-0">
             Weekly Top <span className="text-red font-bold">Songs</span>{" "}
           </h1>

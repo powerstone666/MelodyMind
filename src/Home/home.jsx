@@ -9,7 +9,7 @@ import Albums from "../Albumsongs/albums";
 
 function Home() {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
-
+ 
   return (
     <>
       {isAboveMedium ? (
@@ -42,7 +42,7 @@ function Home() {
             </h1>
             <Artist />
           </div>
-          <div className="mb-8">
+          <div className="mb-16">
             <h1 className="text-3xl p-4 m-5">
               Top <span className="text-red font-bold">Album</span>
             </h1>
@@ -74,7 +74,7 @@ function Home() {
           <h1 className="text-xl p-2 m-2">
             Popular<span className="text-red font-bold">Albums</span>
           </h1>
-          <Albums />
+          <Albums  />
           <div className="h-2/6"></div>
         </div>
       )}

@@ -10,6 +10,16 @@
 .custom-caret-color{
   caret-color: #656565;
 }
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 #text{
   background-color: linear-gradient(90deg, #EE1080 0%, #0E9EEf 100%);
   color:transparent;

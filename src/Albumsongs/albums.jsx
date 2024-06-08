@@ -7,8 +7,8 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs, albumsongs, searchResult } from "../saavnapi";
 import he from "he";
-function Albums({ names }) {
-  const { setSongid } = useContext(Context);
+function Albums() {
+  const { setSongid,setInneralbum,setSelected } = useContext(Context);
   const [limit, setLimit] = useState(5);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,16 +17,6 @@ function Albums({ names }) {
   // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
-  };
-
-  const fetchData = async (id,name) => {
-    try {
-        const res = await MelodyMusicsongs(id+" "+name);
-        localStorage.setItem("songid", res[0].id);
-        setSongid(res[0].id);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
   };
 
   useEffect(() => {
@@ -48,11 +38,19 @@ function Albums({ names }) {
     };
 
     fetchData();
-  }, [names]);
+  }, []);
 
-  const play = (id) => {
-    fetchData(id);
+
+   
+  const play = async (id) => {
+  
+    localStorage.setItem("innerAlbum", id);
+    setInneralbum(id);
+
+    localStorage.setItem("selected", "innerAlbum");
+    setSelected("innerAlbum");
   };
+
 
   return (
     <>
@@ -65,7 +63,7 @@ function Albums({ names }) {
                   <div
                     className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                     key={song.id}
-                    onClick={() => play(song.name,song.artist)}
+                    onClick={() => play(song.id)}
                   >
                     <img
                       src={song.image.url}
@@ -94,7 +92,7 @@ function Albums({ names }) {
                 <div
                   className="flex flex-col items-center"
                   key={song.id}
-                  onClick={() => play(song.name,song.artist)}
+                  onClick={() => play(song.id)}
                 >
                   <div className="h-24 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
                     <img

@@ -84,6 +84,21 @@ export const searchSuggestion=async(songid)=>{
           console.error('Error fetching data:', error);
       }
     }
+    
+    export const albumsongsinner=async(id)=>{
+      try{
+        const language=languages();
+        const options = {
+            method: 'GET',
+            url: 'https://saavn.dev/api/albums',
+            params: {id:id,limit:50}
+          };
+        const res = await axios.request(options);
+        return res;
+      }catch(error){
+          console.error('Error fetching data:', error);
+      }
+    }
     export const artist=async()=>{
       try{
         const language=languages();

@@ -5,11 +5,12 @@ import axios from "axios";
 import { useContext } from "react";
 import { Context } from "../main";
 import he from "he";
-import { MelodyMusicsongs, albumsongs, artist, searchResult } from "../saavnapi";
-function AlbumFull({names}) {
+import { MelodyMusicsongs, albumsongs, albumsongsinner, artist, searchResult } from "../saavnapi";
+function Inneralbum({names,setSelected }) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
-  const { setSongid ,setInneralbum,innerAlbum,setSelected,selected} = useContext(Context);
-  const [limit, setLimit] = useState(5);
+  const { setSongid,innerAlbum} = useContext(Context);
+ const[image,setimage]=useState([]);
+
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
   // Function to handle expanding to show more results
@@ -20,10 +21,12 @@ function AlbumFull({names}) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await albumsongs();
-   
+        console.log(innerAlbum)
+        const res = await albumsongsinner(innerAlbum);
+       setimage(res.data.data);
+      
         setMusicInfo(
-          res.data.data.results.map((song) => ({
+          res.data.data.songs.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
             image: song.image[1],
@@ -41,12 +44,8 @@ function AlbumFull({names}) {
   }, [names]);
 
   const play = async (id) => {
-  
-    localStorage.setItem("innerAlbum", id);
-    setInneralbum(id);
-
-    localStorage.setItem("selected", "innerAlbum");
-           setSelected("innerAlbum");
+  localStorage.setItem("songid", id);
+  setSongid(id);
   };
   return (
     <>
@@ -54,20 +53,21 @@ function AlbumFull({names}) {
         <>
           {isAboveMedium ? (
             <div
-              className="h-screen w-5/6 m-12  mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
+              className="h-screen w-5/6 m-12  mb-28 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
               style={{
                 overflowY: "scroll",
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
               }}
             >
+                <h1>Inner album</h1>
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={album} />
+                <img src={image.image[1].url} />
                 <h1 className="font-bold text-3xl p-5">
-                  Trending Songs <span className="text-red">Mix</span>
+                  {image.name} <span className="text-red">{image.language}</span>
                 </h1>
               </div>
-              {musicInfo.slice(0, limit).map((song, index) => (
+              {musicInfo.slice(0, musicInfo.length).map((song, index) => (
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
@@ -87,22 +87,8 @@ function AlbumFull({names}) {
                   {/* Keep image size fixed */}
                 </div>
               ))}
-              <div className="flex  ml-8">
-                {musicInfo.length > 5 && limit === 5 ? (
-                  <button
-                    onClick={expandResults}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24"> View All</h1>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setLimit(5)}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24">View Less</h1>
-                  </button>
-                )}
+              <div className="flex  mb-8">
+              
               </div>
             </div>
           ) : (
@@ -115,12 +101,12 @@ function AlbumFull({names}) {
               }}
             >
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={album} />
+                <img src={image.image[1].url} />
                 <h1 className="font-bold text-3xl p-5">
-                  Trending Songs <span className="text-red">Mix</span>
+                  {image.name} <span className="text-red">{image.language}</span>
                 </h1>
               </div>
-              {musicInfo.slice(0, limit).map((song, index) => (
+              {musicInfo.slice(0, musicInfo.length).map((song, index) => (
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
@@ -138,21 +124,7 @@ function AlbumFull({names}) {
                 </div>
               ))}
               <div className="flex  ml-8  mb-36">
-                {musicInfo.length > 5 && limit === 5 ? (
-                  <button
-                    onClick={expandResults}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24"> View All</h1>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setLimit(5)}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24">View Less</h1>
-                  </button>
-                )}
+              
               </div>
             </div>
           )}
@@ -163,4 +135,4 @@ function AlbumFull({names}) {
     </>
   );
 }
-export default AlbumFull;
+export default Inneralbum;
