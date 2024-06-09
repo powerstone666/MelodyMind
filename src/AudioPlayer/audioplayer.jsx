@@ -122,10 +122,11 @@ if ('mediaSession' in navigator) {
             src={music}
             showSkipControls
             onClickNext={handleNext}
-              autoPlay
-            onEnded={handleNext}
+             
+         onClickPrevious={handlePrev}                  autoPlay
+                onEnded={handleNext}
             className="bg-deep-blue w-5/6"
-        
+            
             showFilledVolume={true}
           />
         </div>
