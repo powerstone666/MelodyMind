@@ -5,10 +5,23 @@ import Newrelease from "../Home/newrelease";
 import Trending from "../Trendy/trending";
 import Artist from "../Playlist/artist";
 import Albums from "../Albumsongs/albums";
-
+import { Context } from "../main";
+import Trendingmobile from "../Home/trendingmobile";
+import Newreleasemobile from "../Home/newreleasemobile";
+import { useContext } from "react";
 function Discover() {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const { Viewall, setViewall, setPage, page } = useContext(Context);
 
+  const handleCLick = (name) => {
+    if (page === name) {
+      setViewall(3);
+      setPage("");
+    } else {
+      setViewall(40);
+      setPage(name);
+    }
+  };
   return (
     <>
       {isAboveMedium ? (
@@ -55,25 +68,65 @@ function Discover() {
         >
            <h1 className="text-xl p-2 m-0">
             New Releases <span className="text-red font-bold">Songs</span>
+            <span>
+              <button
+                className="ml-12 bg-blue text-deep-blue text-sm h-12 w-24 border-0 rounded-md"
+                onClick={() => handleCLick("newrelease")}
+              >
+                {page === "newrelease" ? "View-Less" : "View-All"}
+              </button>
+            </span>
           </h1>
           <Newrelease />
           
           <h1 className="text-xl p-2 m-0">
             Trending <span className="text-red font-bold">Songs</span>
+            <span>
+              <button
+                className="ml-12 bg-blue text-deep-blue text-sm h-12 w-24 border-0 rounded-md"
+                onClick={() => handleCLick("trending")}
+              >
+                {page === "trending" ? "View-Less" : "View-All"}
+              </button>
+            </span>
           </h1>
-          <Topsongs names={"trending songs 2024"} />
+          <Trendingmobile names={"songs"} />
           <h1 className="text-xl p-2 m-0">
             Popular<span className="text-red font-bold">Albums</span>
+            <span>
+            <button
+                className="ml-12 bg-blue text-deep-blue text-sm h-12 w-24 border-0 rounded-md"
+                onClick={() => handleCLick("album")}
+              >
+                {page === "album" ? "View-Less" : "View-All"}
+              </button>
+              </span>
           </h1>
           <Albums />
           <h1 className="text-xl p-2 m-0">
             Weekly Top <span className="text-red font-bold">Songs</span>{" "}
+            <span>
+              <button
+                className="ml-12 bg-blue text-deep-blue text-sm h-12 w-24 border-0 rounded-md"
+                onClick={() => handleCLick("topsongs")}
+              >
+                {page === "topsongs" ? "View-Less" : "View-All"}
+              </button>
+            </span>
           </h1>
 
           <Topsongs />
          
           <h1 className="text-xl p-2 m-0">
             Popular<span className="text-red font-bold">Artists</span>
+            <span>
+            <button
+                className="ml-12 bg-blue text-deep-blue text-sm h-12 w-24 border-0 rounded-md"
+                onClick={() => handleCLick("artist")}
+              >
+                {page === "artist" ? "View-Less" : "View-All"}
+              </button>
+              </span>
           </h1>
           <Artist />
         

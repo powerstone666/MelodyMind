@@ -111,7 +111,7 @@ if ('mediaSession' in navigator) {
             onClickNext={handleNext}
             onClickPrevious={handlePrev}
             onEnded={handleNext}
-            src={null}
+            src={music}
             className="bg-deep-blue w-5/6"
             listenInterval={100}
           />
@@ -122,8 +122,9 @@ if ('mediaSession' in navigator) {
             src={music}
             showSkipControls
             onClickNext={handleNext}
-             
-         onClickPrevious={handlePrev}                  autoPlay
+             showJumpControls={false}
+             onClickPrevious={handlePrev}              
+                   autoPlay
                 onEnded={handleNext}
             className="bg-deep-blue w-5/6"
             

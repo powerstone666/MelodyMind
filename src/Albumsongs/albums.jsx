@@ -8,7 +8,7 @@ import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs, albumsongs, searchResult } from "../saavnapi";
 import he from "he";
 function Albums() {
-  const { setSongid,setInneralbum,setSelected } = useContext(Context);
+  const { setSongid,setInneralbum,setSelected,page,Viewall } = useContext(Context);
   const [limit, setLimit] = useState(5);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -91,9 +91,9 @@ function Albums() {
                 )}
               </>
             ) : (
-              musicInfo.slice(0, 3).map((song) => (
+              musicInfo.slice(0, page==="album"?Viewall:3).map((song) => (
                 <div
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center pb-12"
                   key={song.id}
                   onClick={() => play(song.id)}
                 >

@@ -49,6 +49,11 @@ html {
 }
 .rhap_volume-indicator{
   background-color: white;
+
+}
+.rhap_volume-bar{
+  background-color: #1ED760;
+  color: white;
 }
 .swiper {
   width: 40%;

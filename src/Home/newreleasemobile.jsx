@@ -7,7 +7,7 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-function Topsongs({ names }) {
+function Newreleasemobile({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
@@ -51,42 +51,9 @@ function Topsongs({ names }) {
       {!loading ? (
         <>
           <div className="flex flex-wrap">
-          {isAboveMedium ? (
-            <>
-          
-              {musicInfo.slice(0, limit).map((song) => (
-                <div
-                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <img
-                    src={song.image.url}
-                    alt={song.title}
-                    className="h-48 w-56 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white">
-                    {song.name}
-                  </h1>
-                </div>
-              ))}
-              {musicInfo.length > 5 && limit === 5 ? (
-                <button onClick={expandResults}>
-                  <img src={viewall} />
-                  <h1 className="font-bold"> View All</h1>
-                </button>
-              ) : (
-                <button onClick={() => setLimit(5)}>
-                  <img src={viewclose} />
-                  <h1 className="font-bold">Close</h1>
-                </button>
-              )}
-              
-            </>
-          ) : (
            <>
             {
-            musicInfo.slice(0, page==="topsongs"?Viewall:3).map((song) => (
+            musicInfo.slice(0, page==="newrelease"?Viewall:3).map((song) => (
               <div
                 className="flex flex-col items-center pb-12"
                 key={song.id}
@@ -104,7 +71,7 @@ function Topsongs({ names }) {
                 </div>
               </div>
             ))
-              }</>)}
+              }</>
          </div>
       </>
       ) : (
@@ -114,4 +81,4 @@ function Topsongs({ names }) {
   );
 }
 
-export default Topsongs;
+export default Newreleasemobile;

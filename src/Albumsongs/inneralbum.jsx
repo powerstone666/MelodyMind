@@ -21,7 +21,6 @@ function Inneralbum({names,setSelected }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(innerAlbum)
         const res = await albumsongsinner(innerAlbum);
        setimage(res.data.data);
       

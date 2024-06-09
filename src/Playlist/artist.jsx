@@ -8,7 +8,7 @@ import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 
 function Artist({ names }) {
-  const { setSongid } = useContext(Context);
+  const { setSongid,page,Viewall } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -78,9 +78,9 @@ function Artist({ names }) {
               )}
             </>
           ) : (
-            musicInfo.slice(0, 3).map((song) => (
+            musicInfo.slice(0, page==="artist"?Viewall:3).map((song) => (
               <div
-                className="flex flex-col items-center"
+                className="flex flex-col items-center pb-12"
                 key={song.id}
                 onClick={() => play(song.id)}
               >
