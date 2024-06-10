@@ -19,7 +19,7 @@ function Sidebar() {
   return (
     <>
       {isAboveMedium ? (
-        <aside className="w-42 bg-deep-blue h-screen ">
+        <aside className="w-42 bg-deep-blue h-screen">
           <h1 className="bg-gradient-rainbow text-transparent bg-clip-text text-2xl p-6 font-bold ">
             MelodyMind
           </h1>

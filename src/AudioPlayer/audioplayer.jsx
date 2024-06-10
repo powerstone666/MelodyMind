@@ -60,6 +60,7 @@ if ('mediaSession' in navigator) {
   }, [songid]);
 
   const handleNext = async () => {
+    try{
     setPrev([...prev, songid]);
     const res = await searchSuggestion(songid);
   
@@ -69,13 +70,18 @@ if ('mediaSession' in navigator) {
     }
   
   if(i===res.data.length){
-    i=0;
+    alert("No more songs to play please go back  and select another song.");
+    return;
   }
   
     // Set the songid to the new unique song or the last song in the list
     localStorage.setItem("songid", res.data[i].id);
     setSongid(res.data[i].id);
+}catch(error){
+  alert("No more songs to play please go back  and select another song.");
+}
   };
+
   
 
   const handlePrev = () => {
@@ -103,10 +109,10 @@ if ('mediaSession' in navigator) {
   return (
     <div>
       {isAboveMedium ? (
-        <div className="fixed bottom-0 w-full bg-deep-blue">
+        <div className="fixed bottom-0 w-screen bg-deep-blue">
           <h1>{names}</h1>
           <AudioPlayer
-            autoPlay
+      
             showSkipControls
             onClickNext={handleNext}
             onClickPrevious={handlePrev}
@@ -117,14 +123,14 @@ if ('mediaSession' in navigator) {
           />
         </div>
       ) : (
-        <div className="fixed bottom-20 w-full bg-deep-blue">
+        <div className="fixed bottom-20 w-screen bg-deep-blue">
           <AudioPlayer
             src={music}
             showSkipControls
             onClickNext={handleNext}
              showJumpControls={false}
              onClickPrevious={handlePrev}              
-                   autoPlay
+             
                 onEnded={handleNext}
             className="bg-deep-blue w-5/6"
             

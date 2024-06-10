@@ -57,12 +57,14 @@ export const searchResult=async(songid)=>{
 export const searchSuggestion=async(songid)=>{
     const options = {
         method: 'GET',
-        url: `https://saavn.dev/api/songs/${songid}/suggestions`
+        url: `https://saavn.dev/api/songs/${songid}/suggestions`,
+      
       };
+    
       
       try {
         const { data } = await axios.request(options);
-      
+     
         return data;
       } catch (error) {
         console.error(error);

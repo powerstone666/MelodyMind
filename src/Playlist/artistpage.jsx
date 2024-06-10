@@ -8,7 +8,7 @@ import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 
 function ArtistPage({ names }) {
-  const { setSongid } = useContext(Context);
+  const { setSongid,setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -44,6 +44,8 @@ function ArtistPage({ names }) {
   };
 
   return (
+    <>
+    {isAboveMedium ?(
     <div
     className="overflow-y-auto h-screen w-screen mb-12"
     style={{ overflowX: "scroll", minWidth: "100%" }}
@@ -80,6 +82,10 @@ function ArtistPage({ names }) {
       </div>
       </div>
     </div>
+    ):(
+      setSelected("home")
+    )}
+    </>
   );
 }
 

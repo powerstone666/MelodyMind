@@ -59,7 +59,7 @@ function Inneralbum({names,setSelected }) {
                 msOverflowStyle: "none",
               }}
             >
-                <h1>Inner album</h1>
+              
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
                 <img src={image.image[1].url} />
                 <h1 className="font-bold text-3xl p-5">
@@ -101,7 +101,7 @@ function Inneralbum({names,setSelected }) {
             >
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
                 <img src={image.image[1].url} />
-                <h1 className="font-bold text-3xl p-5">
+                <h1 className="font-bold text-md p-5">
                   {image.name} <span className="text-red">{image.language}</span>
                 </h1>
               </div>
