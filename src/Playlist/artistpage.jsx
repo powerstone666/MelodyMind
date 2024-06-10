@@ -6,9 +6,10 @@ import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
+import Home from "../Home/home";
 
 function ArtistPage({ names }) {
-  const { setSongid,setSelected } = useContext(Context);
+  const { setSinger,page,Viewall,setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -40,7 +41,11 @@ function ArtistPage({ names }) {
   }, [names]);
 
   const play = (id) => {
-    setSongid(id);
+    localStorage.setItem("singer", id);
+    setSinger(id);
+    
+    localStorage.setItem("selected", "innerartist");
+           setSelected("innerartist");
   };
 
   return (
@@ -83,7 +88,7 @@ function ArtistPage({ names }) {
       </div>
     </div>
     ):(
-      setSelected("home")
+        <Home/>
     )}
     </>
   );

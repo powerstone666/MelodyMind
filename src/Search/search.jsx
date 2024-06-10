@@ -28,11 +28,11 @@ function Searchfunc() {
     >
       {isAboveMedium ? (
         <>
-          <h1 className="p-4 text-xl font-bold">
-            Search <span className="text-red">Results....</span>
-          </h1>
+     
           {rerender && search ? (
+              <div className="h-screen">
             <Result names={search} />
+            </div>
           ) : (
             <Topsongs names={"Top songs"} />
           )}

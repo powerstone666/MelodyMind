@@ -8,7 +8,7 @@ import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 
 function Artist({ names }) {
-  const { setSongid,page,Viewall } = useContext(Context);
+  const { setSinger,page,Viewall,setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -40,7 +40,11 @@ function Artist({ names }) {
   }, [names]);
 
   const play = (id) => {
-    setSongid(id);
+    localStorage.setItem("singer", id);
+    setSinger(id);
+    
+    localStorage.setItem("selected", "innerartist");
+           setSelected("innerartist");
   };
 
   return (

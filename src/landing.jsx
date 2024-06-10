@@ -9,6 +9,7 @@ import ArtistPage from "./Playlist/artistpage";
 import Inneralbum from "./Albumsongs/inneralbum";
 import { useContext } from "react";
 import { Context } from "./main";
+import Innerartist from "./Playlist/innerartist";
 function Landing() {
   const {selected,setSelected}=useContext(Context)
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -24,6 +25,8 @@ function Landing() {
       return <Inneralbum />;
       case "artist":
         return <ArtistPage/>;
+        case "innerartist":
+          return <Innerartist/>;
       case "recently":
         return <h1>Recently</h1>;
       case "liked":

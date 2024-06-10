@@ -5,12 +5,15 @@ import React, { useContext } from "react";
 import { useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
-import { MelodyMusicsongs, Searchsongs } from "../saavnapi";
+import { MelodyMusicsongs, Searchsongs, Searchsongs2 } from "../saavnapi";
 import he from "he";
 function Result({ names }) {
-  const { setSongid } = useContext(Context);
+  const { setSongid,setSelected,setSinger,setInneralbum } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
+  const [topquery, setTopquery] = useState([]);
+  const [albuminfo, setAlbuminfo] = useState([]);
+  const [artistinfo, setArtistinfo] = useState([]);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
 
@@ -23,11 +26,35 @@ function Result({ names }) {
     const fetchData = async () => {
       try {
         const res = await Searchsongs(names);
+        console.log(res);
+        const res2=await Searchsongs2(names);
         setMusicInfo(
-          res.map((song) => ({
+          res2.results.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
-            image: song.image[1],
+            image: song.image[1].url,
+          }))
+        );
+        setAlbuminfo(
+          res.albums.results.map((song) => ({
+            id: song.id,
+            name: he.decode(song.title),
+            image: song.image[1].url,
+          }))
+        );
+        setArtistinfo(
+          res.artists.results.map((song) => ({
+            id: song.id,
+            name: he.decode(song.title),
+            image: song.image[1].url,
+          }))
+        );
+        setTopquery(
+          res.topQuery.results.map((song) => ({
+            id: song.id,
+            name: he.decode(song.title),
+            image: song.image[1].url,
+            type:song.type
           }))
         );
         setLoading(false);
@@ -35,6 +62,7 @@ function Result({ names }) {
         console.error("Error fetching data:", error);
       }
     };
+    
 
     fetchData();
   }, [names]);
@@ -43,21 +71,66 @@ function Result({ names }) {
     localStorage.setItem("songid", id);
     setSongid(id);
   };
+  
+  const playsinger = (id) => {
+    localStorage.setItem("singer", id);
+    setSinger(id);
+    
+    localStorage.setItem("selected", "innerartist");
+           setSelected("innerartist");
+  };
+  const playalbum = async (id) => {
+  
+    localStorage.setItem("innerAlbum", id);
+    setInneralbum(id);
+
+    localStorage.setItem("selected", "innerAlbum");
+           setSelected("innerAlbum");
+  };
+  const playquery = async (id) => {
+  
+  switch(topquery[0].type){
+    case "album":
+    localStorage.setItem("innerAlbum", id);
+    setInneralbum(id);
+    localStorage.setItem("selected", "innerAlbum");
+           setSelected("innerAlbum");
+           break;
+    case "artist":
+      localStorage.setItem("singer", id);
+      setSinger(id);
+      
+      localStorage.setItem("selected", "innerartist");
+             setSelected("innerartist");
+             break;
+    case "song":
+      localStorage.setItem("songid", id);
+      setSongid(id);
+      break;
+  }
+
+  };
 
   return (
-    <div className="flex p-4 flex-3 gap-5 mb-12 cursor-pointer ">
+    <div className=" p-4  gap-5 mb-12 cursor-pointer ">
       {!loading ? (
-        <div className="flex flex-wrap">
+        <>
+       
           {isAboveMedium ? (
             <>
-              {musicInfo.slice(0, limit).map((song) => (
+            
+            <h1 className="text-2xl p-2 m-2">
+            Top <span className="text-red font-bold">Songs</span>
+            </h1>
+             <div className="flex flex-wrap p-4  gap-5">
+              {musicInfo.slice(0, musicInfo.length).map((song) => (
                 <div
                   className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                   key={song.id}
                   onClick={() => play(song.id)}
                 >
                   <img
-                    src={song.image.url}
+                    src={song.image}
                     alt={song.title}
                     className="h-48 w-56 object-cover border-0 rounded-md"
                   />
@@ -66,20 +139,79 @@ function Result({ names }) {
                   </h1>
                 </div>
               ))}
-              {musicInfo.length > 5 && limit === 5 ? (
-                <button onClick={expandResults}>
-                  <img src={viewall} />
-                  <h1 className="font-bold"> View All</h1>
-                </button>
-              ) : (
-                <button onClick={() => setLimit(5)}>
-                  <img src={viewclose} />
-                  <h1 className="font-bold">Close</h1>
-                </button>
-              )}
+              </div>
+
+             <h1 className="text-2xl p-2 m-2">
+            Top <span className="text-red font-bold">Albums</span>
+            </h1>
+            <div className="flex flex-wrap p-4  gap-5">
+              {albuminfo.slice(0, limit).map((song) => (
+                <div
+                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
+                  key={song.id}
+                  onClick={() => playalbum(song.id)}
+                >
+                  <img
+                    src={song.image}
+                    alt={song.title}
+                    className="h-48 w-56 object-cover border-0 rounded-md"
+                  />
+                  <h1 className="text-center font-bold text-white">
+                    {song.name}
+                  </h1>
+                </div>
+              ))}
+              </div>
+              <h1 className="text-2xl p-2 m-2">
+            Top <span className="text-red font-bold">Artist</span>
+            </h1>
+            <div className="flex flex-wrap p-4  gap-5">
+              {artistinfo.slice(0, limit).map((song) => (
+                <div
+                  className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md  p-4 mt-5"
+                  key={song.id}
+                  onClick={() => playsinger(song.id)}
+                >
+                  <img
+                    src={song.image}
+                    alt={song.title}
+                    className="h-48 w-56 object-cover border-0 rounded-full" 
+                  />
+                  <h1 className="text-center font-bold text-white">
+                    {song.name}
+                  </h1>
+                </div>
+              ))}
+              </div>
+              <h1 className="text-2xl p-2 m-2">
+            Top <span className="text-red font-bold">Query</span>
+            </h1>
+            <div className="flex flex-wrap p-4 mb-8 gap-5">
+              {topquery.slice(0, limit).map((song) => (
+                <div
+                  className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md  p-4 mt-5"
+                  key={song.id}
+                  onClick={() => playquery(song.id)}
+                >
+                  <img
+                    src={song.image}
+                    alt={song.title}
+                    className="h-48 w-56 object-cover border-0 rounded-full" 
+                  />
+                  <h1 className="text-center font-bold text-white">
+                    {song.name}
+                  </h1>
+                </div>
+              ))}
+              </div>
             </>
           ) : (
-            musicInfo.slice(0, 40).map((song) => (
+           <>
+               <h1 className="text-xl p-2 m-2">
+            Top <span className="text-red font-bold">Songs</span>
+            </h1>
+             <div className="flex flex-wrap">{
+            musicInfo.slice(0, 10).map((song) => (
               <div
                 className="flex flex-col-3 items-center p-4 mb-5"
                 key={song.id}
@@ -87,8 +219,8 @@ function Result({ names }) {
               >
                 <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
                   <img
-                    src={song.image.url}
-                    alt={song.title}
+                    src={song.image}
+                    alt={song.name}
                     className="h-18 w-18 object-cover border-0 rounded-md"
                   />
                   <h1 className="text-center font-bold text-white text-sm">
@@ -96,13 +228,88 @@ function Result({ names }) {
                   </h1>
                 </div>
               </div>
-            ))
+            ))}
+            </div>
+            <h1 className="text-xl p-2 mt-12">
+            Top <span className="text-red font-bold">Albums</span>
+            </h1>
+             <div className="flex flex-wrap">{
+            albuminfo.slice(0, 10).map((song) => (
+              <div
+                className="flex flex-col-3 items-center p-4 mb-5"
+                key={song.id}
+                onClick={() => playalbum(song.id)}
+              >
+                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                  <img
+                    src={song.image}
+                    alt={song.name}
+                    className="h-18 w-18 object-cover border-0 rounded-md"
+                  />
+                  <h1 className="text-center font-bold text-white text-sm">
+                    {song.name}
+                  </h1>
+                </div>
+              </div>
+            ))}
+            </div>
+
+            <h1 className="text-xl p-2 mt-12">
+            Top <span className="text-red font-bold">Artists</span>
+            </h1>
+             <div className="flex flex-wrap">{
+            artistinfo.slice(0, 10).map((song) => (
+              <div
+                className="flex flex-col-3 items-center p-4 mb-5"
+                key={song.id}
+                onClick={() => playsinger(song.id)}
+              >
+                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                  <img
+                    src={song.image}
+                    alt={song.name}
+                    className="h-18 w-18 object-cover border-0 rounded-md"
+                  />
+                  <h1 className="text-center font-bold text-white text-sm">
+                    {song.name}
+                  </h1>
+                </div>
+              </div>
+            ))}
+            </div>
+            <h1 className="text-xl p-2 mt-12">
+            Top <span className="text-red font-bold">Query</span>
+            </h1>
+             <div className="flex flex-wrap">{
+            topquery.slice(0, 10).map((song) => (
+              <div
+                className="flex flex-col-3 items-center p-4 mb-5"
+                key={song.id}
+                onClick={() => playquery(song.id)}
+              >
+                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                  <img
+                    src={song.image}
+                    alt={song.name}
+                    className="h-18 w-18 object-cover border-0 rounded-md"
+                  />
+                  <h1 className="text-center font-bold text-white text-sm">
+                    {song.name}
+                  </h1>
+                </div>
+              </div>
+            ))}
+            </div>
+            </>
           )}{" "}
-        </div>
+        
+   
+        </>
       ) : (
         <span className="text-red text-3xl font-bold">Loading.....</span>
       )}
     </div>
+  
   );
 }
 

@@ -31,13 +31,32 @@ export const Searchsongs=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search/songs',
+          url: 'https://saavn.dev/api/search',
           params: { query: names ? names : `topsongs ${language}`,
-          limit: 50
+          limit: 10
            }
       };
       const res = await axios.request(options);
-      return res.data.data.results;
+   
+      return res.data.data;
+
+  } catch (error) {
+      console.error('Error fetching data:', error);
+  }
+}
+export const Searchsongs2=async(names)=>{
+  try {
+      const language=languages();
+      const options = {
+          method: 'GET',
+          url: 'https://saavn.dev/api/search/songs',
+          params: { query: names ? names : `topsongs ${language}`,
+          limit: 10
+           }
+      };
+      const res2 = await axios.request(options);
+  
+      return res2.data.data;
 
   } catch (error) {
       console.error('Error fetching data:', error);
@@ -111,6 +130,22 @@ export const searchSuggestion=async(songid)=>{
           };
           const res = await axios.request(options);
 
+          return res;
+        }catch(error){
+          console.error('Error fetching data:', error);
+        }
+    }
+
+    export const artistSongs=async(id)=>{
+      try{
+        const language=languages();
+        const options = {
+            method: "GET",
+            url: `https://saavn.dev/api/artists/${id}`,
+            params: {limit:50 },
+          };
+          const res = await axios.request(options);
+          console.log(res)
           return res;
         }catch(error){
           console.error('Error fetching data:', error);

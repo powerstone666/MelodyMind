@@ -12,11 +12,11 @@ const Appwrapper = () => {
   const [Viewall,setViewall]=useState(3)
   const [page,setPage]=useState("")
   const [search, setSearch] = useState("");
-  const [singer, setSinger] = useState("");
+  const [singer, setSinger] = useState(localStorage.getItem("singer") || "");
   const [innerAlbum, setInneralbum] = useState(localStorage.getItem("innerAlbum") || "");
   const [languages, setLanguage] = useState(localStorage.getItem("languages")|| "hindi" );
   return (
-    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage}}>
+    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger}}>
       <App
       selected={selected}
       setSelected={setSelected}
