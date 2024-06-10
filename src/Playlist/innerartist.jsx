@@ -173,13 +173,13 @@ const[albuminfo,setAlbuminfo]=useState([]);
                   key={song.aid}
                   onClick={() => plays(song.aid)}
                 >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
+                  <p className="text-2xl w-12">#{index + 1}</p>{" "}
                   {/* Fixed width for index */}
                   <img src={song.aimage} className="h-12" />{" "}
                   {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.ayear}</h1>{" "}
+                  <p className="text-md flex-grow">{song.ayear}</p>{" "}
                   {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.aname}</h1>
+                  <p className="text-md flex-grow">{song.aname}</p>
                  {" "}
                   {/* Keep image size fixed */}
                 </div>
