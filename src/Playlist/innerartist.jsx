@@ -180,10 +180,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
                   <h1 className="text-md flex-grow">{song.ayear}</h1>{" "}
                   {/* Allow year to take remaining space */}
                   <h1 className="text-md flex-grow">{song.aname}</h1>
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
+                 {" "}
                   {/* Keep image size fixed */}
                 </div>
               ))}
