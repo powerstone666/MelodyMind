@@ -103,8 +103,10 @@ function AlbumFull({names}) {
                     <h1 className="font-bold mb-24">View Less</h1>
                   </button>
                 )}
-              </div>
+              </div>   
+              <div className="h-2/6 mb-24"></div>
             </div>
+              
           ) : (
             <div
               className="h-screen w-full   mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"

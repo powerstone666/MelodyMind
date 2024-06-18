@@ -17,6 +17,9 @@ function Searchfunc() {
   const searchquery = (e) => {
     setSearch(e.target.value);
   };
+  const clearSearch = () => {
+    setSearch(""); // Clear the search query
+  };
   return (
     <div
       className="h-screen mb-16"
@@ -43,18 +46,21 @@ function Searchfunc() {
             <input
               type="text"
               placeholder="Search For Musics, Artists, Albums..."
-              className="p-4 h-8 w-80 bg-transparent outline-none "
+              className="p-4 h-8 w-80 bg-transparent outline-none  "
               onChange={(e) => searchquery(e)}
               value={search}
             />
-            <button className="w-16 border-0 rounded-md bg-red text-black">
-              search
-            </button>
+              {search && (
+                  <button className="text-blue" onClick={clearSearch}>
+                    X
+                  </button>
+                )}
+  
           </div>
           {rerender && search ? (
             <>
               <Result names={search} />
-              <div className="h-2/6"></div>
+              <div className="h-24"></div>
             </>
           ) : (
             <Topsongs names={"Top songs"} />

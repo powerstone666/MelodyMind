@@ -38,7 +38,7 @@ function Navbar() {
       {isAboveMedium ? (
         <section>
           <nav className="z-40 w-full p-4">
-            <ul className="flex items-center gap-12 justify-center hover:cursor-pointer">
+            <ul className="flex items-center gap-12 justify-start hover:cursor-pointer ">
               <li className="flex rounded-md bg-grey w-96 h-8">
                 <img
                   src={searchicon}
@@ -170,7 +170,7 @@ function Navbar() {
                 </option>
               </select>
               <button
-                className="bg-deep-grey w-24 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
+                className="bg-deep-grey w-20 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
                 onClick={() => {
                   localStorage.setItem("selected", "login");
                   setSelected("login");
@@ -179,7 +179,7 @@ function Navbar() {
                 Login
               </button>
               <button
-                className="bg-red w-24 h-8 border-0 rounded-md text-deep-grey hover:shadow-md hover:shadow-deep-blue"
+                className="bg-red w-20  h-8 border-0 rounded-md text-deep-grey hover:shadow-md hover:shadow-deep-blue"
                 onClick={() => {
                   localStorage.setItem("selected", "signup");
                   setSelected("signup");

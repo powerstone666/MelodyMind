@@ -10,7 +10,7 @@ import { searchResult, searchSuggestion } from "../saavnapi";
 
 function AudioPlayerComponent() {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
-  const { songid, setSongid } = useContext(Context);
+  const { songid, setSongid,setSelected } = useContext(Context);
   const [music, setMusic] = useState("");
   const [names, setNames] = useState("");
   const [prev, setPrev] = useState([]);
@@ -106,24 +106,34 @@ if ('mediaSession' in navigator) {
     }
 
   }, [handlePrev, handleNext]);
+
+  const setdisplay=()=>{
+    localStorage.setItem("selected","innersong")
+    setSelected("innersong")
+  }
   return (
     <div>
       {isAboveMedium ? (
         <div className="fixed bottom-0 w-screen bg-deep-blue">
-          <h1>{names}</h1>
+          <div className="flex gap-4 justify-start items-center">
           <AudioPlayer
-      
             showSkipControls
             onClickNext={handleNext}
             onClickPrevious={handlePrev}
             onEnded={handleNext}
             src={music}
-            className="bg-deep-blue w-5/6"
+            className="bg-deep-blue w-4/6"
             listenInterval={100}
           />
+          <div className="flex items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
+          <img src={image} className="h-16" />
+          <h1>{names}</h1>
+          </div>
+          </div>
         </div>
       ) : (
         <div className="fixed bottom-20 w-screen bg-deep-blue">
+          <div className="flex items-center gap-2">
           <AudioPlayer
             src={music}
             showSkipControls
@@ -136,6 +146,10 @@ if ('mediaSession' in navigator) {
             
             showFilledVolume={true}
           />
+          <img src={image} className="h-12" onClick={setdisplay}/>
+        
+        </div>
+      
         </div>
       )}
     </div>

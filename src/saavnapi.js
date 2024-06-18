@@ -152,4 +152,13 @@ export const searchSuggestion=async(songid)=>{
         }
     }
 
-    
+    export const songLyrics=async(songid)=>{
+      const options = {method: 'GET', url: `https://saavn.dev/api/songs/${songid}/lyrics`};
+
+try {
+  const { data } = await axios.request(options);
+  return data;
+} catch (error) {
+  console.error(error);
+}
+    }

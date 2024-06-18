@@ -48,7 +48,7 @@ function Artist({ names }) {
   };
 
   return (
-    <div className="flex p-4 flex-3 gap-5 mb-12 cursor-pointer">
+    <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer">
       {!loading ? (
         <div className="flex flex-wrap">
           {isAboveMedium ? (

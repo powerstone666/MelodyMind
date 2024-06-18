@@ -10,6 +10,8 @@ import Inneralbum from "./Albumsongs/inneralbum";
 import { useContext } from "react";
 import { Context } from "./main";
 import Innerartist from "./Playlist/innerartist";
+import Innersongs from "./AudioPlayer/innersongs";
+import Moodanalyse from "./moodanalyse";
 function Landing() {
   const {selected,setSelected}=useContext(Context)
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -17,6 +19,8 @@ function Landing() {
     switch (selected) {
       case "home":
         return <Home />;
+        case "innersong":
+          return <Innersongs />;
       case "discover":
         return <Discover />;
       case "albums":
@@ -38,7 +42,7 @@ function Landing() {
       case "contact":
         return <h1>Contact</h1>;
       case "mood":
-        return <h1>Mood Analyser</h1>;
+        return <Moodanalyse/>;
       case "login":
         return <h1>Login</h1>;
       case "signup":

@@ -47,7 +47,7 @@ function Trendingmobile({ names }) {
   };
 
   return (
-    <div className="flex p-4 flex-3 gap-5 mb-12 cursor-pointer ">
+    <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer ">
       {!loading ? (
         <>
           <div className="flex flex-wrap">
@@ -59,11 +59,11 @@ function Trendingmobile({ names }) {
                 key={song.id}
                 onClick={() => play(song.id)}
               >
-                <div className="h-24 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-28 p-2 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
                   <img
                     src={song.image.url}
                     alt={song.title}
-                    className="h-24 w-24 object-cover border-0 rounded-md"
+                    className="h-24 w-24 object-cover border-0 rounded-md mb-2"
                   />
                    <p className="text-center font-bold text-white text-sm">
                     {song.name}

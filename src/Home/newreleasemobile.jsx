@@ -59,11 +59,11 @@ function Newreleasemobile({ names }) {
                 key={song.id}
                 onClick={() => play(song.id)}
               >
-                <div className="h-24 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-28 p-2 border-1 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
                   <img
                     src={song.image.url}
                     alt={song.title}
-                    className="h-24 w-24 object-cover border-0 rounded-md"
+                    className="h-24 w-24 mb-2 object-cover border-0 rounded-md"
                   />
                    <p className="text-center font-bold text-white text-sm">
                     {song.name}

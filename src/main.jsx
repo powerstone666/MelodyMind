@@ -15,8 +15,9 @@ const Appwrapper = () => {
   const [singer, setSinger] = useState(localStorage.getItem("singer") || "");
   const [innerAlbum, setInneralbum] = useState(localStorage.getItem("innerAlbum") || "");
   const [languages, setLanguage] = useState(localStorage.getItem("languages")|| "hindi" );
+  const [lyrics,setLyrics]=useState(localStorage.getItem("lyrics")||"No Lyrics Found");
   return (
-    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger}}>
+    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger,lyrics,setLyrics}}>
       <App
       selected={selected}
       setSelected={setSelected}
@@ -34,6 +35,8 @@ const Appwrapper = () => {
         setViewall={setViewall}
         page={page}
         setPage={setPage}
+        lyrics={lyrics}
+        setLyrics={setLyrics}
       />
     </Context.Provider>
   );

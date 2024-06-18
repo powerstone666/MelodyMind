@@ -6,6 +6,7 @@
   background-color: #412C3A;
   color:white;
   overflow: hidden;
+  font-family:"oxanium", sans-serif;
 }
 .custom-caret-color{
   caret-color: #656565;
@@ -14,6 +15,7 @@
 ::-webkit-scrollbar {
   display: none;
 }
+
 
 /* Hide scrollbar for IE, Edge, and Firefox */
 html {
@@ -56,7 +58,9 @@ html {
   color: white;
 }
 .swiper {
-  width: 40%;
+  display: flex;
+  justify-content:start;
+  width:800px;
   height: 40%;
 }
 
@@ -66,8 +70,7 @@ html {
   background: #fff;
 
   /* Center slide text vertically */
-  display: flex;
-  justify-content: center;
+
   align-items: center;
 }
 

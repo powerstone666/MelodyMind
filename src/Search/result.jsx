@@ -217,7 +217,7 @@ function Result({ names }) {
                 key={song.id}
                 onClick={() => play(song.id)}
               >
-                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-24 border-1  w-24 text-white mr-5  rounded-md  mt-2">
                   <img
                     src={song.image}
                     alt={song.name}
@@ -230,7 +230,7 @@ function Result({ names }) {
               </div>
             ))}
             </div>
-            <h1 className="text-xl p-2 mt-12">
+            <h1 className="text-xl p-2 mt-5">
             Top <span className="text-red font-bold">Albums</span>
             </h1>
              <div className="flex flex-wrap">{
@@ -254,7 +254,7 @@ function Result({ names }) {
             ))}
             </div>
 
-            <h1 className="text-xl p-2 mt-12">
+            <h1 className="text-xl p-2 mt-5">
             Top <span className="text-red font-bold">Artists</span>
             </h1>
              <div className="flex flex-wrap">{
@@ -277,13 +277,13 @@ function Result({ names }) {
               </div>
             ))}
             </div>
-            <h1 className="text-xl p-2 mt-12">
+            <h1 className="text-xl p-2 mt-5">
             Top <span className="text-red font-bold">Query</span>
             </h1>
              <div className="flex flex-wrap">{
             topquery.slice(0, 10).map((song) => (
               <div
-                className="flex flex-col-3 items-center p-4 mb-5"
+                className="flex flex-col-3 items-center p-4 "
                 key={song.id}
                 onClick={() => playquery(song.id)}
               >
