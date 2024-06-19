@@ -1,15 +1,21 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import useMediaQuery from './useMedia';
 import * as faceapi from 'face-api.js';
-
+import { songBymood } from './saavnapi';
+import he from 'he';
 function Moodanalyse() {
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-
+  const [dominantExpression, setDominantExpression] = useState(null);
+  const [musicInfo, setMusicInfo] = useState([]);
   useEffect(() => {
-    startVideo();
-    loadModels();
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      startVideo();
+      loadModels();
+    } else {
+      console.error("getUserMedia is not supported in this browser.");
+    }
   }, []);
 
   const startVideo = async () => {
@@ -24,7 +30,7 @@ function Moodanalyse() {
       console.error("Error accessing media devices:", err);
     }
   };
-  
+
   const loadModels = async () => {
     try {
       await Promise.all([
@@ -63,47 +69,114 @@ function Moodanalyse() {
           faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
           faceapi.draw.drawFaceExpressions(canvasRef.current, resizedDetections);
 
-          // Log expression results
-          resizedDetections.forEach(result => {
-            const expressions = result.expressions;
-            console.log("Expression results:", expressions);
-          });
+          // Get and store the dominant expression of the first detected face
+          const firstDetection = resizedDetections[0];
+          if (firstDetection) {
+            const expressions = firstDetection.expressions;
+            const dominant = Object.keys(expressions).reduce((a, b) => expressions[a] > expressions[b] ? a : b);
+            console.log("Dominant expression:", dominant);
+            setDominantExpression(dominant);
+          }
         }
       }, 100); // Adjust the interval as needed
     } catch (err) {
       console.error("Error detecting faces:", err);
     }
   };
+  useEffect(() => {
+    let intervalId;
+
+    if (dominantExpression) {
+      const fetchSong = async () => {
+        try {
+          const res = await songBymood(dominantExpression);
+          setMusicInfo(
+            res.data.data.results.map((song) => ({
+              id: song.id,
+              name: he.decode(song.name),
+              image: song.image[1],
+              artist: song.artists.primary[0].name,
+              year: song.year,
+            }))
+          );
+        } catch (err) {
+          console.error("Error fetching song:", err);
+        }
+      };
+
+      fetchSong();
+      intervalId = setInterval(fetchSong, 30000);
+    }
+    return () => clearInterval(intervalId);
+  }, [dominantExpression]);
 
   return (
     <div>
       {isAboveMedium ? (
-        <div className="h-screen flex flex-col items-center overflow-y-scroll">
+        <div className="h-screen flex flex-col items-center overflow-y-scroll overflow-x-hidden">
           <div>
             <h1 className='text-2xl text-red mt-8'>Let Your Mood Sing For You</h1>
           </div>
           <div className='w-screen h-screen flex'>
-            <div className='w-1/2 p-4 h-screen relative'>
+            <div className='w-1/3 p-4 h-screen relative'>
               <h1 className='text-blue text-2xl'>Face Detection</h1>
               <video ref={videoRef} autoPlay muted style={{ height: "600px", width: "800px" }}></video>
-              <canvas ref={canvasRef} muted className='absolute top-0 left-0'></canvas>
+              <canvas ref={canvasRef} className='absolute top-0 left-0'></canvas>
             </div>
-            <div className='w-1/2'></div>
+            <div className='w-2/3 '>
+            {musicInfo.slice(0, 10).map((song, index) => (
+                 <div
+                 className="w-4/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
+                 key={song.id}
+                 onClick={() => play(song.id)}
+               >
+                 <h1 className="text-md w-12">#{index + 1}</h1>{" "}
+                 {/* Fixed width for index */}
+                 <img src={song.image.url} className="h-12" />{" "}
+                 {/* Keep image size fixed */}
+                 <h1 className="text-mdflex-grow">{song.year}</h1>{" "}
+                 {/* Allow year to take remaining space */}
+                 <h1 className="text-md flex-grow">{song.name}</h1>
+                {" "}
+                 {/* Keep image size fixed */}
+               </div>
+              ))}
+            </div>
           </div>
+          <div className='mb-48'>
+            </div>
         </div>
       ) : (
-        <div className="h-screen flex flex-col items-center overflow-y-scroll">
+        <div className="h-screen flex flex-col items-center ">
           <div>
             <h1 className='text-2xl text-red mt-8'>Let Your Mood Sing For You</h1>
           </div>
-          <div className='w-screen h-screen flex'>
-            <div className='w-1/2 p-4 h-screen relative'>
-              <h1 className='text-blue text-2xl'>Face Detection</h1>
-              <video ref={videoRef} autoPlay muted playsInline style={{ height: "600px", width: "800px" }}></video>
-
-              <canvas ref={canvasRef} autoPlay muted playsInline className='absolute top-0 left-0'></canvas>
+          <div className='w-screen h-screen '>
+            <div className=' p-4 h-screen relative'>
+              <div className='h-1/2'>
+              <h1 className='text-blue text-xl'>Face Detection</h1>
+              <video ref={videoRef} autoPlay muted playsInline style={{ height: "400px", width: "600px" }}></video>
+              <canvas ref={canvasRef} className='absolute top-0 left-0' ></canvas>
+              </div>
+              <div className='mb-32 flex-wrap h-screen'>
+              {musicInfo.slice(0, 10).map((song, index) => (
+                  <div
+                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
+                  key={song.id}
+                  onClick={() => play(song.id)}
+                >
+                  <h1 className="text-sm w-12">#{index + 1}</h1>{" "}
+                  {/* Fixed width for index */}
+                  <img src={song.image.url} className="h-12" />{" "}
+                  {/* Keep image size fixed */}
+                  <h1 className="text-sm flex-grow">{song.year}</h1>{" "}
+                  {/* Allow year to take remaining space */}
+                  <h1 className="text-sm flex-grow">{song.name}</h1>
+                
+                </div>
+              ))}
+              </div>
             </div>
-            <div className='w-1/2'></div>
           </div>
         </div>
       )}
