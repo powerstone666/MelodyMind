@@ -39,7 +39,6 @@ function Moodanalyse() {
         faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
         faceapi.nets.faceExpressionNet.loadFromUri("/models")
       ]);
-      console.log("Models loaded successfully.");
       faceMyDetect();
     } catch (err) {
       console.error("Error loading models:", err);
@@ -74,7 +73,6 @@ function Moodanalyse() {
           if (firstDetection) {
             const expressions = firstDetection.expressions;
             const dominant = Object.keys(expressions).reduce((a, b) => expressions[a] > expressions[b] ? a : b);
-            console.log("Dominant expression:", dominant);
             setDominantExpression(dominant);
           }
         }
@@ -147,20 +145,16 @@ function Moodanalyse() {
             </div>
         </div>
       ) : (
-        <div className="h-screen flex flex-col items-center ">
-          <div>
-            <h1 className='text-2xl text-red mt-8'>Let Your Mood Sing For You</h1>
-          </div>
-          <div className='w-screen h-screen '>
-            <div className=' p-4 h-screen relative'>
-              <div className='h-1/2'>
-              <h1 className='text-blue text-xl'>Face Detection</h1>
-              <video ref={videoRef} autoPlay muted playsInline style={{ height: "400px", width: "600px" }}></video>
-              <canvas ref={canvasRef} className='absolute top-0 left-0' ></canvas>
-              </div>
-              <div className='mb-32 flex-wrap h-screen'>
-              {musicInfo.slice(0, 10).map((song, index) => (
-                  <div
+       <div className='h-screen flex-col flex-wrap items-center overflow-y-scroll justify-center'>
+            <h1 className='text-red ml-12 text-xl'>Let Your Mood Sing For You</h1>
+            <div style={{ position: 'relative', width: '300px', height: '300px' }}>
+  <h1 className='text-blue mt-4 ml-28'>Face Detection</h1>
+  <video ref={videoRef} autoPlay muted style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, height: "300px", width: "300px" }} className='ml-8'></video>
+  <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, zIndex: 10, height: "300px", width: "300px" }} className=''></canvas>
+</div>
+              <div className='mb-80'>
+                          {musicInfo.slice(0, 10).map((song, index) => (
+                <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
                   onClick={() => play(song.id)}
@@ -175,9 +169,7 @@ function Moodanalyse() {
                 
                 </div>
               ))}
-              </div>
-            </div>
-          </div>
+                    </div>
         </div>
       )}
     </div>
