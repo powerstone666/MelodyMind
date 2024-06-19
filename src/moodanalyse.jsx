@@ -106,7 +106,7 @@ function Moodanalyse() {
       };
 
       fetchSong();
-      intervalId = setInterval(fetchSong, 30000);
+      intervalId = setInterval(fetchSong, 300);
     }
     return () => clearInterval(intervalId);
   }, [dominantExpression]);
