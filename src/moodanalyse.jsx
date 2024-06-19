@@ -1,9 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useContext } from 'react';
+import { Context } from './main';
 import useMediaQuery from './useMedia';
 import * as faceapi from 'face-api.js';
 import { songBymood } from './saavnapi';
 import he from 'he';
 function Moodanalyse() {
+  const { songid,setSongid} = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -107,7 +110,10 @@ function Moodanalyse() {
     }
     return () => clearInterval(intervalId);
   }, [dominantExpression]);
-
+  const play = async (id) => {
+    const a = localStorage.setItem("songid", id);
+   setSongid(id);
+ };
   return (
     <div>
       {isAboveMedium ? (
