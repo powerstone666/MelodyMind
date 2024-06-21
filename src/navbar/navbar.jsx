@@ -8,7 +8,7 @@ import Search from "../Search/search";
 import { getLanguages } from "../saavnapi";
 function Navbar() {
   const { search, setSearch, setLanguage, languages,selected,setSelected } = useContext(Context);
-  const isAboveMedium = useMediaQuery("(min-width: 768px)");
+  const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
   const selectedStyle = `text-red  `;
   const searchquery = (e) => {

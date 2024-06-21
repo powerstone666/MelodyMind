@@ -84,15 +84,15 @@ function Artist({ names }) {
           ) : (
             musicInfo.slice(0, page==="artist"?Viewall:3).map((song) => (
               <div
-                className="flex flex-col items-center pb-12"
+                className="flex flex-col items-center pb-4"
                 key={song.id}
                 onClick={() => play(song.id)}
               >
-                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-24 border-1 bg-transparent w-20 text-white mr-8 border-0 rounded-md  mt-2">
                   <img
                     src={song.image.url}
                     alt={song.title}
-                    className="h-24 w-24 object-cover border-0 rounded-full"
+                    className="h-20 w-20 object-cover border-0 rounded-full"
                   />
                     <p className="text-center font-bold text-white text-sm">
                     {song.name}

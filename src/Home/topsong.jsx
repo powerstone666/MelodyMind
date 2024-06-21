@@ -88,15 +88,15 @@ function Topsongs({ names }) {
             {
             musicInfo.slice(0, page==="topsongs"?Viewall:3).map((song) => (
               <div
-                className="flex flex-col items-center pb-12"
+                className="flex flex-col items-center pb-8"
                 key={song.id}
                 onClick={() => play(song.id)}
               >
-                <div className="h-28  border-1 p-2 bg-deep-grey w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-24  border-1 p-2 bg-deep-grey w-20 text-white mr-8 border-0 rounded-md  mt-2 " >
                   <img
                     src={song.image.url}
                     alt={song.title}
-                    className="h-24 w-24 object-cover mb-2 border-deep-grey rounded-md"
+                    className="h-20 w-20 object-cover mb-2 border-deep-grey rounded-md"
                   />
                    <p className="text-center font-bold text-white text-sm">
                     {song.name}

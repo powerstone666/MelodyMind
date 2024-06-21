@@ -8,6 +8,7 @@ function Innersongs() {
     const { songid, lyrics, setLyrics,setSongid } = useContext(Context);
     const [details, setDetails] = useState("");
     const [image,setimage]=useState("");
+    const [songName,setSongName]=useState("")
     const [midsection,setMidsection]=useState("song")
     const [recomendation,setRecomendation]=useState([])
     const [loading, setLoading] = useState(true);
@@ -18,6 +19,9 @@ function Innersongs() {
                 try{
                 const res = await searchResult(songid);
                 setDetails(res.data.data[0]);
+               const new2=he.decode(res.data.data[0].name);
+               
+                setSongName(new2)
                 setimage(res.data.data[0].image[2].url);
                 }catch(error){
                     console.error(error)
@@ -33,7 +37,6 @@ function Innersongs() {
              try{
                const res3=await searchSuggestion(songid);
                setRecomendation(res3.data)
-               console.log(res3.data)
                setRecomendation(
                 res3.data.map((song) => ({
                   id: song.id,
@@ -66,7 +69,7 @@ function Innersongs() {
                 <div className='border-1 bg-deep-grey h-1/2  mb-6 p-4 '>
                   <img src={image} alt="song" className=" h-full" />
                   </div>
-                  <h1 className='text-xl mb-6'>{details.name}</h1>
+                  <h1 className='text-xl mb-6'>{songName}</h1>
                   <div className='h-14 bg-deep-grey flex justify-center  w-96 border-0 rounded-xl items-center mb-8' >
                         <div className={`${midsection==="song"?style:""} w-1/2  h-full p-4 flex justify-center   cursor-pointer`} onClick={()=>setMidsection("song")}>
                             <h1>Song</h1></div>
@@ -101,7 +104,7 @@ function Innersongs() {
                   }
                   {midsection==="lyric"&&(
                     <div>
-                        <h1 className='text-3xl mb-2'>Movie:{''}{' '}<span className='text-red'>{details.name}</span></h1>
+                        <h1 className='text-3xl mb-2'>Movie:{''}{' '}<span className='text-red'>{he.decode(details.name)}</span></h1>
                         <h1 className='text-3xl mb-4'>Year:{''}{' '}<span className='text-red'>{details.year}</span></h1>
                         <h1 className='text-xl' dangerouslySetInnerHTML={{ __html: lyrics ? lyrics : "Lyrics Not found" }}/>
                     </div>
@@ -113,7 +116,7 @@ function Innersongs() {
                 <div className='border-1 bg-deep-grey h-2/6  mb-6 p-4 flex-col'>
                   <img src={image} alt="song" className=" h-full" />
                   </div>
-                  <h1 className='text-xl mb-6'>{details.name}</h1>
+                  <h1 className='text-xl mb-6'>{songName}</h1>
                   <div className='h-14 bg-deep-grey flex justify-center  w-56 border-0 rounded-xl items-center mb-8' >
                         <div className={`${midsection==="song"?style:""} w-1/2  h-full p-4 flex justify-center   cursor-pointer`} onClick={()=>setMidsection("song")}>
                             <h1>Song</h1></div>
@@ -144,7 +147,7 @@ function Innersongs() {
                   }
                   {midsection==="lyric"&&(
                     <div className='mb-36'>
-                        <h1 className='text-xl mb-2'>Movie:{''}{' '}<span className='text-red'>{details.name}</span></h1>
+                        <h1 className='text-xl mb-2'>Movie:{''}{' '}<span className='text-red'>{he.decode(details.name)}</span></h1>
                         <h1 className='text-xl mb-4'>Year:{''}{' '}<span className='text-red'>{details.year}</span></h1>
                         <h1 className='text-md flex-wrap' dangerouslySetInnerHTML={{ __html: lyrics ? lyrics : "Lyrics Not found" }}/>
                     </div>

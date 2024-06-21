@@ -13,7 +13,7 @@ import AudioPlayer from "../AudioPlayer/audioplayer";
 import { useContext } from "react";
 import { Context } from "../main";
 function Sidebar() {
-  const isAboveMedium = useMediaQuery("(min-width: 768px)");
+  const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const selectedStyle = `text-red  `;
   const {selected,setSelected}=useContext(Context)
   return (

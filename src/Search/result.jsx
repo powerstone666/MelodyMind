@@ -217,7 +217,7 @@ function Result({ names }) {
                 key={song.id}
                 onClick={() => play(song.id)}
               >
-                <div className="h-24 border-1  w-24 text-white mr-5  rounded-md  mt-2">
+                <div className="h-24 border-1  w-20 text-white mr-5  rounded-md  mt-2">
                   <img
                     src={song.image}
                     alt={song.name}
@@ -240,7 +240,7 @@ function Result({ names }) {
                 key={song.id}
                 onClick={() => playalbum(song.id)}
               >
-                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-24 border-1 bg-transparent w-20 text-white mr-5 border-0 rounded-md  mt-2">
                   <img
                     src={song.image}
                     alt={song.name}
@@ -264,7 +264,7 @@ function Result({ names }) {
                 key={song.id}
                 onClick={() => playsinger(song.id)}
               >
-                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-24 border-1 bg-transparent w-20 text-white mr-5 border-0 rounded-md  mt-2">
                   <img
                     src={song.image}
                     alt={song.name}
@@ -287,7 +287,7 @@ function Result({ names }) {
                 key={song.id}
                 onClick={() => playquery(song.id)}
               >
-                <div className="h-24 border-1 bg-transparent w-24 text-white mr-5 border-0 rounded-md  mt-2">
+                <div className="h-24 border-1 bg-transparent w-20 text-white mr-5 border-0 rounded-md  mt-2">
                   <img
                     src={song.image}
                     alt={song.name}
