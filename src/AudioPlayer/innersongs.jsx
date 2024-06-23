@@ -12,6 +12,23 @@ function Innersongs() {
     const [midsection,setMidsection]=useState("song")
     const [recomendation,setRecomendation]=useState([])
     const [loading, setLoading] = useState(true);
+    const [download,setDownload]=useState(" ")
+    const downloadAudio = async () => {
+      const url = download;
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.setAttribute('download', `${songName}.mp3`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error('Error downloading audio:', error);
+      }
+    };
     useEffect(() => {
         const fetchLyrics = async () => {
             setLoading(false)
@@ -19,6 +36,7 @@ function Innersongs() {
                 try{
                 const res = await searchResult(songid);
                 setDetails(res.data.data[0]);
+                setDownload(res.data.data[0].downloadUrl[4].url)
                const new2=he.decode(res.data.data[0].name);
                
                 setSongName(new2)
@@ -69,7 +87,12 @@ function Innersongs() {
                 <div className='border-1 bg-deep-grey h-1/2  mb-6 p-4 '>
                   <img src={image} alt="song" className=" h-full" />
                   </div>
-                  <h1 className='text-xl mb-6'>{songName}</h1>
+                  <div className='flex gap-4 items-center justify-center mb-6'>
+                  <h1 className='text-xl '>{songName}</h1>
+                  <div>
+      <button onClick={downloadAudio}><img src="https://cdn-icons-png.flaticon.com/128/2810/2810387.png" className='h-8 '/></button>
+    </div>
+    </div>
                   <div className='h-14 bg-deep-grey flex justify-center  w-96 border-0 rounded-xl items-center mb-8' >
                         <div className={`${midsection==="song"?style:""} w-1/2  h-full p-4 flex justify-center   cursor-pointer`} onClick={()=>setMidsection("song")}>
                             <h1>Song</h1></div>
@@ -91,7 +114,7 @@ function Innersongs() {
                   {/* Keep image size fixed */}
                   <h1 className="text-md flex-grow">{song.year}</h1>{" "}
                   {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.name}</h1>
+                  <h1 className="text-md flex-grow">{song.name}</h1> 
                   <img
                     src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
                     className="h-12"
@@ -116,7 +139,12 @@ function Innersongs() {
                 <div className='border-1 bg-deep-grey h-2/6  mb-6 p-4 flex-col'>
                   <img src={image} alt="song" className=" h-full" />
                   </div>
-                  <h1 className='text-xl mb-6'>{songName}</h1>
+                  <div className='flex gap-4 items-center justify-center mb-6'>
+                  <h1 className='text-xl '>{songName}</h1>
+                  <div>
+      <button onClick={downloadAudio}><img src="https://cdn-icons-png.flaticon.com/128/2810/2810387.png" className='h-8 '/></button>
+    </div>
+    </div>
                   <div className='h-14 bg-deep-grey flex justify-center  w-56 border-0 rounded-xl items-center mb-8' >
                         <div className={`${midsection==="song"?style:""} w-1/2  h-full p-4 flex justify-center   cursor-pointer`} onClick={()=>setMidsection("song")}>
                             <h1>Song</h1></div>
