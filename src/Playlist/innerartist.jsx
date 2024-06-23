@@ -155,7 +155,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
                 >
                   <p className="text-sm w-full">#{index + 1}</p>{" "}
                   {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
+                  <img src={song.image} className="h-12" />{" "}
                   {/* Keep image size fixed */}
                   <p className="text-sm flex-grow">{song.year}</p>{" "}
                   {/* Allow year to take remaining space */}

@@ -41,7 +41,7 @@ function Innersongs() {
                 res3.data.map((song) => ({
                   id: song.id,
                   name: he.decode(song.name),
-                  image: song.image[1],
+                  image: song.image[1].url,
                   artist: song.artists.primary[0].name,
                   year: song.year,
                 }))
@@ -87,7 +87,7 @@ function Innersongs() {
                 >
                   <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
+                  <img src={song.image} className="h-12" />{" "}
                   {/* Keep image size fixed */}
                   <h1 className="text-md flex-grow">{song.year}</h1>{" "}
                   {/* Allow year to take remaining space */}
@@ -134,7 +134,7 @@ function Innersongs() {
                 >
                   <h1 className="text-sm w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
+                  <img src={song.image} className="h-12" />{" "}
                   {/* Keep image size fixed */}
                   <h1 className="text-sm flex-grow">{song.year}</h1>{" "}
                   {/* Allow year to take remaining space */}

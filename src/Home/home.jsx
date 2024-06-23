@@ -63,72 +63,47 @@ function Home() {
           </div>
         </div>
       ) : (
-        <div
-          className="overflow-y h-screen w-full"
-          style={{ overflowX: "scroll" }}
-        >
-          <h1 className="text-xl p-2 m-2">
-            Weekly Top <span className="text-red font-bold">Songs</span>{" "}
-            <span>
-              <button
-                className="ml-12 bg-transparent text-blue text-md h-12 w-24 border-0 rounded-md"
-                onClick={() => handleCLick("topsongs")}
-              >
-                {page === "topsongs" ? "View-Less" : "View-All"}
-              </button>
-            </span>
-          </h1>
-          <Topsongs />
-          <h1 className="text-xl p-2 m-2">
-            New Releases <span className="text-red font-bold">Songs</span>
-            <span>
-              <button
-                className="ml-12 bg-transparent text-blue text-md h-12 w-24 border-0 rounded-md"
-                onClick={() => handleCLick("newrelease")}
-              >
-                {page === "newrelease" ? "View-Less" : "View-All"}
-              </button>
-            </span>
-          </h1>
-          <Newrelease />
-          <h1 className="text-xl p-2 m-2">
-            Trending <span className="text-red font-bold">Songs</span>
-            <span>
-              <button
-                className="ml-12 bg-transparent text-blue text-md h-12 w-24 border-0 rounded-md"
-                onClick={() => handleCLick("trending")}
-              >
-                {page === "trending" ? "View-Less" : "View-All"}
-              </button>
-            </span>
-          </h1>
-          <Trendingmobile names={"songs"} />
-          <h1 className="text-xl p-2 m-2">
-            Popular<span className="text-red font-bold">Artists</span>
-            <span>
-            <button
-                className="ml-12 bg-transparent text-blue text-md h-12 w-24 border-0 rounded-md"
-                onClick={() => handleCLick("artist")}
-              >
-                {page === "artist" ? "View-Less" : "View-All"}
-              </button>
-              </span>
-          </h1>
-          <Artist />
-          <h1 className="text-xl p-2 m-2">
-            Popular<span className="text-red font-bold">Albums</span>
-            <span>
-            <button
-                className="ml-12 bg-transparent text-blue text-md h-12 w-24 border-0 rounded-md"
-                onClick={() => handleCLick("album")}
-              >
-                {page === "album" ? "View-Less" : "View-All"}
-              </button>
-              </span>
-          </h1>
-          <Albums />
-          <div className="h-2/6"></div>
-        </div>
+        <>
+       <div className="overflow-y-auto h-screen w-full">
+  <h1 className="text-2xl p-2 m-1">
+    Weekly Top <span className="text-red font-bold">Songs</span>
+  </h1>
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
+    <Topsongs />
+  </div>
+  
+  <h1 className="text-2xl p-2 m-1">
+    New Releases <span className="text-red font-bold">Songs</span>
+  </h1>
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
+    <Newrelease />
+  </div>
+  
+  <h1 className="text-2xl p-2 m-1">
+    Trending <span className="text-red font-bold">Songs</span>
+  </h1>
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
+    <Trendingmobile names={"songs"} />
+  </div>
+  
+  <h1 className="text-2xl p-2 m-1">
+    Popular <span className="text-red font-bold">Artists</span>
+  </h1>
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
+    <Artist />
+  </div>
+  
+  <h1 className="text-2xl p-2 m-1">
+    Popular <span className="text-red font-bold">Albums</span>
+  </h1>
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2 mb-48">
+    <Albums />
+  </div>
+  
+  <div className="h-16"></div>
+</div>
+
+        </>
       )}
     </>
   );

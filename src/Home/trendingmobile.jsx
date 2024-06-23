@@ -1,23 +1,13 @@
-import axios from "axios";
-import viewall from "../assets/viewall.svg";
-import viewclose from "../assets/viewclose.svg";
-import React, { useContext } from "react";
-import { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
-import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
+
 function Trendingmobile({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
-  const [limit, setLimit] = useState(5);
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
-  const {Viewall,page}=useContext(Context);
-  // Function to handle expanding to show more results
-  const expandResults = () => {
-    setLimit(musicInfo.length);
-  };
+  const { page } = useContext(Context);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +18,7 @@ function Trendingmobile({ names }) {
             res.map((song) => ({
               id: song.id,
               name: he.decode(song.name),
-              image: song.image[1],
+              image: song.image[1].url, // Assuming `song.image` is an object with a `url` property
             }))
           );
         }
@@ -42,38 +32,33 @@ function Trendingmobile({ names }) {
   }, [names]);
 
   const play = (id) => {
-    const a = localStorage.setItem("songid", id);
+    localStorage.setItem("songid", id);
     setSongid(id);
   };
 
   return (
-    <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer ">
+    <div className="flex p-2 gap-4 overflow-x-scroll space-x-2 overflow-y-hidden">
       {!loading ? (
         <>
-          <div className="flex flex-wrap">
-           <>
-            {
-            musicInfo.slice(0, page==="trending"?Viewall:3).map((song) => (
-              <div
-                className="flex flex-col items-center pb-12"
-                key={song.id}
-                onClick={() => play(song.id)}
-              >
-                <div className="h-24 p-2 border-1 bg-deep-grey w-20 text-white mr-8 border-0 rounded-md  mt-2">
-                  <img
-                    src={song.image.url}
-                    alt={song.title}
-                    className="h-20 w-20 object-cover border-0 rounded-md mb-2"
-                  />
-                   <p className="text-center font-bold text-white text-sm">
-                    {song.name}
-                  </p>
-                </div>
+          {musicInfo.map((song) => (
+            <div
+              className="flex flex-col items-center pb-4"
+              key={song.id}
+              onClick={() => play(song.id)}
+            >
+              <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
+                <img
+                  src={song.image}
+                  alt={song.name}
+                  className="h-24 w-24 object-cover mb-2 rounded-md"
+                />
+                <p className="text-center font-bold text-white text-sm truncate">
+                  {song.name}
+                </p>
               </div>
-            ))
-              }</>
-         </div>
-      </>
+            </div>
+          ))}
+        </>
       ) : (
         <span className="text-red text-3xl font-bold">Loading.....</span>
       )}

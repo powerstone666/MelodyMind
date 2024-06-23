@@ -207,102 +207,104 @@ function Result({ names }) {
             </>
           ) : (
            <>
-               <h1 className="text-xl p-2 m-2">
-            Top <span className="text-red font-bold">Songs</span>
-            </h1>
-             <div className="flex flex-wrap">{
-            musicInfo.slice(0, 10).map((song) => (
-              <div
-                className="flex flex-col-3 items-center p-4 mb-5"
-                key={song.id}
-                onClick={() => play(song.id)}
-              >
-                <div className="h-24 border-1  w-20 text-white mr-5  rounded-md  mt-2">
-                  <img
-                    src={song.image}
-                    alt={song.name}
-                    className="h-18 w-18 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white text-sm">
-                    {song.name}
-                  </h1>
-                </div>
-              </div>
-            ))}
-            </div>
-            <h1 className="text-xl p-2 mt-5">
-            Top <span className="text-red font-bold">Albums</span>
-            </h1>
-             <div className="flex flex-wrap">{
-            albuminfo.slice(0, 10).map((song) => (
-              <div
-                className="flex flex-col-3 items-center p-4 mb-5"
-                key={song.id}
-                onClick={() => playalbum(song.id)}
-              >
-                <div className="h-24 border-1 bg-transparent w-20 text-white mr-5 border-0 rounded-md  mt-2">
-                  <img
-                    src={song.image}
-                    alt={song.name}
-                    className="h-18 w-18 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white text-sm">
-                    {song.name}
-                  </h1>
-                </div>
-              </div>
-            ))}
-            </div>
+           <h1 className="text-2xl p-2 m-2">
+  Top <span className="text-red font-bold">Songs</span>
+</h1>
+<div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+  {musicInfo.slice(0, 10).map((song) => (
+    <div
+      className="flex flex-col items-center pb-4"
+      key={song.id}
+      onClick={() => play(song.id)}
+    >
+      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
+        <img
+          src={song.image}
+          alt={song.name}
+          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+        />
+        <h1 className="text-center font-bold text-white text-sm truncate">
+          {song.name}
+        </h1>
+      </div>
+    </div>
+  ))}
+</div>
 
-            <h1 className="text-xl p-2 mt-5">
-            Top <span className="text-red font-bold">Artists</span>
-            </h1>
-             <div className="flex flex-wrap">{
-            artistinfo.slice(0, 10).map((song) => (
-              <div
-                className="flex flex-col-3 items-center p-4 mb-5"
-                key={song.id}
-                onClick={() => playsinger(song.id)}
-              >
-                <div className="h-24 border-1 bg-transparent w-20 text-white mr-5 border-0 rounded-md  mt-2">
-                  <img
-                    src={song.image}
-                    alt={song.name}
-                    className="h-18 w-18 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white text-sm">
-                    {song.name}
-                  </h1>
-                </div>
-              </div>
-            ))}
-            </div>
-            <h1 className="text-xl p-2 mt-5">
-            Top <span className="text-red font-bold">Query</span>
-            </h1>
-             <div className="flex flex-wrap">{
-            topquery.slice(0, 10).map((song) => (
-              <div
-                className="flex flex-col-3 items-center p-4 "
-                key={song.id}
-                onClick={() => playquery(song.id)}
-              >
-                <div className="h-24 border-1 bg-transparent w-20 text-white mr-5 border-0 rounded-md  mt-2">
-                  <img
-                    src={song.image}
-                    alt={song.name}
-                    className="h-18 w-18 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white text-sm">
-                    {song.name}
-                  </h1>
-                </div>
-              </div>
-            ))}
-            </div>
+<h1 className="text-2xl p-2 mt-5">
+  Top <span className="text-red font-bold">Albums</span>
+</h1>
+<div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+  {albuminfo.slice(0, 10).map((album) => (
+    <div
+      className="flex flex-col items-center pb-4"
+      key={album.id}
+      onClick={() => playalbum(album.id)}
+    >
+      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
+        <img
+          src={album.image}
+          alt={album.name}
+          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+        />
+        <h1 className="text-center font-bold text-white text-sm truncate">
+          {album.name}
+        </h1>
+      </div>
+    </div>
+  ))}
+</div>
+
+<h1 className="text-2xl p-2 mt-5">
+  Top <span className="text-red font-bold">Artists</span>
+</h1>
+<div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+  {artistinfo.slice(0, 10).map((artist) => (
+    <div
+      className="flex flex-col items-center pb-4"
+      key={artist.id}
+      onClick={() => playsinger(artist.id)}
+    >
+      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
+        <img
+          src={artist.image}
+          alt={artist.name}
+          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+        />
+        <h1 className="text-center font-bold text-white text-sm truncate">
+          {artist.name}
+        </h1>
+      </div>
+    </div>
+  ))}
+</div>
+
+<h1 className="text-2xl p-2 mt-5">
+  Top <span className="text-red font-bold">Query</span>
+</h1>
+<div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+  {topquery.slice(0, 10).map((query) => (
+    <div
+      className="flex flex-col items-center pb-4"
+      key={query.id}
+      onClick={() => playquery(query.id)}
+    >
+      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
+        <img
+          src={query.image}
+          alt={query.name}
+          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+        />
+        <h1 className="text-center font-bold text-white text-sm truncate">
+          {query.name}
+        </h1>
+      </div>
+    </div>
+  ))}
+</div>
+
             </>
-          )}{" "}
-        
+            )}
    
         </>
       ) : (

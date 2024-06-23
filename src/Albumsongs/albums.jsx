@@ -1,14 +1,16 @@
 import axios from "axios";
 import viewall from "../assets/viewall.svg";
 import viewclose from "../assets/viewclose.svg";
-import React, { useContext } from "react";
-import { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
-import { MelodyMusicsongs, albumsongs, searchResult } from "../saavnapi";
+import { albumsongs } from "../saavnapi";
 import he from "he";
+
 function Albums() {
-  const { setSongid,setInneralbum,setSelected,page,Viewall } = useContext(Context);
+  const { setSongid, setInneralbum, setSelected, page, Viewall } = useContext(
+    Context
+  );
   const [limit, setLimit] = useState(5);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,16 +25,14 @@ function Albums() {
     const fetchData = async () => {
       try {
         setLoading(true);
-       const res=await albumsongs();
-       setLoading(false);
-            setMusicInfo(
+        const res = await albumsongs();
+        setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
             artist: song.artists.primary[0].name,
-            image: song.image[1],
+            image: song.image[1].url,
           }))
-         
         );
         setLoading(false);
       } catch (error) {
@@ -43,10 +43,7 @@ function Albums() {
     fetchData();
   }, []);
 
-
-   
   const play = async (id) => {
-  
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
@@ -54,64 +51,65 @@ function Albums() {
     setSelected("innerAlbum");
   };
 
-
   return (
     <>
       {!loading ? (
-        <div className="flex p-4 flex-3 gap-5 mb-8 cursor-pointer">
-          <div className="flex flex-wrap">
-            {isAboveMedium ? (
-              <>
-                {musicInfo.slice(0, limit).map((song) => (
-                  <div
-                    className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
-                    key={song.id}
-                    onClick={() => play(song.id)}
-                  >
-                    <img
-                      src={song.image.url}
-                      alt={song.title}
-                      className="h-48 w-56 object-cover border-0 rounded-md"
-                    />
-                    <h1 className="text-center font-bold text-white">
-                      {song.name}
-                    </h1>
-                  </div>
-                ))}
-                {musicInfo.length > 5 && limit === 5 ? (
-                  <button onClick={expandResults}>
-                    <img src={viewall} />
-                    <h1 className="font-bold"> View All</h1>
-                  </button>
-                ) : (
-                  <button onClick={() => setLimit(5)}>
-                    <img src={viewclose} />
-                    <h1 className="font-bold">Close</h1>
-                  </button>
-                )}
-              </>
-            ) : (
-              musicInfo.slice(0, page==="album"?Viewall:3).map((song) => (
+        isAboveMedium ? (
+          <div className="flex p-4 flex-3 gap-5 mb-8 cursor-pointer">
+            <div className="flex flex-wrap">
+              {musicInfo.slice(0, limit).map((song) => (
+                <div
+                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
+                  key={song.id}
+                  onClick={() => play(song.id)}
+                >
+                  <img
+                    src={song.image}
+                    alt={song.name}
+                    className="h-48 w-56 object-cover border-0 rounded-md"
+                  />
+                  <h1 className="text-center font-bold text-white">
+                    {song.name}
+                  </h1>
+                </div>
+              ))}
+              {musicInfo.length > 5 && limit === 5 ? (
+                <button onClick={expandResults}>
+                  <img src={viewall} alt="View All" />
+                  <h1 className="font-bold"> View All</h1>
+                </button>
+              ) : (
+                <button onClick={() => setLimit(5)}>
+                  <img src={viewclose} alt="Close" />
+                  <h1 className="font-bold">Close</h1>
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex p-4  overflow-x-scroll overflow-y-hidden">
+            {musicInfo
+              .slice(0,musicInfo.length)
+              .map((song) => (
                 <div
                   className="flex flex-col items-center pb-4"
                   key={song.id}
                   onClick={() => play(song.id)}
                 >
-                  <div className="h-24 p-2 border-1 bg-deep-grey w-20 text-white mr-8 border-0 rounded-md  mt-2">
+                  <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white mr-8 border-0 rounded-md mt-2">
                     <img
-                      src={song.image.url}
-                      alt={song.title}
-                      className="h-20 w-20 mb-2 object-cover border-0 rounded-md"
+                      src={song.image}
+                      alt={song.name}
+                      className="h-24 w-24 mb-2 object-cover border-0 rounded-md"
                     />
                     <p className="text-center font-bold text-white text-sm">
-                    {song.name}
-                  </p>
+                      {song.name}
+                    </p>
                   </div>
                 </div>
-              ))
-            )}
+              ))}
           </div>
-        </div>
+        )
       ) : (
         <span className="text-red text-3xl font-bold">Loading.....</span>
       )}
