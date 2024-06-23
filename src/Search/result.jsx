@@ -26,7 +26,6 @@ function Result({ names }) {
     const fetchData = async () => {
       try {
         const res = await Searchsongs(names);
-        console.log(res);
         const res2=await Searchsongs2(names);
         setMusicInfo(
           res2.results.map((song) => ({
@@ -147,7 +146,7 @@ function Result({ names }) {
             <div className="flex flex-wrap p-4  gap-5">
               {albuminfo.slice(0, limit).map((song) => (
                 <div
-                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
+                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
                   key={song.id}
                   onClick={() => playalbum(song.id)}
                 >
@@ -189,14 +188,14 @@ function Result({ names }) {
             <div className="flex flex-wrap p-4 mb-8 gap-5">
               {topquery.slice(0, limit).map((song) => (
                 <div
-                  className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md  p-4 mt-5"
+                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
                   key={song.id}
                   onClick={() => playquery(song.id)}
                 >
                   <img
                     src={song.image}
                     alt={song.title}
-                    className="h-48 w-56 object-cover border-0 rounded-full" 
+                    className="h-48 w-56 object-cover border-0 rounded-md" 
                   />
                   <h1 className="text-center font-bold text-white">
                     {song.name}
@@ -221,7 +220,7 @@ function Result({ names }) {
         <img
           src={song.image}
           alt={song.name}
-          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+          className="h-24 w-24 mb-2 object-cover "
         />
         <h1 className="text-center font-bold text-white text-sm truncate">
           {song.name}
@@ -245,7 +244,7 @@ function Result({ names }) {
         <img
           src={album.image}
           alt={album.name}
-          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+          className="h-24 w-24 mb-2 object-cover"
         />
         <h1 className="text-center font-bold text-white text-sm truncate">
           {album.name}
@@ -269,7 +268,7 @@ function Result({ names }) {
         <img
           src={artist.image}
           alt={artist.name}
-          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+          className="h-24 w-24 mb-2 object-cover "
         />
         <h1 className="text-center font-bold text-white text-sm truncate">
           {artist.name}
@@ -293,7 +292,7 @@ function Result({ names }) {
         <img
           src={query.image}
           alt={query.name}
-          className="h-24 w-24 mb-2 object-cover border border-white rounded-md"
+          className="h-24 w-24 mb-2 object-cover "
         />
         <h1 className="text-center font-bold text-white text-sm truncate">
           {query.name}
