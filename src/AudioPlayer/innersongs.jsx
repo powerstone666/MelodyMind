@@ -2,6 +2,9 @@ import React, { useContext, useEffect,useState } from 'react';
 import { Context } from '../main';
 import useMediaQuery from '../useMedia';
 import { searchResult, searchSuggestion, songLyrics } from '../saavnapi';
+import { ToastContainer, toast ,Bounce} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import he from 'he';
 function Innersongs() {
     const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -12,10 +15,12 @@ function Innersongs() {
     const [midsection,setMidsection]=useState("song")
     const [recomendation,setRecomendation]=useState([])
     const [loading, setLoading] = useState(true);
+    const [dloading,setDloading]=useState(false)
     const [download,setDownload]=useState(" ")
     const downloadAudio = async () => {
       const url = download;
       try {
+        setDloading(true)
         const response = await fetch(url);
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
@@ -25,8 +30,12 @@ function Innersongs() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setDloading(false)
+        toast.success("Dowmloaded Successfully");
       } catch (error) {
         console.error('Error downloading audio:', error);
+        toast.error("Dowmloaded Failed");
+        setDloading(false)
       }
     };
     useEffect(() => {
@@ -80,8 +89,23 @@ function Innersongs() {
      const style=`text-white bg-red  border-0 rounded-xl`
     return (
         <>
+      
         {loading ? (
+          
         <div className="flex flex-col items-center h-screen overflow-y-scroll mb-24">
+                       <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
             {isAboveMedium ? (
                 <>
                 <div className='border-1 bg-deep-grey h-1/2  mb-6 p-4 '>
@@ -90,7 +114,12 @@ function Innersongs() {
                   <div className='flex gap-4 items-center justify-center mb-6'>
                   <h1 className='text-xl '>{songName}</h1>
                   <div>
+                    {!dloading ? (
       <button onClick={downloadAudio}><img src="https://cdn-icons-png.flaticon.com/128/2810/2810387.png" className='h-8 '/></button>
+                    ):(
+                       <img src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png" className='animate-spin h-8' viewBox="0 0 24 24"/>
+                    )}
+                    
     </div>
     </div>
                   <div className='h-14 bg-deep-grey flex justify-center  w-96 border-0 rounded-xl items-center mb-8' >
@@ -142,7 +171,12 @@ function Innersongs() {
                   <div className='flex gap-4 items-center justify-center mb-6'>
                   <h1 className='text-xl '>{songName}</h1>
                   <div>
+                    {!dloading ? (
       <button onClick={downloadAudio}><img src="https://cdn-icons-png.flaticon.com/128/2810/2810387.png" className='h-8 '/></button>
+                    ):(
+                       <img src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png" className='animate-spin h-8' viewBox="0 0 24 24"/>
+                    )}
+                    
     </div>
     </div>
                   <div className='h-14 bg-deep-grey flex justify-center  w-56 border-0 rounded-xl items-center mb-8' >

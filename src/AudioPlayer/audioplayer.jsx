@@ -7,6 +7,9 @@ import useMediaQuery from "../useMedia";
 import axios from "axios";
 import he from "he";
 import { searchResult, searchSuggestion } from "../saavnapi";
+import { ToastContainer, toast ,Bounce} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function AudioPlayerComponent() {
   const isAboveMedium = useMediaQuery("(min-width:1025px)");
@@ -70,7 +73,7 @@ if ('mediaSession' in navigator) {
     }
   
   if(i===res.data.length){
-    alert("No more songs to play please go back  and select another song.");
+    toast.error("No more songs to play please go back  and select another song.");
     return;
   }
   
@@ -78,7 +81,7 @@ if ('mediaSession' in navigator) {
     localStorage.setItem("songid", res.data[i].id);
     setSongid(res.data[i].id);
 }catch(error){
-  alert("No more songs to play please go back  and select another song.");
+    toast.error("No more songs to play please go back  and select another song.");
 }
   };
 
@@ -113,6 +116,19 @@ if ('mediaSession' in navigator) {
   }
   return (
     <div>
+       <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       {isAboveMedium ? (
         <div className="fixed bottom-0 w-screen bg-deep-blue">
           <div className="flex gap-4 justify-start items-center">

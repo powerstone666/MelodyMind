@@ -153,9 +153,6 @@ function Navbar() {
                 <option className="bg-deep-grey" value="portuguese">
                   Portuguese
                 </option>
-                <option className="bg-deep-grey" value="swahili">
-                  Swahili
-                </option>
                 <option className="bg-deep-grey" value="turkish">
                   Turkish
                 </option>
