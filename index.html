@@ -1,25 +1,43 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-     <!-- Set theme color for Chrome, Firefox OS, Opera and Vivaldi -->
+<head>
+  <meta charset="UTF-8" />
   <meta name="theme-color" content="#000000">
+  <meta name="description" content="MelodyMind is a music player that allows you to listen to your favorite music.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="MelodyMind">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="MelodyMind">
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="/music icon.jfif">
+  <meta name="msapplication-starturl" content="/index.html">
+  <meta name="msapplication-navbutton-color" content="#000000">
+  <meta name="msapplication-tooltip" content="MelodyMind">
+  <meta name="msapplication-window" content="width=800;height=600">
+  <meta name="msapplication-task" content="name=MelodyMind;action-uri=/;icon-uri=/music icon.jfif">
 
   <!-- Set theme color for Safari -->
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Set theme color for Windows Phone -->
-  <meta name="msapplication-navbutton-color" content="#000000">
-    <link rel="icon" type="image/svg+xml+jfif" href="/music icon.jfif" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oxanium:wght@200..800&family=VT323&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MelodyMind</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  <!-- Hide browser bars -->
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        window.scrollTo(0, 1); // Scrolls the page down to hide the address bar on mobile browsers
+      }, 0);
+    });
+  </script>
+
+  <link rel="icon" type="image/svg+xml+jfif" href="/music icon.jfif" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oxanium:wght@200..800&family=VT323&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MelodyMind</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>

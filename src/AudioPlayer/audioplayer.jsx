@@ -125,7 +125,7 @@ if ('mediaSession' in navigator) {
             className="bg-deep-blue w-4/6"
             listenInterval={100}
           />
-          <div className="flex items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
+          <div className="flex flex-wrap items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
           <img src={image} className="h-16" />
           <h1 className="truncate">{names}</h1>
           </div>

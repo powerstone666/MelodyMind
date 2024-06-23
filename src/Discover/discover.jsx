@@ -94,7 +94,7 @@ function Discover() {
           </h1>
           <Artist />
         
-          <div className="h-1/6 mb-12"></div>
+          <div className="h-1/6 mb-20"></div>
         </div>
       )}
     </>

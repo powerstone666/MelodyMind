@@ -3,13 +3,13 @@
   "short_name": "MelodyMind",
   "icons": [
     {
-      "src": "../src/assets/music icon.jfif", 
-      "sizes": "192x192",             
-      "type": "image/jfif"
+      "src": "/assets/music-icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
     }
   ],
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",  
-  "background_color": "#000000"        
+  "theme_color": "#000000",
+  "background_color": "#000000"
 }

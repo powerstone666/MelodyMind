@@ -93,14 +93,14 @@ function Home() {
     <Artist />
   </div>
   
-  <h1 className="text-2xl p-2 m-1">
+  <h1 className="text-2xl p-2 m-0">
     Popular <span className="text-red font-bold">Albums</span>
   </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2 mb-24">
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2 ">
     <Albums />
   </div>
   
-  <div className="h-16"></div>
+  <div className="h-1/6 mb-24"></div>
 </div>
 
         </>
