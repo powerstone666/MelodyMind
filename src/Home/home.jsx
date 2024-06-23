@@ -10,7 +10,7 @@ import { Context } from "../main";
 import Trendingmobile from "./trendingmobile";
 
 function Home() {
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const isAboveMedium = useMediaQuery("(min-width:1025px)");
   const { Viewall, setViewall, setPage, page } = useContext(Context);
 
   const handleCLick = (name) => {
@@ -96,7 +96,7 @@ function Home() {
   <h1 className="text-2xl p-2 m-1">
     Popular <span className="text-red font-bold">Albums</span>
   </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2 mb-48">
+  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2 mb-24">
     <Albums />
   </div>
   

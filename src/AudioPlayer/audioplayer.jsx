@@ -9,7 +9,7 @@ import he from "he";
 import { searchResult, searchSuggestion } from "../saavnapi";
 
 function AudioPlayerComponent() {
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const isAboveMedium = useMediaQuery("(min-width:1025px)");
   const { songid, setSongid,setSelected } = useContext(Context);
   const [music, setMusic] = useState("");
   const [names, setNames] = useState("");
@@ -127,7 +127,7 @@ if ('mediaSession' in navigator) {
           />
           <div className="flex items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
           <img src={image} className="h-16" />
-          <h1>{names}</h1>
+          <h1 className="truncate">{names}</h1>
           </div>
           </div>
         </div>

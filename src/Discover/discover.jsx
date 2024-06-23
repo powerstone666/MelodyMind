@@ -10,7 +10,7 @@ import Trendingmobile from "../Home/trendingmobile";
 import Newreleasemobile from "../Home/newreleasemobile";
 import { useContext } from "react";
 function Discover() {
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const isAboveMedium = useMediaQuery("(min-width:1025px)");
   const { Viewall, setViewall, setPage, page } = useContext(Context);
 
   const handleCLick = (name) => {
@@ -94,7 +94,7 @@ function Discover() {
           </h1>
           <Artist />
         
-          <div className="h-2/6"></div>
+          <div className="h-1/6 mb-12"></div>
         </div>
       )}
     </>

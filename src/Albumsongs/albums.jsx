@@ -14,7 +14,7 @@ function Albums() {
   const [limit, setLimit] = useState(5);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(false);
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const isAboveMedium = useMediaQuery("(min-width:1025px)");
 
   // Function to handle expanding to show more results
   const expandResults = () => {
@@ -102,7 +102,7 @@ function Albums() {
                       alt={song.name}
                       className="h-24 w-24 mb-2 object-cover border-0 rounded-md"
                     />
-                    <p className="text-center font-bold text-white text-sm">
+                    <p className="text-center font-bold text-white text-sm truncate">
                       {song.name}
                     </p>
                   </div>

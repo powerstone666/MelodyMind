@@ -10,7 +10,7 @@ function Artist({ names }) {
   const { setSinger, page, Viewall, setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const isAboveMedium = useMediaQuery("(min-width:1025px)");
   const [loading, setLoading] = useState(true);
 
   // Function to handle expanding to show more results

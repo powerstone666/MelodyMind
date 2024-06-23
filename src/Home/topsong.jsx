@@ -11,7 +11,7 @@ function Topsongs({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
-  const isAboveMedium = useMediaQuery("(min-width: 768px)");
+  const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [loading, setLoading] = useState(true);
   const { Viewall, page } = useContext(Context);
 
@@ -53,6 +53,7 @@ function Topsongs({ names }) {
         <>
           {isAboveMedium ? (
             <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer">
+                <div className="flex flex-wrap">
               {musicInfo.slice(0, limit).map((song) => (
                 <div
                   className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
@@ -80,6 +81,7 @@ function Topsongs({ names }) {
                   <h1 className="font-bold">Close</h1>
                 </button>
               )}
+              </div>
             </div>
           ) : (
            

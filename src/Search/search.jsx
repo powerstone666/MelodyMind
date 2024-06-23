@@ -8,7 +8,7 @@ import Topsongs from "../Home/topsong";
 function Searchfunc() {
   const { search, setSearch } = useContext(Context);
   const [rerender, setRerender] = useState(false);
-  const isAboveMedium = useMediaQuery("(min-width:768px)");
+  const isAboveMedium = useMediaQuery("(min-width:1025px)");
   // Listen for changes in the search state
   useEffect(() => {
     setRerender(true);
