@@ -3,13 +3,47 @@
   "short_name": "MelodyMind",
   "icons": [
     {
-      "src": "/assets/music-icon.png",
-      "sizes": "192x192",
+      "src": "MelodyMind/public/music icon.jfif",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#000000"
+  "background_color": "#000000",
+  "id": "MelodyMind",
+  "description": "MelodyMind is a music player that allows you to listen to your favorite music.",
+  "lang": "en",
+  "orientation": "portrait",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "url": "https://melodyminds.netlify.app/",
+      "description": "Home Page"
+    },
+    {
+      "name": "Discover",
+      "url": "https://melodyminds.netlify.app/discover",
+      "description": "Discover"
+    },
+    {
+      "name": "Albums",
+      "url": "https://melodyminds.netlify.app/albums",
+      "description": "Album"
+    },
+    {
+      "name": "Search",
+      "url": "https://melodyminds.netlify.app/search",
+      "description": "Search"
+    }
+  ],
+  "categories": [
+    "music",
+    "personalization"
+  ]
 }
