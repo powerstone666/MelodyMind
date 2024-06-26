@@ -9,6 +9,7 @@ import he from "he";
 import { searchResult, searchSuggestion } from "../saavnapi";
 import { ToastContainer, toast ,Bounce} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from "react-router-dom";
 
 
 function AudioPlayerComponent() {
@@ -142,7 +143,7 @@ if ('mediaSession' in navigator) {
             listenInterval={100}
           />
           <div className="flex flex-wrap items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
-          <img src={image} className="h-16" />
+        <Link to="innersong">  <img src={image} className="h-16" /></Link>
           <h1 className="truncate">{names}</h1>
           </div>
           </div>
@@ -162,7 +163,9 @@ if ('mediaSession' in navigator) {
             
             showFilledVolume={true}
           />
-          <img src={image} className="h-12" onClick={setdisplay}/>
+           <Link to="innersong">
+            <img src={image} className="h-12" onClick={setdisplay}/>
+            </Link>
         
         </div>
       

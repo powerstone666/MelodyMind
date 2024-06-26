@@ -5,6 +5,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { Context } from "../main";
 import he from "he";
+import { Link } from "react-router-dom";
 import { MelodyMusicsongs, albumsongs, artist, searchResult } from "../saavnapi";
 function AlbumFull({names}) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -45,8 +46,8 @@ function AlbumFull({names}) {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
-    localStorage.setItem("selected", "innerAlbum");
-           setSelected("innerAlbum");
+    localStorage.setItem("selected", "/albums");
+           setSelected("/albums");
   };
   return (
     <>
@@ -68,7 +69,7 @@ function AlbumFull({names}) {
                 </h1>
               </div>
               {musicInfo.slice(0, limit).map((song, index) => (
-                <div
+             <Link to="/innerAlbum"> <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
                   onClick={() => play(song.id)}
@@ -86,6 +87,7 @@ function AlbumFull({names}) {
                   />{" "}
                   {/* Keep image size fixed */}
                 </div>
+                </Link>
               ))}
               <div className="flex  ml-8">
                 {musicInfo.length > 5 && limit === 5 ? (
@@ -123,6 +125,7 @@ function AlbumFull({names}) {
                 </h1>
               </div>
               {musicInfo.slice(0, limit).map((song, index) => (
+                  <Link to="/innerAlbum">
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
@@ -138,6 +141,7 @@ function AlbumFull({names}) {
                
                   {/* Keep image size fixed */}
                 </div>
+                </Link>
               ))}
               <div className="flex  ml-8  mb-36">
                 {musicInfo.length > 5 && limit === 5 ? (

@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { Context } from "../main";
 import he from "he";
 import { MelodyMusicsongs, albumsongs, albumsongsinner, artist, artistSongs, searchResult } from "../saavnapi";
-
+import { Link } from "react-router-dom";
 
 function Innerartist({names}) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
@@ -62,8 +62,8 @@ const[albuminfo,setAlbuminfo]=useState([]);
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
-    localStorage.setItem("selected", "innerAlbum");
-    setSelected("innerAlbum");
+    localStorage.setItem("selected", "/albums");
+    setSelected("/albums");
   };
   return (
     <>
@@ -109,6 +109,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
             Top <span className="text-red font-bold">Albums</span>
             </h1>
               {albuminfo.slice(0, albuminfo.length).map((song, index) => (
+                  <Link to="/innerAlbum">
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.aid}
@@ -127,6 +128,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
                   />{" "}
                   {/* Keep image size fixed */}
                 </div>
+                </Link>
               ))}
               <div className="flex  mb-8">
               
@@ -168,6 +170,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
             Top <span className="text-red font-bold">Albums</span>
             </h1>
               {albuminfo.slice(0, albuminfo.length).map((song, index) => (
+                  <Link to="/innerAlbum">
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.aid}
@@ -183,6 +186,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
                  {" "}
                   {/* Keep image size fixed */}
                 </div>
+                </Link>
               ))}
               <div className="flex  ml-8  mb-36">
               

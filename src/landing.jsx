@@ -12,49 +12,37 @@ import { Context } from "./main";
 import Innerartist from "./Playlist/innerartist";
 import Innersongs from "./AudioPlayer/innersongs";
 import Moodanalyse from "./moodanalyse";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 function Landing() {
   const {selected,setSelected}=useContext(Context)
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
-  const rendercomponents = () => {
-    switch (selected) {
-      case "home":
-        return <Home />;
-        case "innersong":
-          return <Innersongs />;
-      case "discover":
-        return <Discover />;
-      case "albums":
-        return <AlbumFull />;
-      case "innerAlbum":
-      return <Inneralbum />;
-      case "artist":
-        return <ArtistPage/>;
-        case "innerartist":
-          return <Innerartist/>;
-      case "recently":
-        return <h1>Recently</h1>;
-      case "liked":
-        return <h1>Liked</h1>;
-      case "search":
-        return <Searchfunc />;
-      case "about":
-        return <h1>About</h1>;
-      case "contact":
-        return <h1>Contact</h1>;
-      case "mood":
-        return <Moodanalyse/>;
-      case "login":
-        return <h1>Login</h1>;
-      case "signup":
-        return <h1>Sign Up</h1>;
-      default:
-        return <h1>Home</h1>;
-    }
-  };
+
   return (
     <div className="w-full h-screen flex flex-col">
       <Navbar selected={selected} setSelected={setSelected} />
-      {rendercomponents()}
+     
+        <Routes>
+          <Route path="/" element={<Home/>}></Route>
+          <Route path="/discover" element={<Discover/>}></Route>
+          <Route path="/albums" element={<AlbumFull/>}></Route>
+          <Route path="/innerAlbum" element={<Inneralbum/>}></Route>
+          <Route path="albums/innerAlbum" element={<Inneralbum/>}></Route>
+          {isAboveMedium &&(
+          <Route path="/artist" element={<ArtistPage/>}></Route>
+          )}
+          <Route path="/innerartist" element={<Innerartist/>}></Route>
+          <Route path="/search" element={<Searchfunc/>}></Route>
+          <Route path="/mood" element={<Moodanalyse/>}></Route>
+          <Route path="/innersong" element={<Innersongs/>}></Route>
+          <Route path="/about" element={<h1>About</h1>}></Route>
+          <Route path="/contact" element={<h1>Contact</h1>}></Route>
+          <Route path="/login" element={<h1>Login</h1>}></Route>
+          <Route path="/signup" element={<h1>Sign Up</h1>}></Route>
+          <Route path="/recently" element={<h1>Recently</h1>}></Route>
+          <Route path="/liked" element={<h1>Liked</h1>}></Route>
+          <Route path="*" element={<Home/>}></Route>
+        </Routes>
+     
       {isAboveMedium ? (
         <div className="fixed bottom-0 w-full">
           <AudioPlayerr />

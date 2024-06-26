@@ -5,6 +5,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { albumsongs } from "../saavnapi";
+import { Link } from "react-router-dom";
 import he from "he";
 
 function Albums() {
@@ -47,8 +48,8 @@ function Albums() {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
-    localStorage.setItem("selected", "innerAlbum");
-    setSelected("innerAlbum");
+    localStorage.setItem("selected", "/albums");
+    setSelected("/albums");
   };
 
   return (
@@ -58,7 +59,7 @@ function Albums() {
           <div className="flex p-4 flex-3 gap-5 mb-8 cursor-pointer">
             <div className="flex flex-wrap">
               {musicInfo.slice(0, limit).map((song) => (
-                <div
+            <Link to="/innerAlbum">  <div
                   className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                   key={song.id}
                   onClick={() => play(song.id)}
@@ -72,6 +73,7 @@ function Albums() {
                     {song.name}
                   </h1>
                 </div>
+                </Link>
               ))}
               {musicInfo.length > 5 && limit === 5 ? (
                 <button onClick={expandResults}>
@@ -91,6 +93,7 @@ function Albums() {
             {musicInfo
               .slice(0,musicInfo.length)
               .map((song) => (
+                <Link to="/innerAlbum">
                 <div
                   className="flex flex-col items-center pb-4"
                   key={song.id}
@@ -107,6 +110,7 @@ function Albums() {
                     </p>
                   </div>
                 </div>
+                </Link>
               ))}
           </div>
         )

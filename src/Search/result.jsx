@@ -7,6 +7,7 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs, Searchsongs, Searchsongs2 } from "../saavnapi";
 import he from "he";
+import { Link, useNavigate } from "react-router-dom";
 function Result({ names }) {
   const { setSongid,setSelected,setSinger,setInneralbum } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -16,7 +17,7 @@ function Result({ names }) {
   const [artistinfo, setArtistinfo] = useState([]);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
-
+  const Navigate=useNavigate();
   // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
@@ -75,32 +76,34 @@ function Result({ names }) {
     localStorage.setItem("singer", id);
     setSinger(id);
     
-    localStorage.setItem("selected", "innerartist");
-           setSelected("innerartist");
+    localStorage.setItem("selected", "/artist");
+           setSelected("/artist");
   };
   const playalbum = async (id) => {
   
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
-    localStorage.setItem("selected", "innerAlbum");
-           setSelected("innerAlbum");
+    localStorage.setItem("selected", "/albums");
+           setSelected("/albums");
   };
   const playquery = async (id) => {
-  
+
   switch(topquery[0].type){
     case "album":
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
-    localStorage.setItem("selected", "innerAlbum");
-           setSelected("innerAlbum");
+    localStorage.setItem("selected", "albums");
+           setSelected("albums");
+           Navigate("/innerAlbum");
            break;
     case "artist":
       localStorage.setItem("singer", id);
       setSinger(id);
       
-      localStorage.setItem("selected", "innerartist");
-             setSelected("innerartist");
+      localStorage.setItem("selected", "artist");
+             setSelected("artist");
+              Navigate("/innerartist");
              break;
     case "song":
       localStorage.setItem("songid", id);
@@ -143,8 +146,10 @@ function Result({ names }) {
              <h1 className="text-2xl p-2 m-2">
             Top <span className="text-red font-bold">Albums</span>
             </h1>
+           
             <div className="flex flex-wrap p-4  gap-5">
               {albuminfo.slice(0, limit).map((song) => (
+                  <Link to="/innerAlbum">
                 <div
                   className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
                   key={song.id}
@@ -159,6 +164,7 @@ function Result({ names }) {
                     {song.name}
                   </h1>
                 </div>
+                </Link>
               ))}
               </div>
               <h1 className="text-2xl p-2 m-2">
@@ -166,6 +172,7 @@ function Result({ names }) {
             </h1>
             <div className="flex flex-wrap p-4  gap-5">
               {artistinfo.slice(0, limit).map((song) => (
+                  <Link to="/innerartist">
                 <div
                   className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md  p-4 mt-5"
                   key={song.id}
@@ -180,6 +187,7 @@ function Result({ names }) {
                     {song.name}
                   </h1>
                 </div>
+                </Link>
               ))}
               </div>
               <h1 className="text-2xl p-2 m-2">
@@ -235,6 +243,7 @@ function Result({ names }) {
 </h1>
 <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
   {albuminfo.slice(0, 10).map((album) => (
+      <Link to="/innerAlbum">
     <div
       className="flex flex-col items-center pb-4"
       key={album.id}
@@ -251,6 +260,7 @@ function Result({ names }) {
         </h1>
       </div>
     </div>
+    </Link>
   ))}
 </div>
 
@@ -259,6 +269,7 @@ function Result({ names }) {
 </h1>
 <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
   {artistinfo.slice(0, 10).map((artist) => (
+      <Link to="/innerartist">
     <div
       className="flex flex-col items-center pb-4"
       key={artist.id}
@@ -275,6 +286,7 @@ function Result({ names }) {
         </h1>
       </div>
     </div>
+    </Link>
   ))}
 </div>
 

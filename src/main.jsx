@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { createContext } from "react";
+import { BrowserRouter } from "react-router-dom";
 
 export const Context = createContext();
 
@@ -44,6 +45,8 @@ const Appwrapper = () => {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
+    <BrowserRouter>
     <Appwrapper />
+    </BrowserRouter>
   </React.StrictMode>
 );

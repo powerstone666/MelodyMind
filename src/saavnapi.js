@@ -145,7 +145,7 @@ export const searchSuggestion=async(songid)=>{
             params: {limit:50 },
           };
           const res = await axios.request(options);
-          console.log(res)
+        
           return res;
         }catch(error){
           console.error('Error fetching data:', error);

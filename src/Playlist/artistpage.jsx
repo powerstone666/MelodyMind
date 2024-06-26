@@ -7,7 +7,7 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 import Home from "../Home/home";
-
+import { Link } from "react-router-dom";
 function ArtistPage({ names }) {
   const { setSinger,page,Viewall,setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -44,8 +44,8 @@ function ArtistPage({ names }) {
     localStorage.setItem("singer", id);
     setSinger(id);
     
-    localStorage.setItem("selected", "innerartist");
-           setSelected("innerartist");
+    localStorage.setItem("selected", "/artist");
+           setSelected("/artist");
   };
 
   return (
@@ -61,6 +61,7 @@ function ArtistPage({ names }) {
           
             <>
               {musicInfo.slice(0, musicInfo.length).map((song) => (
+                <Link to="/innerartist">
                 <div
                   className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                   key={song.id}
@@ -75,6 +76,7 @@ function ArtistPage({ names }) {
                     {song.name}
                   </h1>
                 </div>
+                </Link>
               ))}
             
             </>

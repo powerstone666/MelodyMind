@@ -5,7 +5,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
-
+import { Link } from "react-router-dom";
 function Artist({ names }) {
   const { setSinger, page, Viewall, setSelected } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -45,8 +45,8 @@ function Artist({ names }) {
     localStorage.setItem("singer", id);
     setSinger(id);
 
-    localStorage.setItem("selected", "innerartist");
-    setSelected("innerartist");
+    localStorage.setItem("selected", "/");
+    setSelected("/");
   };
 
   return (
@@ -59,6 +59,7 @@ function Artist({ names }) {
               <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer">
                 <div className="flex flex-wrap">
                   {musicInfo.slice(0, limit).map((song) => (
+                    <Link to="/innerartist">
                     <div
                       className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                       key={song.id}
@@ -70,6 +71,7 @@ function Artist({ names }) {
                           alt={song.name}
                           className="h-48 w-56 object-cover border-0 rounded-full"
                         />
+                      
                       ) : (
                         <div className="h-48 w-56 flex items-center justify-center bg-gray-200 text-gray-400">
                           Image Not Available
@@ -79,6 +81,7 @@ function Artist({ names }) {
                         {song.name}
                       </h1>
                     </div>
+                    </Link>
                   ))}
                   {musicInfo.length > 5 && limit === 5 ? (
                     <button onClick={expandResults}>
@@ -97,6 +100,7 @@ function Artist({ names }) {
           ) : (
             <div className="flex p-4 overflow-x-scroll overflow-y-hidden space-x-4">
               {musicInfo.slice(0, musicInfo.length).map((song) => (
+                <Link to="/innerartist">
                 <div
                   className="flex flex-col items-center pb-4"
                   key={song.id}
@@ -119,6 +123,7 @@ function Artist({ names }) {
                     </p>
                   </div>
                 </div>
+               </Link>
               ))}
             </div>
           )}

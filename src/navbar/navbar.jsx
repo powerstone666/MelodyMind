@@ -5,6 +5,7 @@ import { Context } from "../main";
 import close from "../assets/close-icon.svg";
 import searchicon from "../assets/searchicon.svg";
 import Search from "../Search/search";
+import { Link } from "react-router-dom";
 import { getLanguages } from "../saavnapi";
 function Navbar() {
   const { search, setSearch, setLanguage, languages,selected,setSelected } = useContext(Context);
@@ -16,9 +17,6 @@ function Navbar() {
   };
   const handleClick = (e) => {
     if (e.key === "Enter") {
-      setSearch(e.target.value);
-      localStorage.setItem("selected", "search");
-      setSelected("search");
     }
   };
   const clearSearch = () => {
@@ -39,15 +37,12 @@ function Navbar() {
         <section>
           <nav className="z-40 w-full p-4">
             <ul className="flex items-center gap-12 justify-start hover:cursor-pointer ">
+              <Link to="search">
               <li className="flex rounded-md bg-grey w-96 h-8">
                 <img
                   src={searchicon}
                   alt="search icon"
                   className="p-2"
-                  onClick={() => {
-                    localStorage.setItem("selected", "search");
-                    setSelected("search");
-                  }}
                 />
                 <input
                   type="text"
@@ -57,8 +52,7 @@ function Navbar() {
                   value={search}
                   onKeyDown={handleClick}
                   onClick={() => {
-                    localStorage.setItem("selected", "search");
-                    setSelected("search");
+                   
                   }}
                 />
                 {search && (
@@ -67,39 +61,43 @@ function Navbar() {
                   </button>
                 )}
               </li>
+              </Link>
+              <Link to="about"> 
               <li
                 className={`${
-                  selected === "about" ? selectedStyle : "hover:text-red"
+                  selected === "/about" ? selectedStyle : "hover:text-red"
                 }`}
                 onClick={() => {
-                  localStorage.setItem("selected", "about");
-                  setSelected("about");
+                  localStorage.setItem("selected","/about"
+                  );
+                  setSelected("/about");
                 }}
               >
                 About
               </li>
-              <li
+              </Link>
+              <Link to="contact"
                 className={`${
-                  selected === "contact" ? selectedStyle : "hover:text-red"
+                  selected === "/contact" ? selectedStyle : "hover:text-red"
                 }`}
                 onClick={() => {
-                  localStorage.setItem("selected", "contact");
-                  setSelected("contact");
+                  localStorage.setItem("selected","/contact");
+                  setSelected("/contact");
                 }}
               >
                 Contact
-              </li>
-              <li
+              </Link>
+              <Link to="mood"
                 className={`${
-                  selected === "mood" ? selectedStyle : "hover:text-red"
+                  selected === "/mood" ? selectedStyle : "hover:text-red"
                 }`}
                 onClick={() => {
-                  localStorage.setItem("selected", "mood");
-                  setSelected("mood");
+                  localStorage.setItem("selected","/mood");
+                  setSelected("/mood");
                 }}
               >
                 Mood Analyse
-              </li>
+              </Link>
               <select
                 className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none`}
                 value={languages}
@@ -166,24 +164,26 @@ function Navbar() {
                   Indonesian
                 </option>
               </select>
-              <button
+          <Link to="login">   <button
                 className="bg-deep-grey w-20 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
                 onClick={() => {
-                  localStorage.setItem("selected", "login");
-                  setSelected("login");
+                  localStorage.setItem("selected",window.location.pathname);
+                  setSelected(window.location.pathname);
                 }}
               >
                 Login
               </button>
-              <button
+              </Link>
+            <Link to="signup"> <button
                 className="bg-red w-20  h-8 border-0 rounded-md text-deep-grey hover:shadow-md hover:shadow-deep-blue"
                 onClick={() => {
-                  localStorage.setItem("selected", "signup");
-                  setSelected("signup");
+                  localStorage.setItem("selected",window.location.pathname);
+                  setSelected(window.location.pathname);
                 }}
               >
                 Sign Up
               </button>
+              </Link>
             </ul>
           </nav>
         </section>
@@ -294,83 +294,92 @@ function Navbar() {
           </h1>
 
           <div className="align-middle justify-center items-center p-8 hover:cursor-pointer">
-            <div
-              className="p-2"
-              onClick={() => {
-                localStorage.setItem("selected", "about");
-                setSelected("about");
-              }}
-            >
+            <Link to="about">
+             <div className="p-2"
+             onClick={() => {
+                localStorage.setItem("selected","/about");
+                setSelected("/about");
+              }}>
               <h1
                 className={`${
-                  selected === "about" ? selectedStyle : "hover:text-red"
+                  selected === "/about" ? selectedStyle : "hover:text-red"
                 }text-xl`}
               >
                 About
               </h1>
-            </div>
+              </div>
+            </Link>
+            <Link to="contact">
             <div
               className="p-2"
               onClick={() => {
-                localStorage.setItem("selected", "contact");
-                setSelected("contact");
+                localStorage.setItem("selected","/contact");
+                setSelected("/contact");
               }}
             >
               <h1
                 className={`${
-                  selected === "contact" ? selectedStyle : "hover:text-red"
+                  selected === "/contact" ? selectedStyle : "hover:text-red"
                 }text-xl`}
               >
                 Contact
               </h1>
             </div>
+            </Link>
+            <Link to="mood">
             <div
               className="p-2"
               onClick={() => {
-                localStorage.setItem("selected", "mood");
-                setSelected("mood");
+                localStorage.setItem("selected","/mood");
+                setSelected("/mood");
               }}
             >
               <h1
                 className={`${
-                  selected === "mood" ? selectedStyle : "hover:text-red"
+                  selected === "/mood" ? selectedStyle : "hover:text-red"
                 }text-xl`}
               >
                 Mood Analyser
               </h1>
             </div>
+            </Link>
+            <Link to="recently">
             <div
               className="p-2"
               onClick={() => {
-                localStorage.setItem("selected", "recently");
-                setSelected("recently");
+                localStorage.setItem("selected","/recently");
+                setSelected("/recently");
               }}
             >
               <h1
                 className={`${
-                  selected === "recently" ? selectedStyle : "hover:text-red"
+                  selected === "/recently" ? selectedStyle : "hover:text-red"
                 }text-xl`}
               >
                 Recently
               </h1>
             </div>
-
+            </Link>
+<Link to="login">
             <div
               onClick={() => {
-                localStorage.setItem("selected", "login");
-                setSelected("login");
+                localStorage.setItem("selected","/login");
+                setSelected("/login");
               }}
             >
               <button className="p-2 text-xl text-blue">Login</button>
             </div>
+            </Link>
+            <Link to="signup">
             <div
               onClick={() => {
-                localStorage.setItem("selected", "signup");
-                setSelected("signup");
+                localStorage.setItem("selected","/signup");
+                setSelected("/signup");
               }}
             >
               <button className="p-2 text-xl text-orange-500">Sign Up</button>
             </div>
+            </Link>
             <div className="p-2 text-xl">logout</div>
           </div>
         </section>
