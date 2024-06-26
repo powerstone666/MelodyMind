@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from "react";
 import Sidebar from "./navbar/sidebar";
 import { Context } from "./main";
 import { useNavigate, useLocation } from 'react-router-dom';
+import Landing from "./landing"
+import "./App.css";
 
 function App() {
   const { setSelected } = useContext(Context);
@@ -29,7 +31,7 @@ function App() {
     <>
      <div className="flex">
       <Sidebar />
-      <Landing/>
+      <Landing />
      </div>
    
      </>
