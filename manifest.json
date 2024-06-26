@@ -3,7 +3,7 @@
   "short_name": "MelodyMind",
   "icons": [
     {
-      "src": "MelodyMind/public/music icon2.png",
+     "src": "/music icon2.png",
       "sizes": "512x512",
       "type": "image/png"
     }
