@@ -1,59 +1,56 @@
-import AudioPlayer from "react-h5-audio-player";
-import "react-h5-audio-player/lib/styles.css";
-import { useEffect, useState } from "react";
-import { useContext } from "react";
-import { Context } from "../main";
-import useMediaQuery from "../useMedia";
-import axios from "axios";
-import he from "he";
-import { searchResult, searchSuggestion } from "../saavnapi";
-import { ToastContainer, toast ,Bounce} from 'react-toastify';
+import React, { useContext, useEffect, useState } from 'react';
+import AudioPlayer from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+import { Context } from '../main';
+import useMediaQuery from '../useMedia';
+import axios from 'axios';
+import he from 'he';
+import { searchResult, searchSuggestion, newsearch } from '../saavnapi';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from "react-router-dom";
-
+import { Link } from 'react-router-dom';
+import { getRecommendations } from '../spotify';
 
 function AudioPlayerComponent() {
-  const isAboveMedium = useMediaQuery("(min-width:1025px)");
-  const { songid, setSongid,setSelected } = useContext(Context);
-  const [music, setMusic] = useState("");
-  const [names, setNames] = useState("");
+  const isAboveMedium = useMediaQuery('(min-width:1025px)');
+  const { songid, setSongid, setSelected, spotify, setSpotify } = useContext(Context);
+  const [music, setMusic] = useState('');
+  const [names, setNames] = useState('');
   const [prev, setPrev] = useState([]);
-  const [array, setArray] = useState("");
-  const [image,setimage]=useState("");
+  const [array, setArray] = useState('');
+  const [image, setImage] = useState('');
   const [isPlaying, setIsPlaying] = useState(true);
- // Check if the browser supports the Media Session API
-if ('mediaSession' in navigator) {
-  // Set metadata for the media being played
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: names,
-    album: array,
-    artist: ' ',
-    artwork: [
-      { src: image, sizes: '96x96', type: 'image/jpeg' },
-      { src: image, sizes: '128x128', type: 'image/jpeg' },
-      { src: image, sizes: '192x192', type: 'image/jpeg' },
-      { src: image, sizes: '256x256', type: 'image/jpeg' },
-      { src: image, sizes: '384x384', type: 'image/jpeg' },
-      { src: image, sizes: '512x512', type: 'image/jpeg' },
-    ],
-  });
-}
-  
 
- 
-
+  // Check if the browser supports the Media Session API
+  useEffect(() => {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: names,
+        album: array,
+        artist: ' ',
+        artwork: [
+          { src: image, sizes: '96x96', type: 'image/jpeg' },
+          { src: image, sizes: '128x128', type: 'image/jpeg' },
+          { src: image, sizes: '192x192', type: 'image/jpeg' },
+          { src: image, sizes: '256x256', type: 'image/jpeg' },
+          { src: image, sizes: '384x384', type: 'image/jpeg' },
+          { src: image, sizes: '512x512', type: 'image/jpeg' },
+        ],
+      });
+    }
+  }, [names, array, image]);
 
   const fetchSongData = async () => {
     try {
       const res = await searchResult(songid);
-       setArray(res.data.data[0].album.name);
-       setimage(res.data.data[0].image[1].url);
-      const name = he.decode(res.data.data[0].name);
-      setNames(name);
+      setArray(res.data.data[0].album.name);
+      setImage(res.data.data[0].image[1].url);
+      const decodedName = he.decode(res.data.data[0].name);
+      setNames(decodedName);
       const url = res.data.data[0].downloadUrl[4].url;
       setMusic(url);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching song data:', error);
     }
   };
 
@@ -64,57 +61,58 @@ if ('mediaSession' in navigator) {
   }, [songid]);
 
   const handleNext = async () => {
-    try{
-    setPrev([...prev, songid]);
-    const res = await searchSuggestion(songid);
-  
-    let i = 0;
-    while (i < res.data.length && prev.includes(res.data[i].id)) {
-      i++;
+    try {
+      setPrev([...prev, songid]);
+      const res2 = await getRecommendations(spotify);
+      if (res2 === 'error') {
+        const res = await searchSuggestion(songid);
+        let i = 0;
+        while (i < res.data.length && prev.includes(res.data[i].id)) {
+          i++;
+        }
+        if (i === res.data.length) {
+          toast.error('No more songs to play, please go back and select another song.');
+          return;
+        }
+        localStorage.setItem('songid', res.data[i].id);
+        setSongid(res.data[i].id);
+        localStorage.setItem('spotify', res.data[i].name);
+        setSpotify(res.data[i].name);
+      } else {
+        console.log(res2.tracks[0].name)
+        console.log(res2)
+        const res3 = await newsearch(res2.tracks[0].name);
+        localStorage.setItem('songid', res3);
+        setSongid(res3);
+        localStorage.setItem('spotify', res2.tracks[0].name);
+        setSpotify(res2.tracks[0].name);
+      }
+    } catch (error) {
+      console.error('Error handling next song:', error);
+      toast.error('No more songs to play, please go back and select another song.');
     }
-  
-  if(i===res.data.length){
-    toast.error("No more songs to play please go back  and select another song.");
-    return;
-  }
-  
-    // Set the songid to the new unique song or the last song in the list
-    localStorage.setItem("songid", res.data[i].id);
-    setSongid(res.data[i].id);
-}catch(error){
-    toast.error("No more songs to play please go back  and select another song.");
-}
   };
 
-  
 
   const handlePrev = () => {
     const last = prev.pop();
-    localStorage.setItem("songid", last);
+    localStorage.setItem('songid', last);
     setSongid(last);
   };
+
   useEffect(() => {
-    // Check if the Media Session API is supported
-    if ("mediaSession" in navigator) {
-
-     
-       navigator.mediaSession.setActionHandler('nexttrack', function() {
-    // Handle next track action
-                 handleNext();
-  });
-
-  navigator.mediaSession.setActionHandler('previoustrack', function() {
-    // Handle previous track action
-                handlePrev();
-  });
+    // Set up Media Session API handlers
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('nexttrack', handleNext);
+      navigator.mediaSession.setActionHandler('previoustrack', handlePrev);
     }
+  }, [handleNext, handlePrev]);
 
-  }, [handlePrev, handleNext]);
+  const setdisplay = () => {
+    localStorage.setItem('selected', 'innersong');
+    setSelected('innersong');
+  };
 
-  const setdisplay=()=>{
-    localStorage.setItem("selected","innersong")
-    setSelected("innersong")
-  }
   return (
     <div>
        <ToastContainer

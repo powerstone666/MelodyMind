@@ -4,12 +4,10 @@ import { Context } from "./main";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Landing from "./landing"
 import "./App.css";
-
 function App() {
   const { setSelected } = useContext(Context);
   const navigate = useNavigate();
   const location = useLocation();
-
   useEffect(() => {
     // Initialize 'selected' state from localStorage on first mount
     const lastSelected = localStorage.getItem("selected") || "/";
@@ -26,6 +24,8 @@ function App() {
     setSelected(location.pathname);
     localStorage.setItem("selected", location.pathname);
   }, [location.pathname, setSelected]);
+
+
 
   return (
     <>

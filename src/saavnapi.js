@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+
 var  sharedLanguage= '';
 export const getLanguages=async(languages)=>{
     try {
@@ -11,6 +12,7 @@ export const getLanguages=async(languages)=>{
 export const languages=()=>sharedLanguage;
 export const MelodyMusicsongs=async(names)=>{
     try {
+     
         const language=languages();
         const options = {
             method: 'GET',
@@ -21,7 +23,7 @@ export const MelodyMusicsongs=async(names)=>{
         };
         const res = await axios.request(options);
         return res.data.data.results;
-
+      
     } catch (error) {
         console.error('Error fetching data:', error);
     }
@@ -77,7 +79,7 @@ export const searchSuggestion=async(songid)=>{
     const options = {
         method: 'GET',
         url: `https://saavn.dev/api/songs/${songid}/suggestions`,
-      
+        params: {limit: 20}
       };
     
       
@@ -186,3 +188,14 @@ try {
           console.error('Error fetching data:', error);
         }
     }
+
+   export const newsearch=async(names)=>{
+    try {
+      const res=await Searchsongs(names);
+
+      return res.songs.results[0].id;
+    }
+    catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }

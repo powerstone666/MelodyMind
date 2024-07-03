@@ -1,14 +1,15 @@
 import React, { useContext, useEffect,useState } from 'react';
 import { Context } from '../main';
 import useMediaQuery from '../useMedia';
-import { searchResult, searchSuggestion, songLyrics } from '../saavnapi';
+import { searchResult, searchSuggestion, songLyrics,newsearch } from '../saavnapi';
 import { ToastContainer, toast ,Bounce} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import he from 'he';
+import { getRecommendations } from '../spotify';
 function Innersongs() {
     const isAboveMedium = useMediaQuery("(min-width: 768px)");
-    const { songid, lyrics, setLyrics,setSongid } = useContext(Context);
+    const { songid, lyrics, setLyrics,setSongid,spotify,setSpotify} = useContext(Context);
     const [details, setDetails] = useState("");
     const [image,setimage]=useState("");
     const [songName,setSongName]=useState("")
@@ -17,6 +18,7 @@ function Innersongs() {
     const [loading, setLoading] = useState(true);
     const [dloading,setDloading]=useState(false)
     const [download,setDownload]=useState(" ")
+
     const downloadAudio = async () => {
       const url = download;
       try {
@@ -62,8 +64,10 @@ function Innersongs() {
                 setLyrics("Lyrics Not found")
              }
              try{
+              const res4=await getRecommendations(spotify);
+            
+              if(res4==="error"){
                const res3=await searchSuggestion(songid);
-               setRecomendation(res3.data)
                setRecomendation(
                 res3.data.map((song) => ({
                   id: song.id,
@@ -74,6 +78,15 @@ function Innersongs() {
                 }))
             );
             }
+          else{
+            setRecomendation(
+              res4.tracks.map(song => ({
+                  name: he.decode(song.name),
+                  image: song.album.images[1].url,
+                  year: song.album.release_date.slice(0, 4),
+              })))
+          }
+        }
             catch(error){
                  console.error("Error fetching data:", error);
              }
@@ -81,11 +94,13 @@ function Innersongs() {
             setLoading(true)
         };
         fetchLyrics();
-    }, [songid, setLyrics]);
+    }, [songid, setLyrics,songName]);
     const play = async (id) => {
-         const a = localStorage.setItem("songid", id);
-        setSongid(id);
-      };
+      const res= await newsearch(id);
+
+       localStorage.setItem("songid", res);
+       setSongid(res);
+   };
      const style=`text-white bg-red  border-0 rounded-xl`
     return (
         <>
@@ -135,7 +150,7 @@ function Innersongs() {
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.name)}
                 >
                   <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}
@@ -192,7 +207,7 @@ function Innersongs() {
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.name)}
                 >
                   <h1 className="text-sm w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}

@@ -17,8 +17,9 @@ const Appwrapper = () => {
   const [innerAlbum, setInneralbum] = useState(localStorage.getItem("innerAlbum") || "");
   const [languages, setLanguage] = useState(localStorage.getItem("languages")|| "hindi" );
   const [lyrics,setLyrics]=useState(localStorage.getItem("lyrics")||"No Lyrics Found");
+  const [spotify,setSpotify]=useState(localStorage.getItem("spotify")||"");
   return (
-    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger,lyrics,setLyrics}}>
+    <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger,lyrics,setLyrics,spotify,setSpotify}}>
       <App
       selected={selected}
       setSelected={setSelected}
@@ -38,6 +39,8 @@ const Appwrapper = () => {
         setPage={setPage}
         lyrics={lyrics}
         setLyrics={setLyrics}
+        spotify={spotify}
+        setSpotify={setSpotify}
       />
     </Context.Provider>
   );
