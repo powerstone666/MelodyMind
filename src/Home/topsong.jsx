@@ -29,7 +29,7 @@ function Topsongs({ names }) {
           setMusicInfo(
             res.map((song) => ({
               id: song.id,
-              name: he.decode(song.name)+" "+song.album.name,
+              name: he.decode(song.name),
               image: song.image[1].url, // Assuming image is an array and you need the second element
             }))
           );

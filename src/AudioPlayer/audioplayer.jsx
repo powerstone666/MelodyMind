@@ -19,7 +19,6 @@ function AudioPlayerComponent() {
   const [prev, setPrev] = useState([]);
   const [array, setArray] = useState('');
   const [image, setImage] = useState('');
-  const [artist, setArtist] = useState('');
   const [isPlaying, setIsPlaying] = useState(true);
 
   // Check if the browser supports the Media Session API
@@ -47,9 +46,6 @@ function AudioPlayerComponent() {
       setArray(res.data.data[0].album.name);
       setImage(res.data.data[0].image[1].url);
       const decodedName = he.decode(res.data.data[0].name);
-      const decodedArtist = he.decode(res.data.data[0].artists.primary[0].name);
-     setSpotify(decodedName);
-      setArtist(decodedArtist);
       setNames(decodedName);
       const url = res.data.data[0].downloadUrl[4].url;
       setMusic(url);
@@ -67,10 +63,9 @@ function AudioPlayerComponent() {
   const handleNext = async () => {
     try {
       setPrev([...prev,spotify]);
-      const res2 = await getRecommendations(names);
+      const res2 = await getRecommendations(spotify);
       if (res2 === 'error') {
         const res = await searchSuggestion(songid);
-
         let i = 0;
         while (i < res.data.length && prev.includes(res.data[i].name)) {
           i++;
@@ -84,26 +79,26 @@ function AudioPlayerComponent() {
         localStorage.setItem('spotify', res.data[i].name);
         setSpotify(res.data[i].name);
       } else {
-      
         let i = 0;
-        while (i < res2.length && prev.includes(res2[i].name)) {
+        while (i < res2.length && prev.includes(res2.tracks[i].name)) {
           i++;
         }
         if (i === res2.length) {
           toast.error('No more songs to play, please go back and select another song.');
           return;
         }
-        const res3 = await newsearch(res2[i].name);
+        const res3 = await newsearch(res2.tracks[i].name);
         localStorage.setItem('songid', res3);
         setSongid(res3);
-        localStorage.setItem('spotify', res2[i].name);
-        setSpotify(res2[i].name);
+        localStorage.setItem('spotify', res2.tracks[i].name);
+        setSpotify(res2.tracks[i].name);
       }
     } catch (error) {
       console.error('Error handling next song:', error);
       toast.error('No more songs to play, please go back and select another song.');
     }
   };
+
 
   const handlePrev = () => {
     const last = prev.pop();
@@ -152,9 +147,7 @@ function AudioPlayerComponent() {
               listenInterval={100}
             />
             <div className="flex flex-wrap items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
-              <Link to="innersong">
-                <img src={image} className="h-16" />
-              </Link>
+        <Link to="innersong">  <img src={image} className="h-16" /></Link>
               <h1 className="truncate">{names}</h1>
             </div>
           </div>
@@ -168,14 +161,18 @@ function AudioPlayerComponent() {
               onClickNext={handleNext}
               showJumpControls={false}
               onClickPrevious={handlePrev}
+             
               onEnded={handleNext}
               className="bg-deep-blue w-5/6"
+            
               showFilledVolume={true}
             />
             <Link to="innersong">
-              <img src={image} className="h-12" onClick={setdisplay} />
+            <img src={image} className="h-12" onClick={setdisplay}/>
             </Link>
+        
           </div>
+      
         </div>
       )}
     </div>

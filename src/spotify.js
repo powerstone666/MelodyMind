@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-/*const clientId = import.meta.env.VITE_CLIENT;
+const clientId = import.meta.env.VITE_CLIENT;
 const clientSecret = import.meta.env.VITE_SECRET;
 
 let token = null;
@@ -95,9 +95,9 @@ export const getRecommendations = async (songName) => {
         return "error";
     }
 };
-*/
 
 
+/*
 const API_KEY =import.meta.env.VITE_LAST_FM;
 
 const searchSong = async (songName) => {
@@ -151,4 +151,4 @@ export const getRecommendations = async (songName) => {
     } catch (error) {
         return "error"
     }
-};
+};*/

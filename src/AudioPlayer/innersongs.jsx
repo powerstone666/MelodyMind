@@ -80,10 +80,10 @@ function Innersongs() {
             }
           else{
             setRecomendation(
-              res4.map(song => ({
+              res4.tracks.map(song => ({
                   name: he.decode(song.name),
-                  image: song.image[1]["#text"],
-               
+                  image: song.album.images[1].url,
+                  year: song.album.release_date.slice(0, 4),
               })))
           }
         }
@@ -94,11 +94,11 @@ function Innersongs() {
             setLoading(true)
         };
         fetchLyrics();
-    }, [songid, setLyrics,songName,spotify]);
+    }, [songid, setLyrics,songName]);
     const play = async (id) => {
       const res= await newsearch(id);
-        localStorage.setItem("spotify", id);
-        setSpotify(id);
+      localStorage.setItem("spotify", id);
+      setSpotify(id);
        localStorage.setItem("songid", res);
        setSongid(res);
    };
@@ -157,7 +157,7 @@ function Innersongs() {
                   {/* Fixed width for index */}
                   <img src={song.image} className="h-12" />{" "}
                   {/* Keep image size fixed */}
-                
+                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
                   {/* Allow year to take remaining space */}
                   <h1 className="text-md flex-grow">{song.name}</h1> 
                   <img
