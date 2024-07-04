@@ -98,7 +98,7 @@ function Navbar() {
               >
                 Mood Analyse
               </Link>
-              <select
+            {/*  <select
                 className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none`}
                 value={languages}
                 onChange={handleLanguageChange}
@@ -163,7 +163,7 @@ function Navbar() {
                 <option className="bg-deep-grey" value="indonesian">
                   Indonesian
                 </option>
-              </select>
+              </select>*/}
           <Link to="login">   <button
                 className="bg-deep-grey w-20 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
                 onClick={() => {
@@ -198,7 +198,7 @@ function Navbar() {
                 </h1>
               </li>
               <li>
-                <select
+            {/*    <select
                   className={`w-24  border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none cursor-pointer`}
                   value={languages}
                   onChange={handleLanguageChange}
@@ -266,7 +266,7 @@ function Navbar() {
                   <option className="bg-deep-grey" value="indonesian">
                     Indonesian
                   </option>
-                </select>
+                </select>*/}
               </li>
               <img
                 src={menubar}

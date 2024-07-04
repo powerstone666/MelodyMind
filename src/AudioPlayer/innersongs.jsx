@@ -80,10 +80,10 @@ function Innersongs() {
             }
           else{
             setRecomendation(
-              res4.tracks.map(song => ({
+              res4.map(song => ({
                   name: he.decode(song.name),
-                  image: song.album.images[1].url,
-                  year: song.album.release_date.slice(0, 4),
+                  image: song.image[1]["#text"],
+               
               })))
           }
         }
@@ -94,10 +94,11 @@ function Innersongs() {
             setLoading(true)
         };
         fetchLyrics();
-    }, [songid, setLyrics,songName]);
+    }, [songid, setLyrics,songName,spotify]);
     const play = async (id) => {
       const res= await newsearch(id);
-
+        localStorage.setItem("spotify", id);
+        setSpotify(id);
        localStorage.setItem("songid", res);
        setSongid(res);
    };
@@ -156,7 +157,7 @@ function Innersongs() {
                   {/* Fixed width for index */}
                   <img src={song.image} className="h-12" />{" "}
                   {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
+                
                   {/* Allow year to take remaining space */}
                   <h1 className="text-md flex-grow">{song.name}</h1> 
                   <img
@@ -211,7 +212,7 @@ function Innersongs() {
                 >
                   <h1 className="text-sm w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}
-                  <img src={song.image} className="h-12" />{" "}
+                     <img src={song.image} className="h-12" />{" "}
                   {/* Keep image size fixed */}
                   <h1 className="text-sm flex-grow">{song.year}</h1>{" "}
                   {/* Allow year to take remaining space */}

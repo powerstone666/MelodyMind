@@ -24,11 +24,12 @@ function Topsongs({ names }) {
     const fetchData = async () => {
       try {
         const res = await MelodyMusicsongs(names);
+        
         if (res) {
           setMusicInfo(
             res.map((song) => ({
               id: song.id,
-              name: he.decode(song.name),
+              name: he.decode(song.name)+" "+song.album.name,
               image: song.image[1].url, // Assuming image is an array and you need the second element
             }))
           );
