@@ -94,7 +94,7 @@ function Innersongs() {
             setLoading(true)
         };
         fetchLyrics();
-    }, [songid, setLyrics,songName]);
+    }, [songid, setLyrics,songName,Spotify]);
     const play = async (id) => {
       const res= await newsearch(id);
       localStorage.setItem("spotify", id);
