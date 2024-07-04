@@ -98,7 +98,7 @@ export const getRecommendations = async (songName) => {
 */
 
 
-const API_KEY = '53ca1fb231cf575afb4f6e763305b0bd';
+const API_KEY =import.meta.env.VITE_API;
 const searchSong = async (songName) => {
     const url = `http://ws.audioscrobbler.com/2.0/?method=track.search&track=${songName}&api_key=${API_KEY}&format=json`;
 
