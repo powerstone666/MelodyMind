@@ -46,8 +46,10 @@ function AudioPlayerComponent() {
       setArray(res.data.data[0].album.name);
       setImage(res.data.data[0].image[1].url);
       const decodedName = he.decode(res.data.data[0].name);
-        localStorage.setItem('spotify',decodedName);
+       if(decodedName){ 
+localStorage.setItem('spotify',decodedName);
         setSpotify(decodedName);
+}
       setNames(decodedName);
       const url = res.data.data[0].downloadUrl[4].url;
       setMusic(url);
