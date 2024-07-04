@@ -98,10 +98,10 @@ export const getRecommendations = async (songName) => {
 */
 
 
-const API_KEY =import.meta.env.VITE_API;
-console.log(API_KEY);
+const API_KEY =import.meta.env.VITE_LAST_FM;
+
 const searchSong = async (songName) => {
-    const url = `http://ws.audioscrobbler.com/2.0/?method=track.search&track=${songName}&api_key=${API_KEY}&format=json`;
+    const url = `https://ws.audioscrobbler.com/2.0/?method=track.search&track=${songName}&api_key=${API_KEY}&format=json`;
 
     try {
         const response = await axios.get(url);
@@ -121,7 +121,7 @@ const searchSong = async (songName) => {
 };
 
 const getSimilarSongs = async (artist, track, limit = 20) => {
-    const url = `http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=${artist}&track=${track}&api_key=${API_KEY}&limit=${limit}&format=json`;
+    const url = `https://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=${artist}&track=${track}&api_key=${API_KEY}&limit=${limit}&format=json`;
 
     try {
         const response = await axios.get(url);
