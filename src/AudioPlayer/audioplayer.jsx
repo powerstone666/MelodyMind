@@ -43,13 +43,13 @@ function AudioPlayerComponent() {
   const fetchSongData = async () => {
     try {
       const res = await searchResult(songid);
-      setArray(res.data.data[0].album.name);
-      setImage(res.data.data[0].image[1].url);
       const decodedName = he.decode(res.data.data[0].name);
        if(decodedName){ 
-localStorage.setItem('spotify',decodedName);
-        setSpotify(decodedName);
+localStorage.setItem('spotify',decodedName+" "+res.data.data[0].album.name);
+        setSpotify(decodedName+" "+res.data.data[0].album.name);
 }
+      setArray(res.data.data[0].album.name);
+      setImage(res.data.data[0].image[1].url);
       setNames(decodedName);
       const url = res.data.data[0].downloadUrl[4].url;
       setMusic(url);
@@ -67,11 +67,13 @@ localStorage.setItem('spotify',decodedName);
   const handleNext = async () => {
     try {
       setPrev([...prev,spotify]);
+   
       const res2 = await getRecommendations(spotify);
+   
       if (res2 === 'error') {
         const res = await searchSuggestion(songid);
         let i = 0;
-        while (i < res.data.length && prev.includes(res.data[i].name)) {
+        while (i < res.data.length && prev.includes(res.data[i].name+" "+res.data[i].album.name)) {
           i++;
         }
         if (i === res.data.length) {
@@ -80,22 +82,22 @@ localStorage.setItem('spotify',decodedName);
         }
         localStorage.setItem('songid', res.data[i].id);
         setSongid(res.data[i].id);
-        localStorage.setItem('spotify', res.data[i].name);
-        setSpotify(res.data[i].name);
+        localStorage.setItem('spotify', res.data[i].name+" "+res.data[i].album.name);
+        setSpotify(res.data[i].name+" "+res.data[i].album.name);
       } else {
         let i = 0;
-        while (i < res2.length && prev.includes(res2.tracks[i].name)) {
+        while (i < res2.length && prev.includes(res2.tracks[i].name+" "+res2.tracks[i].album.name)) {
           i++;
         }
         if (i === res2.length) {
           toast.error('No more songs to play, please go back and select another song.');
           return;
         }
-        const res3 = await newsearch(res2.tracks[i].name);
+        const res3 = await newsearch(res2.tracks[i].name+" "+res2.tracks[i].album.name);
         localStorage.setItem('songid', res3);
         setSongid(res3);
-        localStorage.setItem('spotify', res2.tracks[i].name);
-        setSpotify(res2.tracks[i].name);
+        localStorage.setItem('spotify', res2.tracks[i].name+" "+res2.tracks[i].album.name);
+        setSpotify(res2.tracks[i].name+" "+res2.tracks[i].album.name);
       }
     } catch (error) {
       console.error('Error handling next song:', error);
