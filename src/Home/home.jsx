@@ -30,7 +30,7 @@ function Home() {
           className="overflow-y-auto h-screen w-full mb-12"
           style={{ overflowX: "scroll", minWidth: "100%" }}
         >
-          <Swipe />
+         
           <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
               Weekly Top <span className="text-red font-bold">Songs</span>

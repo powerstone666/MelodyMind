@@ -4,6 +4,7 @@ import { Context } from "./main";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Landing from "./landing"
 import "./App.css";
+
 function App() {
   const { setSelected } = useContext(Context);
   const navigate = useNavigate();

@@ -13,6 +13,8 @@ import Innerartist from "./Playlist/innerartist";
 import Innersongs from "./AudioPlayer/innersongs";
 import Moodanalyse from "./moodanalyse";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
+import AboutUs from "./about";
+import ContactUs from "./contact";
 function Landing() {
   const {selected,setSelected}=useContext(Context)
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -34,8 +36,8 @@ function Landing() {
           <Route path="/search" element={<Searchfunc/>}></Route>
           <Route path="/mood" element={<Moodanalyse/>}></Route>
           <Route path="/innersong" element={<Innersongs/>}></Route>
-          <Route path="/about" element={<h1>About</h1>}></Route>
-          <Route path="/contact" element={<h1>Contact</h1>}></Route>
+          <Route path="/about" element={<AboutUs/>}></Route>
+          <Route path="/contact" element={<ContactUs/>}></Route>
           <Route path="/login" element={<h1>Login</h1>}></Route>
           <Route path="/signup" element={<h1>Sign Up</h1>}></Route>
           <Route path="/recently" element={<h1>Recently</h1>}></Route>

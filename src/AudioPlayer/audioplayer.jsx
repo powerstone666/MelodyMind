@@ -146,11 +146,12 @@ localStorage.setItem('spotify',decodedName+" "+res.data.data[0].album.name);
             <AudioPlayer
               showSkipControls
               onClickNext={handleNext}
+           
               onClickPrevious={handlePrev}
               onEnded={handleNext}
               src={music}
               className="bg-deep-blue w-4/6"
-              listenInterval={100}
+             
             />
             <div className="flex flex-wrap items-center gap-4 hover:cursor-pointer" onClick={setdisplay}>
         <Link to="innersong">  <img src={image} className="h-16" /></Link>
@@ -167,7 +168,7 @@ localStorage.setItem('spotify',decodedName+" "+res.data.data[0].album.name);
               onClickNext={handleNext}
               showJumpControls={false}
               onClickPrevious={handlePrev}
-             
+            
               onEnded={handleNext}
               className="bg-deep-blue w-5/6"
             
