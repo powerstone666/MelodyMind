@@ -1,14 +1,15 @@
 import img from "../src/assets/music icon2.png";
 import useMediaQuery from "./useMedia";
+import bgimage from "../src/assets/7tqQ0e.jpg";
 const mystyle = {
-  bg1: {
-    backgroundImage: 'url("../src/assets/7tqQ0e.jpg")',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    objectFit: "cover", // This line adds the object-fit property
-    height: "100vh",
-  },
-};
+    bg1: {
+      backgroundImage: `url(${bgimage})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      objectFit: "cover",
+      height: "100vh",
+    },
+  };
 export default function AboutUs() {
     const isAboveMedium = useMediaQuery("(min-width: 768px)");
   return (

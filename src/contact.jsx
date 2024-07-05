@@ -5,16 +5,16 @@ import github from './assets/github.png';
 import gmail from './assets/gmail.png';
 import contact from "./assets/contact.png";
 import useMediaQuery from './useMedia';
-
+import bgimage from "../src/assets/7tqQ0e.jpg";
 const mystyle = {
-  bg1: {
-    backgroundImage: 'url("../src/assets/7tqQ0e.jpg")',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    objectFit: "cover", // This line adds the object-fit property
-    height: "100vh",
-  },
-};
+    bg1: {
+      backgroundImage: `url(${bgimage})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      objectFit: "cover",
+      height: "100vh",
+    },
+  };
 export default function ContactUs() {
   const { register, handleSubmit, trigger, formState: { errors } } = useForm();
  const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -60,7 +60,7 @@ export default function ContactUs() {
           </section>
      </div>
     ) : (
-        <div className='h-screen w-full  mt-18 ' style={{overflowY:"scroll"}}>
+        <div className='h-screen w-full  mt-18 ' style={{...mystyle.bg1,overflowY:"scroll"}}>
           <section className='h-1/3 ml-12 p-4'>
            <img src={contact} alt="contact" className="hover:filter hover:saturate-200 transition duration-500 h-full "/>
           </section>
