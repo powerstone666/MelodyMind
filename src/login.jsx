@@ -2,32 +2,33 @@ import React, { useContext } from 'react';
 import useMediaQuery from './useMedia';
 import {useState} from 'react';
 import {auth,googleProvider,appleProvider} from './Firebase/firebaseConfig';
-import { createUserWithEmailAndPassword,signOut,signInWithRedirect,OAuthProvider,signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword,signOut,signInWithRedirect,OAuthProvider,signInWithEmailAndPassword,signInWithPopup } from 'firebase/auth';
 import { Context } from './main';
 function Login(){
     const {Users,setUsers}=useContext(Context);
     const isAboveMedium = useMediaQuery("(min-width: 768px)");
     const [user,setUser]=useState({email:"",password:""});
-    const signAuth=async (provider)=>{
-
-        if(provider==="google"){
-           await signInWithRedirect(auth,googleProvider)
-           localStorage.setItem("Users", JSON.stringify(res.user));
-
-           // Retrieve the user information from localStorage
-           const localUser = JSON.parse(localStorage.getItem("Users"));
-           setUsers(localUser);
-        }
-        else{
-          await signInWithRedirect(auth,appleProvider)
-                localStorage.setItem("Users", JSON.stringify(res.user));
-
-      // Retrieve the user information from localStorage
-      const localUser = JSON.parse(localStorage.getItem("Users"));
-      setUsers(localUser);
-          
+    const signAuth = async (provider) => {
+        try {
+            let res;
+            if (provider === "google") {
+                res = await signInWithPopup(auth, googleProvider);
+            } else if (provider === "apple") {
+                res = await signInWithPopup(auth, appleProvider);
+            } else {
+                // Handle other providers as needed
+                throw new Error(`Unsupported provider: ${provider}`);
+            }
+    
+            // Update local storage and state
+            localStorage.setItem("Users", JSON.stringify(res.user));
+            setUsers(res.user);
+        } catch (error) {
+            console.error(`Error signing in with ${provider}:`, error);
+            // Handle error state or display an error message
         }
     }
+        re
     const signin=(e)=>{
         setUser({...user,[e.target.name]:e.target.value});
     }

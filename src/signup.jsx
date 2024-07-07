@@ -25,27 +25,26 @@ function Signup(){
     });
 
   }
-
-  
-    const signAuth=async (provider)=>{
-
-        if(provider==="google"){
-           await signInWithRedirect(auth,googleProvider)
-           localStorage.setItem("Users", JSON.stringify(res.user));
-
-           // Retrieve the user information from localStorage
-           const localUser = JSON.parse(localStorage.getItem("Users"));
-           setUsers(localUser);
+  const signAuth = async (provider) => {
+    try {
+        let res;
+        if (provider === "google") {
+            res = await signInWithPopup(auth, googleProvider);
+        } else if (provider === "apple") {
+            res = await signInWithPopup(auth, appleProvider);
+        } else {
+            // Handle other providers as needed
+            throw new Error(`Unsupported provider: ${provider}`);
         }
-        else{
-          await signInWithRedirect(auth,appleProvider)
-          localStorage.setItem("Users", JSON.stringify(res.user));
 
-          // Retrieve the user information from localStorage
-          const localUser = JSON.parse(localStorage.getItem("Users"));
-          setUsers(localUser);
-        }
+        // Update local storage and state
+        localStorage.setItem("Users", JSON.stringify(res.user));
+        setUsers(res.user);
+    } catch (error) {
+        console.error(`Error signing in with ${provider}:`, error);
+        // Handle error state or display an error message
     }
+}
     return(
         <div>
         {   isAboveMedium ? (
