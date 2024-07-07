@@ -28,7 +28,7 @@ function Login(){
             // Handle error state or display an error message
         }
     }
-        re
+        
     const signin=(e)=>{
         setUser({...user,[e.target.name]:e.target.value});
     }
@@ -68,10 +68,10 @@ function Login(){
                             </div>
                         </form>
                            <br/><br/>
-                           <div className='flex justify-between w-full'>
+                       {/*    <div className='flex justify-between w-full'>
                            <button className="border-2 rounded-lg p-2 m-4 bg-transparent w-48 flex gap-4 hover:text-black hover:bg-white font-bold" onClick={()=>{signAuth("google")}}><img src={"https://cdn-icons-png.flaticon.com/128/281/281764.png" } className='h-8'/><h1>Google Login</h1></button>
                            <button className="border-2 rounded-lg p-2 m-4 bg-transparent w-48 flex gap-4 hover:text-black hover:bg-white font-bold" onClick={()=>{signAuth("github")}}><img src={"https://cdn-icons-png.flaticon.com/128/5968/5968866.png" } className='h-8'/><h1>GitHub Login</h1></button>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 ):
@@ -92,10 +92,10 @@ function Login(){
                             </div>
                         </form>
                         <br/><br/>
-                           <div className='flex justify-between w-full'>
+                       {/* <div className='flex justify-between w-full'>
                            <button className="border-2 rounded-lg p-2 m-4 bg-transparent w-32 flex gap-2 hover:text-black hover:bg-white font-bold text-sm" onClick={()=>{signAuth("google")}}><img src={"https://cdn-icons-png.flaticon.com/128/281/281764.png" } className='h-8'/><h1>Google Login</h1></button>
                            <button className="border-2 rounded-lg p-2 m-4 bg-transparent w-32 flex gap-2 hover:text-black hover:bg-white font-bold text-sm" onClick={()=>{signAuth("github")}}><img src={"https://cdn-icons-png.flaticon.com/128/5968/5968866.png" } className='h-8'/><h1>GitHub Login</h1></button>
-                            </div> 
+                            </div> */}
                         </div>
                     </div>
                 )
