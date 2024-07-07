@@ -6,6 +6,7 @@ import { Context } from "../main";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
+import  {addRecents} from '../Firebase/database';
 
 function Topsongs({ names }) {
   const { setSongid } = useContext(Context);
@@ -24,7 +25,7 @@ function Topsongs({ names }) {
     const fetchData = async () => {
       try {
         const res = await MelodyMusicsongs(names);
-       
+    
         if (res) {
           setMusicInfo(
             res.map((song) => ({
@@ -43,9 +44,19 @@ function Topsongs({ names }) {
     fetchData();
   }, [names]);
 
-  const play = (id) => {
+  const play = async(id,name,image) => {
     localStorage.setItem("songid", id);
     setSongid(id);
+    const user=JSON.parse(localStorage.getItem("Users"));
+   
+    if(user){
+    try{
+     await addRecents(user.uid,id,name,image);
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
   };
 
   return (
@@ -59,7 +70,7 @@ function Topsongs({ names }) {
                 <div
                   className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.id,song.name,song.image)} 
                 >
                   <img
                     src={song.image} // Assuming song.image is an object with a 'url' property
@@ -91,7 +102,7 @@ function Topsongs({ names }) {
           <div
             className="flex flex-col items-center pb-6"
             key={song.id}
-            onClick={() => play(song.id)}
+            onClick={() => play(song.id,song.name,song.image)}
           >
             <div className="h-28 border-1 p-2 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
               <img

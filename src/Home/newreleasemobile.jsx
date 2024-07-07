@@ -3,6 +3,7 @@ import { Context } from "../main";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
 
+import { addRecents } from "../Firebase/database";
 function Newreleasemobile({ names }) {
   const { setSongid, Viewall, page } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -30,9 +31,19 @@ function Newreleasemobile({ names }) {
     fetchData();
   }, [names]);
 
-  const play = (id) => {
+  const play = async (id, name, image) => {
     localStorage.setItem("songid", id);
     setSongid(id);
+
+    const user = JSON.parse(localStorage.getItem("Users"));
+
+    if (user) {
+      try {
+        await addRecents(user.uid, id, name, image);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -42,7 +53,7 @@ function Newreleasemobile({ names }) {
           <div
             className="flex flex-col items-center pb-6"
             key={song.id}
-            onClick={() => play(song.id)}
+            onClick={() => play(song.id, song.name, song.image.url)}
           >
             <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white mr-2 border-0 rounded-md mt-2">
               <img

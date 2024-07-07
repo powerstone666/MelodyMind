@@ -9,14 +9,22 @@ import albums from "../assets/album.svg";
 import liked from "../assets/liked.svg";
 import logout from "../assets/logout.svg";
 import recent from "../assets/recent.svg";
+import { auth } from "../Firebase/firebaseConfig";
+import { createUserWithEmailAndPassword,signOut,signInWithPopup,OAuthProvider, signInWithRedirect,updateProfile } from 'firebase/auth';
 import AudioPlayer from "../AudioPlayer/audioplayer";
 import { useContext } from "react";
 import { Context } from "../main";
 import { Link } from "react-router-dom";
 function Sidebar() {
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
+  const localUser = JSON.parse(localStorage.getItem("Users"));
   const selectedStyle = `text-red  `;
   const {selected,setSelected}=useContext(Context)
+  const signout=async()=>{
+    await auth.signOut(auth);
+      localStorage.removeItem("Users");
+      window.location.reload();
+     }
   return (
     <>
       {isAboveMedium ? (
@@ -123,19 +131,25 @@ function Sidebar() {
                 Liked
               </h1>
             </div>
-            </Link>
-            <h1 className="text-red mb-4 mt-2">General</h1>
-            <div className="p-2 flex">
+          </Link>
+           
+            {localUser && (
+              <>
+               <h1 className="text-red mb-4 mt-2">General</h1>
+            <div className="p-2 flex" onClick={signout}>
               <img src={logout} alt="search icon" className="mr-2" />
               <h1
                 className={`${
                   selected === "logout" ? selectedStyle : "hover:text-red"
                 } text-2xl`}
-              >
+                >
                 Logout
               </h1>
             </div>
-          </div>
+            </>
+            )}
+            
+            </div>
         </aside>
       ) : (
         <footer className="fixed bottom-0 w-full bg-deep-blue h-20 z-40">

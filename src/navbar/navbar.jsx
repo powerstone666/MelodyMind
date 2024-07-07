@@ -7,14 +7,22 @@ import searchicon from "../assets/searchicon.svg";
 import Search from "../Search/search";
 import { Link } from "react-router-dom";
 import { getLanguages } from "../saavnapi";
+import { auth } from "../Firebase/firebaseConfig";
+import { createUserWithEmailAndPassword,signOut,signInWithPopup,OAuthProvider, signInWithRedirect,updateProfile } from 'firebase/auth';
 function Navbar() {
   const { search, setSearch, setLanguage, languages,selected,setSelected } = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
   const selectedStyle = `text-red  `;
+  const localUser=JSON.parse(localStorage.getItem("Users"))
   const searchquery = (e) => {
     setSearch(e.target.value);
   };
+  const signout=async()=>{
+    await auth.signOut(auth);
+      localStorage.removeItem("Users");
+      window.location.reload();
+     }
   const handleClick = (e) => {
     if (e.key === "Enter") {
     }
@@ -164,6 +172,8 @@ function Navbar() {
                   Indonesian
                 </option>
               </select>
+              {!localUser ? (
+                <>
           <Link to="login">   <button
                 className="bg-deep-grey w-20 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
                 onClick={() => {
@@ -184,6 +194,12 @@ function Navbar() {
                 Sign Up
               </button>
               </Link>
+              </>):(
+                <div className="flex items-center justify-center gap-2">
+                <img src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png" className="h-8"/>
+                <h1>{localUser.displayName}</h1>
+                   </div>
+              )}
             </ul>
           </nav>
         </section>
@@ -360,6 +376,8 @@ function Navbar() {
               </h1>
             </div>
             </Link>
+            {!localUser ? (
+              <>
 <Link to="login">
             <div
               onClick={() => {
@@ -380,7 +398,15 @@ function Navbar() {
               <button className="p-2 text-xl text-orange-500">Sign Up</button>
             </div>
             </Link>
-            <div className="p-2 text-xl">logout</div>
+            </>):(
+                     <div className="flex p-2 items-center">
+                <img src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png" className="h-8"/>
+                  <h1 className="text-white">{localUser.displayName}</h1>
+                     </div>
+            )}
+            {localUser && (
+            <div className="p-2 text-xl" onClick={signout}>logout</div>
+            )}
           </div>
         </section>
       )}

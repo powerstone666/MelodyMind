@@ -7,7 +7,7 @@ import { Context } from "../main";
 import he from "he";
 import { MelodyMusicsongs, albumsongs, albumsongsinner, artist, artistSongs, searchResult } from "../saavnapi";
 import { Link } from "react-router-dom";
-
+import  {addRecents} from '../Firebase/database';
 function Innerartist({names}) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const { setSongid,singer,page,setInneralbum,setSelected} = useContext(Context);
@@ -53,9 +53,20 @@ const[albuminfo,setAlbuminfo]=useState([]);
     fetchData();
   }, [names]);
 
-  const play = async (id) => {
+  const play = async(id,name,image) => {
   localStorage.setItem("songid", id);
   setSongid(id);
+  const user=JSON.parse(localStorage.getItem("Users"));
+   
+    if(user){
+    try{
+     await addRecents(user.uid,id,name,image);
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
   };
   const plays = async (id) => {
   
@@ -89,7 +100,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.id,song.name,song.image)}
                 >
                   <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}
@@ -153,7 +164,7 @@ const[albuminfo,setAlbuminfo]=useState([]);
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.id,song.name,song.image)}
                 >
                   <p className="text-sm w-full">#{index + 1}</p>{" "}
                   {/* Fixed width for index */}

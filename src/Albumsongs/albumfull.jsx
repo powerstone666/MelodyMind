@@ -1,15 +1,17 @@
 import useMediaQuery from "../useMedia";
 import album from "../assets/albumfull.svg";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useContext } from "react";
 import { Context } from "../main";
 import he from "he";
 import { Link } from "react-router-dom";
-import { MelodyMusicsongs, albumsongs, artist, searchResult } from "../saavnapi";
-function AlbumFull({names}) {
+import {
+  albumsongs
+} from "../saavnapi";
+function AlbumFull({ names }) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
-  const { setSongid ,setInneralbum,innerAlbum,setSelected,selected} = useContext(Context);
+  const { setInneralbum,setSelected } =
+    useContext(Context);
   const [limit, setLimit] = useState(5);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ function AlbumFull({names}) {
     const fetchData = async () => {
       try {
         const res = await albumsongs();
-   
+
         setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
@@ -42,12 +44,11 @@ function AlbumFull({names}) {
   }, [names]);
 
   const play = async (id) => {
-  
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
 
     localStorage.setItem("selected", "/albums");
-           setSelected("/albums");
+    setSelected("/albums");
   };
   return (
     <>
@@ -69,24 +70,26 @@ function AlbumFull({names}) {
                 </h1>
               </div>
               {musicInfo.slice(0, limit).map((song, index) => (
-             <Link to="/innerAlbum"> <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.name}</h1>
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
-                  {/* Keep image size fixed */}
-                </div>
+                <Link to="/innerAlbum">
+                  {" "}
+                  <div
+                    className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
+                    key={song.id}
+                    onClick={() => play(song.id)}
+                  >
+                    <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
+                    {/* Fixed width for index */}
+                    <img src={song.image.url} className="h-12" />{" "}
+                    {/* Keep image size fixed */}
+                    <h1 className="text-md flex-grow">{song.year}</h1>{" "}
+                    {/* Allow year to take remaining space */}
+                    <h1 className="text-md flex-grow">{song.name}</h1>
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
+                      className="h-12"
+                    />{" "}
+                    {/* Keep image size fixed */}
+                  </div>
                 </Link>
               ))}
               <div className="flex  ml-8">
@@ -105,10 +108,9 @@ function AlbumFull({names}) {
                     <h1 className="font-bold mb-24">View Less</h1>
                   </button>
                 )}
-              </div>   
+              </div>
               <div className="h-2/6 mb-24"></div>
             </div>
-              
           ) : (
             <div
               className="h-screen w-full   mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
@@ -125,22 +127,21 @@ function AlbumFull({names}) {
                 </h1>
               </div>
               {musicInfo.slice(0, limit).map((song, index) => (
-                  <Link to="/innerAlbum">
-                <div
-                  className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <p className="text-sm w-full">#{index + 1}</p>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <p className="text-sm flex-grow">{song.year}</p>{" "}
-                  {/* Allow year to take remaining space */}
-                  <p className="text-sm flex-grow">{song.name}</p>
-               
-                  {/* Keep image size fixed */}
-                </div>
+                <Link to="/innerAlbum">
+                  <div
+                    className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
+                    key={song.id}
+                    onClick={() => play(song.id)}
+                  >
+                    <p className="text-sm w-full">#{index + 1}</p>{" "}
+                    {/* Fixed width for index */}
+                    <img src={song.image.url} className="h-12" />{" "}
+                    {/* Keep image size fixed */}
+                    <p className="text-sm flex-grow">{song.year}</p>{" "}
+                    {/* Allow year to take remaining space */}
+                    <p className="text-sm flex-grow">{song.name}</p>
+                    {/* Keep image size fixed */}
+                  </div>
                 </Link>
               ))}
               <div className="flex  ml-8  mb-36">

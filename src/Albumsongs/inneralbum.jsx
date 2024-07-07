@@ -1,29 +1,24 @@
 import useMediaQuery from "../useMedia";
-import album from "../assets/albumfull.svg";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useContext } from "react";
 import { Context } from "../main";
+import { addRecents } from "../Firebase/database";
 import he from "he";
-import { MelodyMusicsongs, albumsongs, albumsongsinner, artist, searchResult } from "../saavnapi";
-function Inneralbum({names,setSelected }) {
+import { albumsongsinner } from "../saavnapi";
+function Inneralbum({ names }) {
   const isAboveMedium = useMediaQuery("(min-width:768px)");
-  const { setSongid,innerAlbum} = useContext(Context);
- const[image,setimage]=useState([]);
+  const { setSongid, innerAlbum } = useContext(Context);
+  const [image, setimage] = useState([]);
 
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Function to handle expanding to show more results
-  const expandResults = () => {
-    setLimit(musicInfo.length);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await albumsongsinner(innerAlbum);
-       setimage(res.data.data);
-      
+        setimage(res.data.data);
+
         setMusicInfo(
           res.data.data.songs.map((song) => ({
             id: song.id,
@@ -42,9 +37,18 @@ function Inneralbum({names,setSelected }) {
     fetchData();
   }, [names]);
 
-  const play = async (id) => {
-  localStorage.setItem("songid", id);
-  setSongid(id);
+  const play = async (id, name, image) => {
+    localStorage.setItem("songid", id);
+    setSongid(id);
+    const user = JSON.parse(localStorage.getItem("Users"));
+
+    if (user) {
+      try {
+        await addRecents(user.uid, id, name, image);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
   return (
     <>
@@ -59,18 +63,18 @@ function Inneralbum({names,setSelected }) {
                 msOverflowStyle: "none",
               }}
             >
-              
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
                 <img src={image.image[1].url} />
                 <h1 className="font-bold text-3xl p-5">
-                  {image.name} <span className="text-red">{image.language}</span>
+                  {image.name}{" "}
+                  <span className="text-red">{image.language}</span>
                 </h1>
               </div>
               {musicInfo.slice(0, musicInfo.length).map((song, index) => (
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.id, song.name, song.image.url)}
                 >
                   <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
                   {/* Fixed width for index */}
@@ -86,9 +90,7 @@ function Inneralbum({names,setSelected }) {
                   {/* Keep image size fixed */}
                 </div>
               ))}
-              <div className="flex  mb-8">
-              
-              </div>
+              <div className="flex  mb-8"></div>
             </div>
           ) : (
             <div
@@ -102,14 +104,15 @@ function Inneralbum({names,setSelected }) {
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
                 <img src={image.image[1].url} />
                 <h1 className="font-bold text-md p-5">
-                  {image.name} <span className="text-red">{image.language}</span>
+                  {image.name}{" "}
+                  <span className="text-red">{image.language}</span>
                 </h1>
               </div>
               {musicInfo.slice(0, musicInfo.length).map((song, index) => (
                 <div
                   className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                   key={song.id}
-                  onClick={() => play(song.id)}
+                  onClick={() => play(song.id, song.name, song.image.url)}
                 >
                   <p className="text-sm w-full">#{index + 1}</p>{" "}
                   {/* Fixed width for index */}
@@ -118,13 +121,10 @@ function Inneralbum({names,setSelected }) {
                   <p className="text-sm flex-grow">{song.year}</p>{" "}
                   {/* Allow year to take remaining space */}
                   <p className="text-sm flex-grow">{song.name}</p>
-               
                   {/* Keep image size fixed */}
                 </div>
               ))}
-              <div className="flex  ml-8  mb-36">
-              
-              </div>
+              <div className="flex  ml-8  mb-36"></div>
             </div>
           )}
         </>

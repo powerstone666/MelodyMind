@@ -15,14 +15,19 @@ import Moodanalyse from "./moodanalyse";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import AboutUs from "./about";
 import ContactUs from "./contact";
+import Login from "./login";
+import Signup from "./signup";
+import Likes from "./Library/likes";
+import Recents from "./Library/recents";
 function Landing() {
   const {selected,setSelected}=useContext(Context)
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
+  const localUser = JSON.parse(localStorage.getItem("Users"))
 
   return (
     <div className="w-full h-screen flex flex-col">
       <Navbar selected={selected} setSelected={setSelected} />
-     
+   
         <Routes>
           <Route path="/" element={<Home/>}></Route>
           <Route path="/discover" element={<Discover/>}></Route>
@@ -38,10 +43,15 @@ function Landing() {
           <Route path="/innersong" element={<Innersongs/>}></Route>
           <Route path="/about" element={<AboutUs/>}></Route>
           <Route path="/contact" element={<ContactUs/>}></Route>
-          <Route path="/login" element={<h1>Login</h1>}></Route>
-          <Route path="/signup" element={<h1>Sign Up</h1>}></Route>
-          <Route path="/recently" element={<h1>Recently</h1>}></Route>
-          <Route path="/liked" element={<h1>Liked</h1>}></Route>
+          {!localUser ?(
+            <>
+          <Route path="/login" element={<Login/>}></Route>
+          <Route path="/signup" element={<Signup/>}></Route>
+          </>
+          ):(<Route path="/" element={<Home/>}></Route>)}
+          
+          <Route path="/recently" element={<Recents/>}></Route>
+          <Route path="/liked" element={<Likes/>}></Route>
           <Route path="*" element={<Home/>}></Route>
         </Routes>
      

@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../main";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-
+import  {addRecents} from '../Firebase/database';
 function Trendingmobile({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -31,9 +31,19 @@ function Trendingmobile({ names }) {
     fetchData();
   }, [names]);
 
-  const play = (id) => {
+  const play = async (id, name, image) => {
     localStorage.setItem("songid", id);
     setSongid(id);
+
+    const user = JSON.parse(localStorage.getItem("Users"));
+
+    if (user) {
+      try {
+        await addRecents(user.uid, id, name, image);
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -44,7 +54,7 @@ function Trendingmobile({ names }) {
             <div
               className="flex flex-col items-center pb-4"
               key={song.id}
-              onClick={() => play(song.id)}
+              onClick={() => play(song.id, song.name, song.image)}
             >
               <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
                 <img

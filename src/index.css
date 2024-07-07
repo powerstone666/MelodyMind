@@ -2,12 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-.body,html {
-  background-color: #412C3A;
-  color:white;
+body, html {
+  background: linear-gradient(90deg,#1E1E1E 20%, #412C3A 100%);
+  color: white;
   overflow: hidden;
-  font-family:"oxanium", sans-serif;
+  font-family: "oxanium", sans-serif;
 }
+
 .custom-caret-color{
   caret-color: #656565;
 }

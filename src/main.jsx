@@ -19,9 +19,10 @@ const Appwrapper = () => {
   const [lyrics,setLyrics]=useState(localStorage.getItem("lyrics")||"No Lyrics Found");
   const [spotify,setSpotify]=useState(localStorage.getItem("spotify")||"");
   const [spotifyArtist,setSpotifyArtist]=useState(localStorage.getItem("spotifyArtist")||"");
+ const [Users,setUsers]=useState(localStorage.getItem("Users")||"");
   return (
     <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger,lyrics,setLyrics,spotify,setSpotify
-      ,spotifyArtist,setSpotifyArtist
+      ,spotifyArtist,setSpotifyArtist,Users,setUsers
     }}>
       <App
       selected={selected}
@@ -46,6 +47,8 @@ const Appwrapper = () => {
         setSpotify={setSpotify}
         spotifyArtist={spotifyArtist}
         setSpotifyArtist={setSpotifyArtist}
+        Users={Users}
+        setUsers={setUsers}
       />
     </Context.Provider>
   );
