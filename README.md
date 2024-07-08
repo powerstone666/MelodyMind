@@ -39,8 +39,8 @@ Welcome to the AI Music Player repository! This is a full-stack progressive web 
 
 ## Screenshots 📸
 
-![Screenshot 1](path/to/your/screenshot1.png)
-![Screenshot 2](path/to/your/screenshot2.png)
+![Screenshot 1](https://github.com/powerstone666/MelodyMind/blob/main/Screenshot%20(172).png)
+![Screenshot 2](https://github.com/powerstone666/MelodyMind/blob/main/Screenshot%20(173).png)
 
 ## Contributing 🤝
 
