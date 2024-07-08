@@ -3,12 +3,13 @@ import useMediaQuery from './useMedia';
 import { auth, googleProvider, appleProvider } from './Firebase/firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithRedirect, updateProfile } from 'firebase/auth';
 import { Context } from './main';
+import { set } from 'react-hook-form';
 
 function Signup() {
     const { setUsers ,Users} = useContext(Context);
     const [user, setUser] = useState({ name: "", email: "", password: "" });
     const isAboveMedium = useMediaQuery("(min-width: 768px)");
-
+    const [dloading, setDloading] = useState(true);
     const configUser = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     }
@@ -18,6 +19,7 @@ function Signup() {
       
 
         try {
+            setDloading(false);
             const res = await createUserWithEmailAndPassword(auth, user.email, user.password);
             const User = res.user;
 
@@ -29,8 +31,10 @@ function Signup() {
             // Update local storage and state
             localStorage.setItem("Users", JSON.stringify(User));
             setUsers(User);
+            setDloading(true);
         } catch (error) {
             console.error("Error signing up:", error);
+            setDloading(true);
             // Handle error state or display an error message
         }
     }
@@ -71,7 +75,17 @@ function Signup() {
                             <br />
                             <div className='flex justify-between w-96'>
                                 <h1 className="p-2 m-4 bg-transparent">Forget Password {">"}</h1>
+                                {dloading ? (
                                 <button className="border-2 border-black p-2 m-4 bg-red w-24">Login</button>
+                                ):(
+                                    <button className="border-2 border-black p-2 m-4 bg-red w-24">
+                                    <img
+                                    src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
+                                    className="animate-spin h-8"
+                                    viewBox="0 0 24 24"
+                                  />
+                                  </button>
+                                )}
                             </div>
                         </form>
                         <br /><br />
@@ -100,7 +114,17 @@ function Signup() {
                             <br />
                             <div className='flex justify-between w-72'>
                                 <h1 className="p-2 m-4 bg-transparent">Forget Password {">"}</h1>
+                                {dloading ? (
                                 <button className="border-2 border-black p-2 m-4 bg-red w-24">Login</button>
+                                ):(
+                                    <button className="border-2 border-black p-2 m-4 bg-red w-24">
+                                    <img
+                                    src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
+                                    className="animate-spin h-8"
+                                    viewBox="0 0 24 24"
+                                  />
+                                  </button>
+                                )}
                             </div>
                         </form>
                      {/*   <div className='flex justify-between w-full'>
