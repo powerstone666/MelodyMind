@@ -4,7 +4,8 @@ import { auth, googleProvider, appleProvider } from './Firebase/firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithRedirect, updateProfile } from 'firebase/auth';
 import { Context } from './main';
 import { set } from 'react-hook-form';
-
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Signup() {
     const { setUsers ,Users} = useContext(Context);
     const [user, setUser] = useState({ name: "", email: "", password: "" });
@@ -34,6 +35,7 @@ function Signup() {
             setDloading(true);
         } catch (error) {
             console.error("Error signing up:", error);
+            toast.error("Something Went Wrong");
             setDloading(true);
             // Handle error state or display an error message
         }
@@ -62,16 +64,29 @@ function Signup() {
 
     return (
         <div>
+               <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
             {isAboveMedium ? (
                 <div className="flex flex-col items-center justify-center">
                     <h1 className='text-3xl my-10'>Sign In to Continue</h1>
                     <div className=''>
                         <form onSubmit={(e) => SignUp(e)}>
-                            <input type="text" placeholder="Name" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="name" onChange={(e) => { configUser(e) }} />
+                            <input type="text" placeholder="Name" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="name" onChange={(e) => { configUser(e) }} required/>
                             <br />
-                            <input type="email" placeholder="Email" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="email" onChange={(e) => { configUser(e) }} />
+                            <input type="email" placeholder="Email" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="email" onChange={(e) => { configUser(e) }} required/>
                             <br />
-                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="password" onChange={(e) => { configUser(e) }} />
+                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="password" onChange={(e) => { configUser(e) }} required minLength={6}/>
                             <br />
                             <div className='flex justify-between w-96'>
                                 <h1 className="p-2 m-4 bg-transparent">Forget Password {">"}</h1>
@@ -106,11 +121,11 @@ function Signup() {
                     <h1 className='text-3xl my-10'>Login to Continue</h1>
                     <div className=''>
                         <form onClick={(e) => { SignUp(e) }}>
-                            <input type="text" placeholder="Name" className="border rounded-lg border-black p-2 m-4 w-72" style={{ background: "#612C4F" }} name="name" onChange={(e) => { configUser(e) }} />
+                            <input type="text" placeholder="Name" className="border rounded-lg border-black p-2 m-4 w-72" style={{ background: "#612C4F" }} name="name" onChange={(e) => { configUser(e) }} required/>
                             <br />
-                            <input type="email" placeholder="Email" className="border rounded-lg border-black p-2 m-4 w-72" style={{ background: "#612C4F" }} name="email" onChange={(e) => { configUser(e) }} />
+                            <input type="email" placeholder="Email" className="border rounded-lg border-black p-2 m-4 w-72" style={{ background: "#612C4F" }} name="email" onChange={(e) => { configUser(e) }} required/>
                             <br />
-                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-72" style={{ background: "#612C4F" }} name="password" onChange={(e) => { configUser(e) }} />
+                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-72" style={{ background: "#612C4F" }} name="password" onChange={(e) => { configUser(e) }} required minLength={6}/>
                             <br />
                             <div className='flex justify-between w-72'>
                                 <h1 className="p-2 m-4 bg-transparent">Forget Password {">"}</h1>

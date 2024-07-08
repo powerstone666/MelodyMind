@@ -5,6 +5,8 @@ import {auth,googleProvider,appleProvider} from './Firebase/firebaseConfig';
 import { createUserWithEmailAndPassword,signOut,signInWithRedirect,OAuthProvider,signInWithEmailAndPassword,signInWithPopup } from 'firebase/auth';
 import { Context } from './main';
 import { set } from 'react-hook-form';
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Login(){
     const {Users,setUsers}=useContext(Context);
     const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -49,11 +51,25 @@ function Login(){
         }   
         catch(error){
             console.log(error);
+            toast.error("Wrong Password or Email");
             setDloading(true);
         }
     }
     return(
         <div>
+             <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
         {   isAboveMedium ? (
                   <div className=" flex flex-col items-center justify-center">
                     <div>
@@ -61,16 +77,16 @@ function Login(){
                     </div>
                     <div className=''>
                         <form onSubmit={(e)=>{onsubmit(e)}}>
-                            <input type="email" placeholder="Email" className="border rounded-lg  border-black p-2 m-4 w-96" style={{background:"#612C4F"}} name="email" onChange={(e)=>{signin(e)}}/>
+                            <input type="email" placeholder="Email" className="border rounded-lg  border-black p-2 m-4 w-96" style={{background:"#612C4F"}} name="email" onChange={(e)=>{signin(e)}} required/>
                             <br/>
-                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-96" style={{background:"#612C4F"}} name="password" onChange={(e)=>{signin(e)}} />
+                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-96" style={{background:"#612C4F"}} name="password" onChange={(e)=>{signin(e)}} required minLength={6}/>
                             <br/>
                             <div className='flex justify-between w-96'>
                             <h1 className=" p-2 m-4 bg-transparent">Forget Password {">"}</h1>
                             {dloading?(
                             <button className="border-2 border-black p-2 m-4 bg-red w-24">Login</button>
                             ):(
-                                <button className="border-2 border-black p-2 m-4 bg-red w-24">
+                                <button  className="border-2 border-black p-2 m-4 bg-red w-24">
                                 <img
                                 src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
                                 className="animate-spin h-8"
@@ -95,9 +111,9 @@ function Login(){
                     </div>
                     <div className=''>
                         <form onSubmit={(e)=>{onsubmit(e)}}>
-                            <input type="email" placeholder="Email" className="border rounded-lg  border-black p-2 m-4 w-72" name="email"style={{background:"#612C4F"}} onChange={(e)=>{signin(e)}}/>
+                            <input type="email" placeholder="Email" className="border rounded-lg  border-black p-2 m-4 w-72" name="email"style={{background:"#612C4F"}} onChange={(e)=>{signin(e)}} required/>
                             <br/>
-                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-72" name="password" style={{background:"#612C4F"}} onChange={(e)=>{signin(e)}}/>
+                            <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-72" name="password" style={{background:"#612C4F"}} onChange={(e)=>{signin(e)}} required minLength={6}/>
                             <br/>
                             <div className='flex justify-between w-96'>
                             <h1 className=" p-2 m-4 bg-transparent">Forget Password {">"}</h1>
