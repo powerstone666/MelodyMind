@@ -28,6 +28,7 @@ function Innersongs() {
   const [download, setDownload] = useState("");
   const [liked, setLiked] = useState(false);
   const [dbId, setDbId] = useState("");
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     const fetchLikes = async () => {
@@ -95,6 +96,8 @@ function Innersongs() {
   }, [songid, setLyrics]);
 
   const fetchRecommendations = async () => {
+    if (isFetching) return; // Prevent multiple calls
+    setIsFetching(true);
     try {
       setDloading(true);
       const res4 = await getRecommendations(spotify);
@@ -124,6 +127,8 @@ function Innersongs() {
     } catch (error) {
       console.error("Error fetching data:", error);
       setDloading(false);
+    } finally {
+      setIsFetching(false); // Reset the fetching state
     }
   };
 

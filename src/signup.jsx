@@ -35,7 +35,7 @@ function Signup() {
             setDloading(true);
         } catch (error) {
             console.error("Error signing up:", error);
-            toast.error("Something Went Wrong");
+            toast.error(error);
             setDloading(true);
             // Handle error state or display an error message
         }
@@ -89,9 +89,9 @@ function Signup() {
                             <input type="password" placeholder="Password" className="border rounded-lg border-black p-2 m-4 w-96" style={{ background: "#612C4F" }} name="password" onChange={(e) => { configUser(e) }} required minLength={6}/>
                             <br />
                             <div className='flex justify-between w-96'>
-                                <h1 className="p-2 m-4 bg-transparent">Forget Password {">"}</h1>
+                               
                                 {dloading ? (
-                                <button className="border-2 border-black p-2 m-4 bg-red w-24">Login</button>
+                                <button className="border-2 border-black p-2 m-4 bg-red w-24">Sign Up</button>
                                 ):(
                                     <button className="border-2 border-black p-2 m-4 bg-red w-24">
                                     <img

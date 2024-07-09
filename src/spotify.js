@@ -18,34 +18,36 @@ const getAccessToken = async () => {
     try {
         const response = await axios.post(tokenUrl, params, { headers });
         token = response.data.access_token;
-   
+       
     } catch (error) {
         console.error('Error fetching access token:', error);
     }
 };
 
-// Refresh the token immediately and then every 15 minutes
+// Refresh the token immediately and then every 30 minutes
 getAccessToken();
-setInterval(getAccessToken, 1 * 60 * 1000); // 15 minutes
+setInterval(getAccessToken, 30 * 60 * 1000); // 30 minutes
 
 const fetchWebApi = async (endpoint, method, body) => {
     try {
-   
+        if (!token) {
+            await getAccessToken(); // Ensure token is available
+        }
+
         const res = await fetch(`https://api.spotify.com/${endpoint}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
             method,
-            body: JSON.stringify(body)
+            body: body ? JSON.stringify(body) : null
         });
 
         if (!res.ok) {
-            console.log(`Error status: ${res.status}`);
+            console.error(`Error status: ${res.status}`);
             return "error";
         }
 
         const res2 = await res.json();
-   
         return res2;
     } catch (error) {
         console.error('Error fetching from Spotify API:', error);
@@ -53,9 +55,9 @@ const fetchWebApi = async (endpoint, method, body) => {
     }
 };
 
-
 const levenshteinDistance = (a, b) => {
-    const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]).map((row, i) => row.concat(Array.from({ length: a.length + 1 }, (_, j) => (i === 0 ? j : 0))));
+    const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i])
+        .map((row, i) => row.concat(Array.from({ length: a.length + 1 }, (_, j) => (i === 0 ? j : 0))));
 
     for (let i = 1; i <= b.length; i++) {
         for (let j = 1; j <= a.length; j++) {
@@ -72,18 +74,18 @@ const levenshteinDistance = (a, b) => {
 
 export const getRecommendations = async (songName) => {
     try {
-    
-
+     
         const encodedSongName = encodeURIComponent(songName);
         const res5 = await fetchWebApi(`v1/search?q=${encodedSongName}&type=track&limit=2`, 'GET');
-
+ 
+        
         if (!res5 || res5.error) {
             console.error('Error fetching top tracks:', res5.error);
             return "error";
         }
 
-        const track1 = `${res5.tracks.items[0].album.name} ${res5.tracks.items[0].name}`;
-        const track2 = `${res5.tracks.items[1].album.name} ${res5.tracks.items[1].name}`;
+        const track1 = `${res5.tracks.items[0].artists[0].name} ${res5.tracks.items[0].name}`;
+        const track2 = `${res5.tracks.items[1].artists[0].name} ${res5.tracks.items[1].name}`;
 
         const distance1 = levenshteinDistance(songName, track1);
         const distance2 = levenshteinDistance(songName, track2);
@@ -91,19 +93,19 @@ export const getRecommendations = async (songName) => {
         const bestTrack = distance1 < distance2 ? res5.tracks.items[0] : res5.tracks.items[1];
         const id = bestTrack.id;
 
-
         const res4 = await fetchWebApi(`v1/recommendations?seed_tracks=${id}`, 'GET');
         if (res4.error) {
             console.error('Error fetching recommendations:', res4.error);
             return "error";
         }
-
+      
         return res4;
     } catch (error) {
         console.error('Error in getRecommendations:', error);
         return "error";
     }
 };
+
 
 /*
 const API_KEY =import.meta.env.VITE_LAST_FM;

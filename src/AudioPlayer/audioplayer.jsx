@@ -3,7 +3,6 @@ import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
-import axios from "axios";
 import he from "he";
 import { searchResult, searchSuggestion, newsearch } from "../saavnapi";
 import { ToastContainer, toast, Bounce } from "react-toastify";
@@ -11,16 +10,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { getRecommendations } from "../spotify";
 import { addRecents } from "../Firebase/database";
+
 function AudioPlayerComponent() {
   const isAboveMedium = useMediaQuery("(min-width:1025px)");
-  const { songid, setSongid, setSelected, spotify, setSpotify } =
-    useContext(Context);
+  const { songid, setSongid, setSelected, spotify, setSpotify } = useContext(Context);
   const [music, setMusic] = useState("");
   const [names, setNames] = useState("");
   const [prev, setPrev] = useState([]);
   const [array, setArray] = useState("");
   const [image, setImage] = useState("");
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
 
   // Check if the browser supports the Media Session API
   useEffect(() => {
@@ -45,12 +44,10 @@ function AudioPlayerComponent() {
     try {
       const res = await searchResult(songid);
       const decodedName = he.decode(res.data.data[0].name);
+     
       if (decodedName) {
-        localStorage.setItem(
-          "spotify",
-          res.data.data[0].album.name + " " + decodedName
-        );
-        setSpotify(res.data.data[0].album.name + " " + decodedName);
+        localStorage.setItem("spotify", res.data.data[0].artists.primary[0].name + " " + decodedName);
+        setSpotify(res.data.data[0].artists.primary[0].name + " " + decodedName);
       }
       setArray(res.data.data[0].album.name);
       setImage(res.data.data[0].image[1].url);
@@ -68,8 +65,10 @@ function AudioPlayerComponent() {
     }
   }, [songid]);
 
- 
   const handleNext = async () => {
+    if (isFetching) return; // Prevent multiple calls
+    setIsFetching(true);
+
     try {
       const prevItem = { name: spotify, id: songid };
       setPrev([...prev, prevItem]);
@@ -77,7 +76,6 @@ function AudioPlayerComponent() {
       const res2 = await getRecommendations(spotify);
 
       if (res2 === "error") {
-        // Handle case when recommendations fetch fails
         const res = await searchSuggestion(songid);
         let i = 0;
         while (i < res.data.length && prev.some(item => item.id === res.data[i].id)) {
@@ -86,15 +84,13 @@ function AudioPlayerComponent() {
 
         if (i === res.data.length) {
           toast.error('No more songs to play, please go back and select another song.');
+          setIsFetching(false);
           return;
         }
         localStorage.setItem('songid', res.data[i].id);
         setSongid(res.data[i].id);
-        localStorage.setItem(
-          "spotify",
-          res.data[i].album.name + " " + res.data[i].name
-        );
-        setSpotify(res.data[i].album.name + " " + res.data[i].name);
+        localStorage.setItem("spotify", res.data[i].artists.primary[0].name + " " + res.data[i].name);
+        setSpotify(res.data[i].artists.primary[0].name + " " + res.data[i].name);
 
         const user = JSON.parse(localStorage.getItem("Users"));
         if (user) {
@@ -103,7 +99,7 @@ function AudioPlayerComponent() {
               user.uid,
               res.data[i].id,
               he.decode(res.data[i].name),
-              res.data[i].image[1].url // Assuming image[1] is correct index
+              res.data[i].image[1].url
             );
           } catch (error) {
             console.log(error);
@@ -111,31 +107,24 @@ function AudioPlayerComponent() {
         }
       } else {
         let i = 0;
-        // Find the first non-duplicate song in recommendations
         while (
           i < res2.tracks.length &&
-          prev.some(item => item.name === res2.tracks[i].album.name + " " + res2.tracks[i].name)
+          prev.some(item => item.name === res2.tracks[i].artists[0].name + " " + res2.tracks[i].name)
         ) {
           i++;
         }
 
         if (i === res2.tracks.length) {
-          toast.error(
-            "No more songs to play, please go back and select another song."
-          );
+          toast.error("No more songs to play, please go back and select another song.");
+          setIsFetching(false);
           return;
         }
 
-        const res3 = await newsearch(
-          res2.tracks[i].name + " " + res2.tracks[i].album.name
-        );
+        const res3 = await newsearch(res2.tracks[i].name + " " + res2.tracks[i].album.name);
         localStorage.setItem("songid", res3);
         setSongid(res3);
-        localStorage.setItem(
-          "spotify",
-          res2.tracks[i].album.name + " " + res2.tracks[i].name
-        );
-        setSpotify(res2.tracks[i].album.name + " " + res2.tracks[i].name);
+        localStorage.setItem("spotify", res2.tracks[i].artists[0].name + " " + res2.tracks[i].name);
+        setSpotify(res2.tracks[i].artists[0].name + " " + res2.tracks[i].name);
 
         const user = JSON.parse(localStorage.getItem("Users"));
         if (user) {
@@ -144,7 +133,7 @@ function AudioPlayerComponent() {
               user.uid,
               res2.tracks[i].id,
               res2.tracks[i].name,
-              res2.tracks[i].image[1].url // Assuming image[1] is correct index
+              res2.tracks[i].album.images[0].url
             );
           } catch (error) {
             console.log(error);
@@ -153,9 +142,9 @@ function AudioPlayerComponent() {
       }
     } catch (error) {
       console.error("Error handling next song:", error);
-      toast.error(
-        "No more songs to play, please go back and select another song."
-      );
+      toast.error("No more songs to play, please go back and select another song.");
+    } finally {
+      setIsFetching(false); // Reset the fetching state
     }
   };
 
@@ -167,12 +156,11 @@ function AudioPlayerComponent() {
 
     const last = prev[prev.length - 1];
     const res3 = last.name;
-    const res=await newsearch(res3);
+    const res = await newsearch(res3);
     localStorage.setItem("songid", res);
     setSongid(res);
     setPrev(prev.slice(0, -1));
   };
-
 
   useEffect(() => {
     // Set up Media Session API handlers
