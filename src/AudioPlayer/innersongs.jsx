@@ -120,6 +120,7 @@ function Innersongs() {
             image: song.album.images[1].url,
             year: song.album.release_date.slice(0, 4),
             album: song.album.name,
+            artist: song.artists[0].name,
           }))
         );
       }
@@ -258,7 +259,7 @@ function Innersongs() {
                       <div
                         className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                         key={song.id}
-                        onClick={() => play(song.name + " " + song.album)}
+                        onClick={() => play(song.name + " " + song.artist)}
                       >
                         <h1 className="text-2xl w-12">#{index + 1}</h1>
                         <img src={song.image} className="h-12" />
@@ -358,7 +359,7 @@ function Innersongs() {
                       <div
                         className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                         key={song.id}
-                        onClick={() => play(song.name + " " + song.album)}
+                        onClick={() => play(song.name + " " + song.artist)}
                       >
                         <h1 className="text-sm w-12">#{index + 1}</h1>
                         <img src={song.image} className="h-12" />

@@ -120,7 +120,7 @@ function AudioPlayerComponent() {
           return;
         }
 
-        const res3 = await newsearch(res2.tracks[i].name + " " + res2.tracks[i].album.name);
+        const res3 = await newsearch(res2.tracks[i].name + " " + res2.tracks[i].artists[0].name);
         localStorage.setItem("songid", res3);
         setSongid(res3);
         localStorage.setItem("spotify", res2.tracks[i].artists[0].name + " " + res2.tracks[i].name);
