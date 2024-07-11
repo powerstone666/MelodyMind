@@ -136,7 +136,7 @@ function Recents() {
             </>
           ) : (
             <h1 className="text-red text-3xl font-bold">
-              Login to view your likes
+              Login to view your Recents
             </h1>
           )}
         </>
