@@ -125,7 +125,7 @@ function Result({ names }) {
                 Top <span className="text-red font-bold">Songs</span>
               </h1>
               <div className="flex flex-wrap p-4  gap-5">
-                {musicInfo.slice(0, musicInfo.length).map((song) => (
+                {musicInfo.slice(0, 20).map((song) => (
                   <div
                     className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                     key={song.id}
@@ -218,7 +218,7 @@ function Result({ names }) {
                 Top <span className="text-red font-bold">Songs</span>
               </h1>
               <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
-                {musicInfo.slice(0, 10).map((song) => (
+                {musicInfo.slice(0, 40).map((song) => (
                   <div
                     className="flex flex-col items-center pb-4"
                     key={song.id}

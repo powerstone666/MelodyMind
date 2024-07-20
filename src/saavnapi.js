@@ -35,7 +35,7 @@ export const Searchsongs=async(names)=>{
           method: 'GET',
           url: 'https://saavn.dev/api/search',
           params: { query: names ? names : `topsongs ${language}`,
-          limit: 10
+          limit: 20
            }
       };
       const res = await axios.request(options);
@@ -53,7 +53,7 @@ export const Searchsongs2=async(names)=>{
           method: 'GET',
           url: 'https://saavn.dev/api/search/songs',
           params: { query: names ? names : `topsongs ${language}`,
-          limit: 10
+          limit: 40
            }
       };
       const res2 = await axios.request(options);

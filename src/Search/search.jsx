@@ -42,16 +42,16 @@ function Searchfunc() {
         </>
       ) : (
         <div className="h-screen">
-          <div className="flex">
+          <div className="flex w-80 h-10 p-2 bg-black ml-4 border-b-2  border-red rounded-md">
             <input
               type="text"
               placeholder="Search For Musics, Artists, Albums..."
-              className="p-4 h-8 w-80 bg-transparent outline-none  "
+              className="p-4 h-8 w-80 bg-transparent outline-none "
               onChange={(e) => searchquery(e)}
               value={search}
             />
               {search && (
-                  <button className="text-blue" onClick={clearSearch}>
+                  <button className="text-blue text-md" onClick={clearSearch}>
                     X
                   </button>
                 )}
