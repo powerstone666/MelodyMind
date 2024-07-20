@@ -89,7 +89,7 @@ function Likes() {
                                         <div
                                             className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
                                             key={song.songId}
-                                            onClick={() => play(song.id)}
+                                            onClick={() => play(song.songId)}
                                         >
                                             <p className="text-sm w-full">#{index + 1}</p>
                                             <img src={song.songUrl} className="h-12" />
