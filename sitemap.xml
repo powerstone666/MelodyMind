@@ -1,16 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
-<url>
-  <loc>https://melodyminds.netlify.app/</loc>
-  <lastmod>2024-07-26T12:12:35+00:00</lastmod>
-</url>
-
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://melodyminds.netlify.app/</loc>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/about</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/features/mood-analyzer</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/features/song-recommendations</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/features/lyrics-display</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/features/music-playback</loc>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/browse/genres</loc>
+    <priority>0.64</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/browse/top-charts</loc>
+    <priority>0.64</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/browse/new-releases</loc>
+    <priority>0.64</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/browse/playlists</loc>
+    <priority>0.64</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/search</loc>
+    <priority>0.64</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/account/login</loc>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/account/profile</loc>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/account/liked-songs</loc>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/account/recent-songs</loc>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/account/settings</loc>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/support/faq</loc>
+    <priority>0.32</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/support/contact-us</loc>
+    <priority>0.32</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/support/feedback</loc>
+    <priority>0.32</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/terms/privacy-policy</loc>
+    <priority>0.32</priority>
+  </url>
+  <url>
+    <loc>https://melodyminds.netlify.app/terms/user-agreement</loc>
+    <priority>0.32</priority>
+  </url>
 </urlset>
