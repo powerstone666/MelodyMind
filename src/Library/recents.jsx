@@ -9,27 +9,39 @@ function Recents() {
   const { setSongid } = useContext(Context);
   const [loading, setLoading] = useState(false);
   const localUser = JSON.parse(localStorage.getItem("Users"));
-
   useEffect(() => {
     const fetchLikes = async () => {
       try {
-        const res = await fetchHistory();
+        let res = await fetchHistory();
 
+        // If the number of items exceeds 100, delete the oldest item
         if (res.length > 100) {
-          const sortedRes = res.sort((a, b) => a.timestamp - b.timestamp); // Sort by timestamp to find the oldest
-          const oldestSong = sortedRes[0]; // Get the oldest song
-          await deleteRecents(oldestSong.id); // Delete the oldest song
-          res.shift(); // Remove the oldest song from the array
+          // Sort by timestamp in ascending order (oldest first)
+          res = res.sort((a, b) => a.timestamp - b.timestamp);
+          const oldestSong = res[0]; // Get the oldest song
+
+          // Delete the oldest song from the database
+          await deleteRecents(oldestSong.id);
+
+          // Remove the oldest song from the local array
+          res = res.slice(1);
         }
 
+        // Sort the remaining items in descending order (newest first) for display
+        res = res.sort((a, b) => b.timestamp - a.timestamp);
+
+        // Update the state with the sorted list
         setLikes(res);
         setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching or deleting likes:', error);
+        setLoading(false);
       }
     };
+
     fetchLikes();
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount
+
 
   const play = (id) => {
     localStorage.setItem("songid", id);
