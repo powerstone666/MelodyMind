@@ -16,7 +16,7 @@ export const MelodyMusicsongs=async(names)=>{
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/search/songs',
+            url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/songs',
             params: { query: names ? language+" "+names : `topsongs ${language}`,
             limit: 50
              }
@@ -33,7 +33,7 @@ export const Searchsongs=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search',
+          url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search',
           params: { query: names ? names : `topsongs ${language}`,
           limit: 20
            }
@@ -51,7 +51,7 @@ export const Searchsongs2=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search/songs',
+          url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/songs',
           params: { query: names ? names : `topsongs ${language}`,
           limit: 40
            }
@@ -68,7 +68,7 @@ export const searchResult=async(songid)=>{
     if(songid){
     const options = {
         method: 'GET',
-        url: `https://saavn.dev/api/songs/${songid}`
+        url: `http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/songs/${songid}`
       };
       const res = await axios.request(options);
       return res;
@@ -78,7 +78,7 @@ export const searchResult=async(songid)=>{
 export const searchSuggestion=async(songid)=>{
     const options = {
         method: 'GET',
-        url: `https://saavn.dev/api/songs/${songid}/suggestions`,
+        url: `http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/songs/${songid}/suggestions`,
         params: {limit: 20}
       };
     
@@ -98,7 +98,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/search/albums',
+            url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/albums',
             params: {query: language,limit:50}
           };
         const res = await axios.request(options);
@@ -113,7 +113,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/albums',
+            url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/albums',
             params: {id:id,limit:50}
           };
         const res = await axios.request(options);
@@ -127,7 +127,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: "GET",
-            url: "https://saavn.dev/api/search/artists",
+            url: "http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/artists",
             params: { query:"Top Artists",limit:50 },
           };
           const res = await axios.request(options);
@@ -143,7 +143,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: "GET",
-            url: `https://saavn.dev/api/artists/${id}`,
+            url: `http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/artists/${id}`,
             params: {limit:50 },
           };
           const res = await axios.request(options);
@@ -155,7 +155,7 @@ export const searchSuggestion=async(songid)=>{
     }
 
     export const songLyrics=async(songid)=>{
-      const options = {method: 'GET', url: `https://saavn.dev/api/songs/${songid}/lyrics`};
+      const options = {method: 'GET', url: `http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/songs/${songid}/lyrics`};
 
 try {
   const { data } = await axios.request(options);
@@ -177,7 +177,7 @@ try {
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/search/songs',
+            url: 'http://jiosaavn-olj6ym1v4-thesumitkolhe.vercel.app/api/search/songs',
             params: { query:mood+" songs "+language,
             limit: 10
              }
