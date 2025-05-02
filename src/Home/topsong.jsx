@@ -8,6 +8,7 @@ import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
 import  {addRecents} from '../Firebase/database';
 
+
 function Topsongs({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
@@ -25,7 +26,6 @@ function Topsongs({ names }) {
     const fetchData = async () => {
       try {
         const res = await MelodyMusicsongs(names);
-    
         if (res) {
           setMusicInfo(
             res.map((song) => ({

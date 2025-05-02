@@ -103,6 +103,7 @@ function Innersongs() {
       const res4 = await getRecommendations(spotify);
       if (res4 === "error") {
         const res3 = await searchSuggestion(songid);
+        console.log(res3);
         setRecommendation(
           res3.data.map((song) => ({
             id: song.id,
