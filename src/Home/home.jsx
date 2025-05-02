@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import useMediaQuery from "../useMedia";
+import React, { useContext } from "react";
 import Swipe from "../components/swipe";
 import Topsongs from "./topsong";
 import Newrelease from "./newrelease";
@@ -7,13 +6,39 @@ import Trending from "../Trendy/trending";
 import Artist from "../Playlist/artist";
 import Albums from "../Albumsongs/albums";
 import { Context } from "../main";
-import Trendingmobile from "./trendingmobile";
 
 function Home() {
-  const isAboveMedium = useMediaQuery("(min-width:1025px)");
-  const { Viewall, setViewall, setPage, page } = useContext(Context);
+  const { setViewall, setPage, page } = useContext(Context);
 
-  const handleCLick = (name) => {
+    const Section = ({ title, children }) => {
+        return (
+          <div className="mb-8">
+            <div className="flex items-center justify-between px-6">
+              <h2 className="text-2xl font-bold text-white">{title}</h2>
+            </div>
+            <div className="flex overflow-x-auto space-x-4 p-4">
+              {children}
+            </div>
+          </div>
+        );
+      };
+    
+      const Card = ({ children }) => {
+        return (
+          <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden min-w-[150px] max-w-[150px] md:min-w-[200px] md:max-w-[200px]">
+            {children}
+          </div>
+        );
+      };
+    
+      const AlbumArt = ({ src, alt }) => {
+        return (
+          <img src={src} alt={alt} className="w-full h-auto rounded-lg shadow-md object-cover" />
+        );
+      };
+
+
+    const handleCLick = (name) => {
     if (page === name) {
       setViewall(3);
       setPage("");
@@ -24,88 +49,38 @@ function Home() {
   };
 
   return (
-    <>
-      {isAboveMedium ? (
-        <div
-          className="overflow-y-auto h-screen w-full mb-12"
-          style={{ overflowX: "scroll", minWidth: "100%" }}
-        >
-         
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Weekly Top <span className="text-red font-bold">Songs</span>
-            </h1>
-            <Topsongs />
-          </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              New Releases <span className="text-red font-bold">Songs</span>
-            </h1>
-            <Newrelease />
-          </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Trending <span className="text-red font-bold">Songs</span>
-            </h1>
-            <Trending />
-          </div>
-          <div className="mb-8">
-            <h1 className="text-3xl p-4 m-5">
-              Popular <span className="text-red font-bold">Artists</span>
-            </h1>
-            <Artist />
-          </div>
-          <div className="mb-16">
-            <h1 className="text-3xl p-4 m-5">
-              Top <span className="text-red font-bold">Album</span>
-            </h1>
-            <Albums />
-          </div>
-        </div>
-      ) : (
-        <>
-       <div className="overflow-y-auto h-screen w-full">
-  <h1 className="text-2xl p-2 m-1">
-    Weekly Top <span className="text-red font-bold">Songs</span>
-  </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
-    <Topsongs />
-  </div>
-  
-  <h1 className="text-2xl p-2 m-1">
-    New Releases <span className="text-red font-bold">Songs</span>
-  </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
-    <Newrelease />
-  </div>
-  
-  <h1 className="text-2xl p-2 m-1">
-    Trending <span className="text-red font-bold">Songs</span>
-  </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
-    <Trendingmobile names={"songs"} />
-  </div>
-  
-  <h1 className="text-2xl p-2 m-1">
-    Popular <span className="text-red font-bold">Artists</span>
-  </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
-    <Artist />
-  </div>
-  
-  <h1 className="text-2xl p-2 m-0">
-    Popular <span className="text-red font-bold">Albums</span>
-  </h1>
-  <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2 ">
-    <Albums />
-  </div>
-  
-  <div className="h-1/6 mb-24"></div>
-</div>
+    <div className="overflow-y-auto h-screen w-full text-white">
+      <div className="p-4">
+        <Section title="Weekly Top Songs">
+          <Topsongs />
+        </Section>
 
-        </>
-      )}
-    </>
+        <Section title="New Releases">
+          <Newrelease />
+        </Section>
+
+        <Section title="Trending Songs">
+          <Trending />
+        </Section>
+
+        <Section title="Popular Artists">
+          <Artist />
+        </Section>
+
+        <Section title="Top Albums">
+          <Albums />
+        </Section>
+        </div>
+      {/* Example of how to use the new components */}
+    {/* <Section title="Trending Now">
+      <Card>
+        <AlbumArt src="https://via.placeholder.com/200" alt="Album Art" />
+        <div>
+        
+        </div>
+      </Card>
+    </Section> */}
+    </div>
   );
 }
 export default Home;

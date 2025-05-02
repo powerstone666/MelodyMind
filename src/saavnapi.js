@@ -154,24 +154,25 @@ export const searchSuggestion=async(songid)=>{
         }
     }
 
-    export const songLyrics=async(songid)=>{
-      const options = {method: 'GET', url: `https://saavn.dev/api/songs/${songid}/lyrics`};
-
-try {
-  const { data } = await axios.request(options);
-  return data;
-} catch (error) {
-  console.error(error);
-}
-    }
-    export const songBymood=async(mood)=>{
+    export const getLyrics = async (artist, title) => {
+        try {
+          const response = await axios.get(
+            `https://api.lyrics.com/v1/${artist}/${title}`
+          );
+          return response.data.lyrics;
+        } catch (error) {
+          console.error("Error fetching lyrics:", error);
+          return "Lyrics not found";
+        }
+    };
+    export const songBymood = async (mood) => {
       try{
         if(mood==="neutral")
           {
             mood="top";
           }
           else if(mood==="surprised")
-            {
+          {
               mood="random"
             }
         const language=languages();

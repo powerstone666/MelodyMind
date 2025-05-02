@@ -1,16 +1,12 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import { Context } from "../main";
 import useMediaQuery from "../useMedia";
-import {
-  searchResult,
-  searchSuggestion,
-  songLyrics,
-  newsearch,
-} from "../saavnapi";
+import { searchResult, newsearch, searchSuggestion } from "../saavnapi";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getLyrics } from "../gemini";
+import { getSongRecommendations } from "../gemini";
 import he from "he";
-import { getRecommendations } from "../spotify";
 import { addLikes, deleteLikes, fetchUser } from "../Firebase/database";
 import { auth } from "../Firebase/firebaseConfig";
 
@@ -76,18 +72,25 @@ function Innersongs() {
     if (songid) {
       try {
         const res = await searchResult(songid);
-        setDetails(res.data.data[0]);
-        setDownload(res.data.data[0].downloadUrl[4].url);
-        const new2 = he.decode(res.data.data[0].name);
-        setSongName(new2);
-        setImage(res.data.data[0].image[2].url);
-      } catch (error) {
-        console.error(error);
-      }
-      try {
-        const res2 = await songLyrics(songid);
-        const decodedRes = he.decode(res2.data.lyrics);
-        setLyrics(decodedRes);
+        const songData = res.data.data[0];
+
+        setDetails(songData);
+        setSongName(songData.name);
+        setDownload(songData.downloadUrl[4].url);
+        console.log(songData)
+        const lyricdata = await getLyrics(
+          songData.artists.all[0].name,
+          songData.name,
+          songData.album.name,
+          songData.year,
+         songData.language
+        );
+        const decodedName = he.decode(songData.name);
+       
+        setImage(songData.image[2].url);
+         setSongName(decodedName);
+        
+        setLyrics(lyricdata);
       } catch (error) {
         setLyrics("Lyrics Not found");
       }
@@ -95,59 +98,51 @@ function Innersongs() {
     setLoading(true);
   }, [songid, setLyrics]);
 
-  const fetchRecommendations = async () => {
-    if (isFetching) return; // Prevent multiple calls
-    setIsFetching(true);
-    try {
-      setDloading(true);
-      const res4 = await getRecommendations(spotify);
-      if (res4 === "error") {
-        const res3 = await searchSuggestion(songid);
-        console.log(res3);
-        setRecommendation(
-          res3.data.map((song) => ({
-            id: song.id,
-            name: he.decode(song.name),
-            image: song.image[1].url,
-            artist: song.artists.primary[0].name,
-            year: song.year,
-            album: song.album.name,
-          }))
-        );
-      } else {
-        setRecommendation(
-          res4.tracks.map((song) => ({
-            name: he.decode(song.name),
-            image: song.album.images[1].url,
-            year: song.album.release_date.slice(0, 4),
-            album: song.album.name,
-            artist: song.artists[0].name,
-          }))
-        );
+  const fetchRecommendations = useCallback(async () => {
+      if (
+        details &&
+        details.name &&
+        details.artists &&
+        details.artists.all &&
+        details.artists.all[0] &&
+        details.artists.all[0].name
+      ) {
+        try {
+          const rec = await getSongRecommendations(
+            details.name,
+            details.artists.all[0].name
+          );
+
+          if (typeof rec === "string") {
+             setRecommendation(JSON.parse(rec).map(item => ({...item, song:item.song.replace(/['"]/g,''),artist:item.artist.replace(/['"]/g,'')})));
+          } else {
+            setRecommendation(rec.map(item => ({...item, song:item.song.replace(/['"]/g,''),artist:item.artist.replace(/['"]/g,'')})));
+          }
+           
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
       }
-      setDloading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setDloading(false);
-    } finally {
-      setIsFetching(false); // Reset the fetching state
+       
+  }, [details]);
+
+  useEffect(() => {
+    if (details.name) {
+        fetchRecommendations();
     }
-  };
+  }, [details.name]);
 
-  useEffect(() => {
-    fetchRecommendations();
-  }, [spotify]);
 
-  useEffect(() => {
+    useEffect(() => {
     fetchLyrics();
-  }, [fetchLyrics]);
+  }, [songid,setLyrics]);
 
-  const play = async (id) => {
-    const res = await newsearch(id);
-    localStorage.setItem("spotify", id);
-    setSpotify(id);
-    localStorage.setItem("songid", res);
-    setSongid(res);
+  const play = async (songName) => {
+      const res = await newsearch(songName);
+      localStorage.setItem("spotify", songName);
+      setSpotify(songName);
+      localStorage.setItem("songid", res);
+      setSongid(res)
   };
 
   const style = `text-white bg-red border-0 rounded-xl`;
@@ -155,7 +150,7 @@ function Innersongs() {
     try {
       setLiked(true);
       const name = he.decode(details.name);
-      const image = details.image[2].url;
+      const image = details.image?.[2]?.url;
       const year = details.year;
       const songId = songid;
       await addLikes(songId, name, image, year, auth.currentUser.uid);
@@ -210,12 +205,11 @@ function Innersongs() {
                           />
                         </button>
                       ) : (
-                        <button onClick={handleLikes}>
                           <img
                             src="https://cdn-icons-png.flaticon.com/128/3641/3641323.png"
                             className="h-8 mr-2"
-                          />
-                        </button>
+                            onClick={handleLikes}
+                        />
                       )}
 
                       <button onClick={downloadAudio}>
@@ -253,23 +247,20 @@ function Innersongs() {
                 </div>
               </div>
               {midsection === "song" && (
-                <div className="">
-                  {recommendation
-                    .slice(0, recommendation.length)
-                    .map((song, index) => (
-                      <div
-                        className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                        key={song.id}
-                        onClick={() => play(song.name + " " + song.artist)}
-                      >
-                        <h1 className="text-2xl w-12">#{index + 1}</h1>
-                        <img src={song.image} className="h-12" />
-                        <h1 className="text-md flex-grow">{song.year}</h1>
-                        <h1 className="text-md flex-grow">{song.name}</h1>
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                          className="h-12"
-                        />
+                <div>
+                  {recommendation.map((song, index) => (
+                    <div
+                      className="bg-deep-grey flex items-center p-4 m-2 cursor-pointer"
+                      key={index}
+                      onClick={() => play(song.song)}
+                    >
+                      <h1 className="text-sm w-12">#{index + 1}</h1>
+                      <div className="flex flex-col flex-grow ml-4 gap-1">
+                            <h1 className="text-md font-bold">{song.song}</h1>
+                            <h1 className="text-xs font-semibold text-gray-400">{song.artist} <span className="font-normal">{song.movie && `~ ${song.movie}`}</span>
+                            </h1>
+                         
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -283,12 +274,10 @@ function Innersongs() {
                   <h1 className="text-3xl mb-4">
                     Year: {""} <span className="text-red">{details.year}</span>
                   </h1>
-                  <h1
-                    className="text-xl"
-                    dangerouslySetInnerHTML={{
-                      __html: lyrics ? lyrics : "Lyrics Not found",
-                    }}
-                  />
+                   <div className="text-xl whitespace-pre-line">
+                     {lyrics ? lyrics : "Lyrics Not found"}
+                    </div>
+                 
                 </div>
               )}
             </>
@@ -310,12 +299,11 @@ function Innersongs() {
                           />
                         </button>
                       ) : (
-                        <button onClick={handleLikes}>
                           <img
                             src="https://cdn-icons-png.flaticon.com/128/3641/3641323.png"
                             className="h-8 mr-2"
-                          />
-                        </button>
+                            onClick={handleLikes}
+                        />
                       )}
 
                       <button onClick={downloadAudio}>
@@ -354,18 +342,19 @@ function Innersongs() {
               </div>
               {midsection === "song" && (
                 <div className="mb-36">
-                  {recommendation
-                    .slice(0, recommendation.length)
-                    .map((song, index) => (
-                      <div
-                        className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                        key={song.id}
-                        onClick={() => play(song.name + " " + song.artist)}
-                      >
-                        <h1 className="text-sm w-12">#{index + 1}</h1>
-                        <img src={song.image} className="h-12" />
-                        <h1 className="text-sm flex-grow">{song.year}</h1>
-                        <h1 className="text-sm flex-grow">{song.name}</h1>
+                  {recommendation.map((song, index) => (
+                        <div className="bg-deep-grey flex items-center p-4 m-2 cursor-pointer" key={index} onClick={() => play(song.song)}>
+                         <h1 className="text-sm w-12">#{index + 1}</h1>
+                         <div className="flex flex-col flex-grow ml-4 gap-1">
+                           <h1 className="text-md font-bold">{song.song}</h1>
+                             <h1 className="text-xs font-semibold text-gray-400">{song.artist}<span className="font-normal">{song.movie && `~ ${song.movie}`}</span>
+                           
+                            
+                            
+                            </h1>
+                        
+                            </div>
+                           
                       </div>
                     ))}
                 </div>
@@ -379,12 +368,9 @@ function Innersongs() {
                   <h1 className="text-xl mb-4">
                     Year: {""} <span className="text-red">{details.year}</span>
                   </h1>
-                  <h1
-                    className="text-md flex-wrap"
-                    dangerouslySetInnerHTML={{
-                      __html: lyrics ? lyrics : "Lyrics Not found",
-                    }}
-                  />
+                  <div className="text-md whitespace-pre-line">
+                    {lyrics ? lyrics : "Lyrics Not found"}
+                  </div>
                 </div>
               )}
             </>
