@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import useMediaQuery from './useMedia';
 import { auth, googleProvider, appleProvider } from './Firebase/firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithRedirect, updateProfile } from 'firebase/auth';
-import { Context } from './main';
+import { Context } from './context.js'; 
 import { set } from 'react-hook-form';
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -91,7 +91,7 @@ function Signup() {
                             <div className='flex justify-between w-96'>
                                
                                 {dloading ? (
-                                <button className="border-2 border-black p-2 m-4 bg-red w-24">Sign Up</button>
+                                <button className="border border-melody-pink-600 p-2 m-4 bg-melody-pink-600 w-24 rounded-md text-white shadow-md shadow-melody-pink-600/30 hover:bg-melody-pink-500 transition-colors">Sign Up</button>
                                 ):(
                                     <button className="border-2 border-black p-2 m-4 bg-red w-24">
                                     <img

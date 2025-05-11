@@ -1,12 +1,12 @@
 import React, { useContext, useEffect } from "react";
 import Sidebar from "./navbar/sidebar";
-import { Context } from "./main";
+import { Context } from "./context.js"; // Import Context from separate file
 import { useNavigate, useLocation } from 'react-router-dom';
-import Landing from "./landing"
+import Landing from "./landing";
 import "./App.css";
 
-function App() {
-  const { setSelected } = useContext(Context);
+function App() { // Remove all props
+  const { selected, setSelected } = useContext(Context); // Get both selected and setSelected from Context
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -25,8 +25,6 @@ function App() {
     setSelected(location.pathname);
     localStorage.setItem("selected", location.pathname);
   }, [location.pathname, setSelected]);
-
-
 
   return (
     <>

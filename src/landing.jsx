@@ -7,8 +7,6 @@ import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
 import ArtistPage from "./Playlist/artistpage";
 import Inneralbum from "./Albumsongs/inneralbum";
-import { useContext } from "react";
-import { Context } from "./main";
 import Innerartist from "./Playlist/innerartist";
 import Innersongs from "./AudioPlayer/innersongs";
 import Moodanalyse from "./moodanalyse";
@@ -19,14 +17,17 @@ import Login from "./login";
 import Signup from "./signup";
 import Likes from "./Library/likes";
 import Recents from "./Library/recents";
-function Landing() {
-  const {selected,setSelected}=useContext(Context)
+import { useContext } from "react"; // Import useContext
+import { Context } from "./context.js"; // Update Context import
+
+function Landing() { // Remove props
+  const { selected, setSelected } = useContext(Context); // Get selected and setSelected from Context
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
   const localUser = JSON.parse(localStorage.getItem("Users"))
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <Navbar selected={selected} setSelected={setSelected} />
+      <Navbar />
    
         <Routes>
           <Route path="/" element={<Home/>}></Route>

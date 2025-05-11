@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js"; // Update Context import
 
 import useMediaQuery from "../useMedia";
 import Result from "../Search/result";

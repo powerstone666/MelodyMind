@@ -3,7 +3,7 @@ import useMediaQuery from './useMedia';
 import {useState} from 'react';
 import {auth,googleProvider,appleProvider} from './Firebase/firebaseConfig';
 import { createUserWithEmailAndPassword,signOut,signInWithRedirect,OAuthProvider,signInWithEmailAndPassword,signInWithPopup } from 'firebase/auth';
-import { Context } from './main';
+import { Context } from './context.js'; 
 import { set } from 'react-hook-form';
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

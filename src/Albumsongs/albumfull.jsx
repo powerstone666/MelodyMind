@@ -2,7 +2,7 @@ import useMediaQuery from "../useMedia";
 import album from "../assets/albumfull.svg";
 import { useEffect, useState } from "react";
 import { useContext } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js";
 import he from "he";
 import { Link } from "react-router-dom";
 import {
@@ -23,13 +23,11 @@ function AlbumFull({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await albumsongs();
-
-        setMusicInfo(
+        const res = await albumsongs();        setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
-            image: song.image[1],
+            image: song.image[2] ? song.image[2] : song.image[1],
             artist: song.artists.primary[0].name,
             year: song.year,
           }))
@@ -54,14 +52,7 @@ function AlbumFull({ names }) {
     <>
       {!loading ? (
         <>
-          {isAboveMedium ? (
-            <div
-              className="h-screen w-5/6 m-12  mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-              style={{
-                overflowY: "scroll",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
+          {isAboveMedium ? (            <div              className="h-screen w-5/6 m-12  mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y no-scrollbar"
             >
               <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
                 <img src={album} />
@@ -111,16 +102,9 @@ function AlbumFull({ names }) {
               </div>
               <div className="h-2/6 mb-24"></div>
             </div>
-          ) : (
-            <div
-              className="h-screen w-full   mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-              style={{
-                overflowY: "scroll",
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
+          ) : (            <div              className="h-screen w-full mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey overflow-y no-scrollbar"
             >
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
+              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey">
                 <img src={album} />
                 <h1 className="font-bold text-3xl p-5">
                   Trending Songs <span className="text-red">Mix</span>

@@ -1,7 +1,7 @@
 import { fetchHistory, deleteRecents } from "../Firebase/database";
 import useMediaQuery from "../useMedia";
 import { useEffect, useState, useContext } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js";
 
 function Recents() {
   const [likes, setLikes] = useState([]);
@@ -65,8 +65,7 @@ function Recents() {
           {localUser ? (
             <>
               {isAboveMedium ? (
-                <div
-                  className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
+                <div                  className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
                   style={{
                     overflowY: "scroll",
                     scrollbarWidth: "none",
@@ -104,14 +103,7 @@ function Recents() {
 
                   <div className="h-2/6 mb-24"></div>
                 </div>
-              ) : (
-                <div
-                  className="h-screen w-full mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y"
-                  style={{
-                    overflowY: "scroll",
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
+              ) : (                <div                  className="h-screen w-full mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y no-scrollbar"
                 >
                   <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
                     <img src="https://cdn-icons-png.flaticon.com/512/7462/7462205.png" />

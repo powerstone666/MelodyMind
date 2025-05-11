@@ -1,9 +1,11 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js"; // Updated import
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-import  {addRecents} from '../Firebase/database';
-function Trendingmobile({ names }) {
+import { addRecents } from '../Firebase/database';
+import { Card, AlbumArt, CardInfo } from '../components/UI';
+
+function Trendingmobile({ names }) { // MobileDiscovery component
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,12 +15,11 @@ function Trendingmobile({ names }) {
     const fetchData = async () => {
       try {
         const res = await MelodyMusicsongs(names);
-        if (res) {
-          setMusicInfo(
+        if (res) {          setMusicInfo(
             res.map((song) => ({
               id: song.id,
               name: he.decode(song.name),
-              image: song.image[1].url, // Assuming `song.image` is an object with a `url` property
+              image: song.image[2] ? song.image[2].url : song.image[1].url, // Now using image[2] with fallback to image[1]
             }))
           );
         }
@@ -43,36 +44,25 @@ function Trendingmobile({ names }) {
       } catch (error) {
         console.log(error);
       }
-    }
-  };
-
-  return (
-    <div className="flex p-2 gap-4 overflow-x-scroll space-x-2 overflow-y-hidden">
-      {!loading ? (
-        <>
+    }  };
+    return (
+    <>
+      {!loading ? (        <div className="flex overflow-x-auto overflow-y-hidden space-x-4 p-2 pb-4 no-scrollbar snap-x snap-mandatory w-full">
           {musicInfo.map((song) => (
             <div
-              className="flex flex-col items-center pb-4"
               key={song.id}
-              onClick={() => play(song.id, song.name, song.image)}
+              onClick={() => play(song.id, song.name, song.image)}              className="bg-melody-purple-800 rounded-lg overflow-hidden min-w-[130px] max-w-[130px] md:min-w-[160px] md:max-w-[160px] lg:min-w-[180px] lg:max-w-[180px] xl:min-w-[190px] xl:max-w-[190px]
+              transition-all duration-300 hover:scale-102 cursor-pointer snap-start
+              border border-melody-purple-700 hover:border-melody-pink-600/50"
             >
-              <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
-                <img
-                  src={song.image}
-                  alt={song.name}
-                  className="h-24 w-24 object-cover mb-2 rounded-md"
-                />
-                <p className="text-center font-bold text-white text-sm truncate">
-                  {song.name}
-                </p>
-              </div>
+              <AlbumArt src={song.image} alt={song.name} />
+              <CardInfo title={song.name} />
             </div>
           ))}
-        </>
+        </div>
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
-      )}
-    </div>
+        <span className="text-red text-3xl font-bold">Loading.....</span>      )}
+    </>
   );
 }
 

@@ -1,22 +1,23 @@
 import axios from "axios";
-import viewall from "../assets/viewall.svg";
-import viewclose from "../assets/viewclose.svg";
-import React, { useContext } from "react";
-import { useState, useEffect } from "react";
-import { Context } from "../main";
+import React, { useContext, useState, useEffect } from "react";
+import { Context } from "../context.js";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
+import { Card, CardInfo, AlbumArt, Loader, EmptyState, Button, Section } from '../components/UI';
+
 function Trending({ names }) {
   const { setSongid } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
   const isAboveMedium = useMediaQuery("(min-width:768px)");
   const [loading, setLoading] = useState(true);
+  
   // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
   };
+  
   const formatDuration = (durationInSeconds) => {
     const minutes = Math.floor(durationInSeconds / 60);
     const seconds = durationInSeconds % 60;
@@ -26,12 +27,11 @@ function Trending({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-       const res=await MelodyMusicsongs("topsongs");
-        setMusicInfo(
+        const res = await MelodyMusicsongs("topsongs");        setMusicInfo(
           res.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
-            image: song.image[1],
+            image: song.image[2] ? song.image[2] : song.image[1],
             duration: formatDuration(song.duration),
             album: he.decode(song.album.name),
             year: song.year,
@@ -40,6 +40,7 @@ function Trending({ names }) {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
@@ -48,79 +49,77 @@ function Trending({ names }) {
 
   const play = (id) => {
     setSongid(id);
-  };
-
-  return (
-    <>
-      {!loading ? (
-        <>
-          {isAboveMedium ? (
-            <div className=" h-full  flex flex-col ">
-              {musicInfo.slice(0, limit).map((song, index) => (
-                <div
-                  className="w-4/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                  {/* Fixed width for index */}
-                  <img src={song.image.url} className="h-12" />{" "}
-                  {/* Keep image size fixed */}
-                  <h1 className="text-md flex-grow">{song.year}</h1>{" "}
-                  {/* Allow year to take remaining space */}
-                  <h1 className="text-md flex-grow">{song.album}</h1>{" "}
-                  {/* Allow album to take remaining space */}
-                  <h1 className="text-md w-16">{song.duration}</h1>{" "}
-                  {/* Fixed width for duration */}
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                    className="h-12"
-                  />{" "}
-                  {/* Keep image size fixed */}
+  };  return (
+    <Section 
+      title="Top Tracks" 
+      onViewAll={musicInfo.length > 5 ? (limit === 5 ? expandResults : () => setLimit(5)) : null}
+    >
+      {loading ? (
+        <Loader />
+      ) : musicInfo.length === 0 ? (
+        <EmptyState 
+          message="No trending songs available" 
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          } 
+        />
+      ) : isAboveMedium ? (
+        <div className="w-full animate-fadeIn">
+          {/* Table header */}
+          <div className="w-full bg-deep-grey/50 flex items-center gap-4 p-3 mb-2 text-gray-400 text-sm font-medium rounded-lg">
+            <span className="text-center w-8">#</span>
+            <span className="w-10"></span> {/* Album art space */}
+            <span className="flex-grow">SONG</span>
+            <span className="flex-grow hidden md:block">ALBUM</span>
+            <span className="w-16 text-center hidden sm:block">TIME</span>
+            <span className="w-8"></span> {/* Play button space */}
+          </div>
+          
+          {/* Table rows */}
+          <div className="space-y-1">
+            {musicInfo.slice(0, limit).map((song, index) => (
+              <div
+                key={song.id}
+                onClick={() => play(song.id)}
+                className="w-full flex items-center gap-4 p-2 hover:bg-deep-grey transition-colors duration-300 rounded-lg cursor-pointer"
+              >
+                <span className="font-bold w-8 text-center text-sm">{index + 1}</span>
+                <img src={song.image.url} alt={song.name} className="h-10 w-10 rounded-md object-cover" />
+                <div className="flex-grow flex flex-col">
+                  <span className="text-sm font-medium truncate">{song.name}</span>
+                  <span className="text-xs text-gray-400 truncate sm:hidden">{song.album}</span>
                 </div>
-              ))}
-              <div className="flex  ml-8">
-                {musicInfo.length > 5 && limit === 5 ? (
-                  <button
-                    onClick={expandResults}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24"> View All</h1>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setLimit(5)}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24">View Less</h1>
-                  </button>
-                )}
+                <span className="text-sm flex-grow truncate hidden md:block">{song.album}</span>
+                <span className="text-sm w-16 text-center hidden sm:block">{song.duration}</span>
+                <button className="h-8 w-8 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-melody-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  </svg>
+                </button>
               </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 p-4">
-              {musicInfo.slice(0, musicInfo.length).map((song) => (
-                <div
-                  className="flex items-center"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <div className="h-24 border-1 bg-deep-grey w-24 text-white  border-0 rounded-md mt-2 flex">
-                    <img
-                      src={song.image.url}
-                      alt={song.title}
-                      className="h-24 w-24 object-cover border-0 rounded-md"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+            ))}
+          </div>
+        </div>      ) : (
+        <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar snap-x snap-mandatory">
+          {/* Mobile view - horizontal scroll */}
+          <div className="flex space-x-3 p-2 pb-4">
+            {musicInfo.map((song) => (
+              <div
+                key={song.id}
+                onClick={() => play(song.id)}                className="bg-melody-purple-800 rounded-lg overflow-hidden min-w-[130px] max-w-[130px] md:min-w-[160px] md:max-w-[160px] lg:min-w-[180px] lg:max-w-[180px] xl:min-w-[190px] xl:max-w-[190px]
+                transition-all duration-300 hover:scale-102 cursor-pointer 
+                border border-melody-purple-700 hover:border-melody-pink-600/50"
+              >
+                <AlbumArt src={song.image.url} alt={song.name} />
+                <CardInfo title={song.name} subtitle={song.album} />
+              </div>
+            ))}
+          </div>
+        </div>
       )}
-    </>
+    </Section>
   );
 }
 

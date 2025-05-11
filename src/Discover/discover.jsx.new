@@ -32,19 +32,19 @@ function Discover() {
         >
              <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
-              New Releases <span className="text-melody-pink-500 font-bold">Songs</span>
+              New Releases <span className="text-red font-bold">Songs</span>
             </h1>
             <Newrelease />
           </div>
           <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
-              Trending <span className="text-melody-pink-500 font-bold">Songs</span>
+              Trending <span className="text-red font-bold">Songs</span>
             </h1>
             <Trending />
           </div>
           <div className="mb-8">
             <h1 className="text-3xl p-4 m-5">
-              Weekly Top <span className="text-melody-pink-500 font-bold">Songs</span>
+              Weekly Top <span className="text-red font-bold">Songs</span>
             </h1>
             <Topsongs />
           </div>

@@ -1,0 +1,480 @@
+/* Custom Audio Player Styles */
+.custom-player .rhap_container {
+  background: linear-gradient(90deg, rgba(45,30,55,0.98) 0%, rgba(95,44,88,0.98) 100%) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 -8px 20px rgba(0, 0, 0, 0.4), 
+    inset 0 1px 2px rgba(255,255,255,0.1),
+    0 0 15px rgba(255, 0, 102, 0.15);
+  border-top: 2px solid rgba(255, 0, 102, 0.4);
+  padding: 14px 10px;
+  border-radius: 18px 18px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-player-mobile .rhap_container {
+  background: linear-gradient(90deg, rgba(45,30,55,0.98) 0%, rgba(95,44,88,0.98) 100%) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 -8px 20px rgba(0, 0, 0, 0.4), 
+    inset 0 1px 2px rgba(255,255,255,0.1);
+  border-top: 2px solid rgba(255, 0, 102, 0.4);
+  padding: 10px 10px 5px 10px;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add animated gradient overlay */
+.custom-player .rhap_container::before,
+.custom-player-mobile .rhap_container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(255, 0, 102, 0.1) 25%,
+    rgba(255, 0, 102, 0.2) 50%,
+    rgba(255, 0, 102, 0.1) 75%,
+    transparent);
+  animation: shimmer 8s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-30%); }
+  100% { transform: translateX(30%); }
+}
+
+.custom-player .rhap_progress-section {
+  margin-bottom: 8px;
+}
+
+.custom-player .rhap_time,
+.custom-player-mobile .rhap_time {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.custom-player .rhap_progress-bar,
+.custom-player-mobile .rhap_progress-bar {
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Add speckling effect to the progress background */
+.custom-player .rhap_progress-bar::before,
+.custom-player-mobile .rhap_progress-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.15) 1px,
+    transparent 1px
+  );
+  background-size: 4px 4px;
+  pointer-events: none;
+}
+
+.custom-player .rhap_progress-filled,
+.custom-player-mobile .rhap_progress-filled {
+  background: linear-gradient(90deg, #ff3366, #ff0099); /* More vibrant gradient */
+  box-shadow: 
+    0 0 10px rgba(255, 0, 102, 0.6),
+    0 0 4px rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  position: relative;
+}
+
+/* Add pulsing glow effect */
+@keyframes pulse-glow {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.custom-player .rhap_progress-filled::after,
+.custom-player-mobile .rhap_progress-filled::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: pulse-glow 2.5s infinite;
+  border-radius: 4px;
+}
+
+.custom-player .rhap_progress-indicator {
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  top: -5px;
+  background: #ffffff;
+  box-shadow: 
+    0 0 0 4px rgba(255, 0, 102, 0.2),
+    0 0 12px rgba(255, 0, 102, 0.7), 
+    0 0 5px rgba(255, 255, 255, 0.5),
+    inset 0 0 3px rgba(255, 0, 102, 0.3);
+  border-radius: 50%;
+  border: 2px solid #ff0066;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.custom-player .rhap_progress-indicator:hover {
+  transform: scale(1.3);
+  background: rgba(255, 255, 255, 0.95);
+  cursor: grab;
+}
+
+.custom-player .rhap_progress-indicator:active {
+  cursor: grabbing;
+  transform: scale(1.4);
+  background: #ff99cc;
+  border: 2px solid #ffffff;
+}
+
+/* Add a bright-spot reflection */
+.custom-player .rhap_progress-indicator::after {
+  content: "";
+  position: absolute;
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+  background: #ffffff;
+  top: 15%;
+  left: 15%;
+  opacity: 0.8;
+}
+
+.custom-player .rhap_button-clear,
+.custom-player-mobile .rhap_button-clear {
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 0.25s ease;
+  opacity: 0.9;
+  position: relative;
+}
+
+.custom-player .rhap_button-clear:hover,
+.custom-player-mobile .rhap_button-clear:hover {
+  color: #ffffff;
+  transform: scale(1.15);
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(255, 0, 102, 0.7);
+}
+
+/* Add subtle glow effect for buttons */
+.custom-player .rhap_button-clear::after,
+.custom-player-mobile .rhap_button-clear::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,0,102,0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s ease;
+  z-index: -1;
+  opacity: 0;
+}
+
+.custom-player .rhap_button-clear:hover::after,
+.custom-player-mobile .rhap_button-clear:hover::after {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 0.5;
+}
+
+.custom-player .rhap_volume-indicator,
+.custom-player-mobile .rhap_volume-indicator {
+  background: linear-gradient(90deg, #ff3366, #ff66cc);
+  box-shadow: 
+    0 0 10px rgba(255, 0, 102, 0.6),
+    0 0 5px rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.custom-player .rhap_volume-bar,
+.custom-player-mobile .rhap_volume-bar {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.4);
+  height: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Add subtle pattern to volume bar */
+.custom-player .rhap_volume-bar::before,
+.custom-player-mobile .rhap_volume-bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    transparent 75%
+  );
+  background-size: 5px 5px;
+  pointer-events: none;
+}
+
+.custom-player .rhap_main-controls-button,
+.custom-player-mobile .rhap_main-controls-button {
+  margin: 0 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.custom-player .rhap_main-controls-button:hover,
+.custom-player-mobile .rhap_main-controls-button:hover {
+  transform: scale(1.18);
+  color: #ffffff;
+}
+
+.custom-player .rhap_main-controls-button:active,
+.custom-player-mobile .rhap_main-controls-button:active {
+  transform: scale(0.95);
+}
+
+.custom-player .rhap_play-pause-button,
+.custom-player-mobile .rhap_play-pause-button {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff3366, #ff0099);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 15px rgba(255, 0, 102, 0.4),
+    0 5px 10px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add a ripple effect on hover */
+.custom-player .rhap_play-pause-button::before,
+.custom-player-mobile .rhap_play-pause-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, 
+                             rgba(255,255,255,0.2) 0%, 
+                             transparent 70%);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.4s ease-out;
+}
+
+.custom-player .rhap_play-pause-button:hover::before,
+.custom-player-mobile .rhap_play-pause-button:hover::before {
+  opacity: 1;
+  transform: scale(2);
+}
+
+.custom-player .rhap_play-pause-button:hover,
+.custom-player-mobile .rhap_play-pause-button:hover {
+  background: linear-gradient(135deg, #ff0066, #ff33cc);
+  box-shadow: 
+    0 0 20px rgba(255, 0, 102, 0.7),
+    0 5px 15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.custom-player .rhap_additional-controls,
+.custom-player .rhap_volume-controls {
+  flex: none;
+}
+
+/* Enhance loop & repeat buttons */
+.custom-player .rhap_additional-controls button,
+.custom-player-mobile .rhap_additional-controls button {
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.custom-player .rhap_additional-controls button:hover,
+.custom-player-mobile .rhap_additional-controls button:hover {
+  color: #ffffff;
+  transform: scale(1.15);
+}
+
+/* Style for active state of loop button */
+.custom-player .rhap_additional-controls button[aria-label="Repeat"],
+.custom-player-mobile .rhap_additional-controls button[aria-label="Repeat"] {
+  color: rgba(255,255,255,0.75);
+}
+
+.custom-player .rhap_additional-controls button[aria-label="Repeat"][aria-checked="true"],
+.custom-player-mobile .rhap_additional-controls button[aria-label="Repeat"][aria-checked="true"] {
+  color: #ff3366;
+  text-shadow: 0 0 8px rgba(255, 0, 102, 0.6);
+}
+
+.custom-player-mobile .rhap_container {
+  background: linear-gradient(90deg, rgba(45,30,55,0.98) 0%, rgba(95,44,88,0.98) 100%) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: 
+    0 -8px 20px rgba(0, 0, 0, 0.4), 
+    inset 0 1px 2px rgba(255,255,255,0.1);
+  border-top: 2px solid rgba(255, 0, 102, 0.4);
+  padding: 10px 10px 5px 10px;
+  border-radius: 16px 16px 0 0;
+}
+
+.custom-player-mobile .rhap_progress-section {
+  margin: 0 0 8px 0;
+}
+
+.custom-player-mobile .rhap_progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.custom-player-mobile .rhap_progress-indicator {
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 0, 102, 0.6);
+  border-radius: 50%;
+  border: 1px solid #ff0066;
+  top: -3.5px;
+}
+
+.custom-player-mobile .rhap_progress-filled {
+  background-color: #ff0000;
+}
+
+.custom-player-mobile .rhap_controls-section {
+  justify-content: space-between;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.custom-player-mobile .rhap_main-controls-button {
+  margin: 0 5px;
+}
+
+.custom-player-mobile .rhap_main-controls {
+  flex-grow: 0;
+  margin: 0 auto;
+}
+
+.custom-player-mobile .rhap_play-pause-button {
+  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #ff3366, #ff0099);
+  box-shadow: 0 0 10px rgba(255, 0, 102, 0.4);
+}
+
+.custom-player-mobile .rhap_skip-button {
+  color: rgba(255,255,255,0.9);
+  margin: 0 4px;
+}
+
+.custom-player-mobile .rhap_forward-button,
+.custom-player-mobile .rhap_rewind-button {
+  font-size: 20px;
+  color: rgba(255,255,255,0.8);
+}
+
+.custom-player-mobile .rhap_time {
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  margin: 0 2px;
+}
+
+.custom-player-mobile .rhap_volume-controls {
+  display: none;
+}
+
+/* Make repeat & shuffle buttons visible on mobile */
+.custom-player-mobile .rhap_additional-controls {
+  display: flex;
+  justify-content: flex-start;
+  margin-right: 8px;
+}
+
+.custom-player-mobile .rhap_additional-controls button {
+  color: rgba(255,255,255,0.7);
+  margin: 0 3px;
+}
+
+/* Animation for the player */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Wave animation for currently playing track */
+.wave-bars {
+  display: flex;
+  align-items: flex-end;
+  height: 16px;
+  gap: 2px;
+}
+
+.wave-bars span {
+  display: block;
+  width: 2px;
+  background: white;
+  border-radius: 2px;
+  animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0% {
+    height: 5px;
+  }
+  50% {
+    height: 12px;
+  }
+  100% {
+    height: 5px;
+  }
+}

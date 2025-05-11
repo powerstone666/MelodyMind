@@ -3,7 +3,7 @@ import viewall from "../assets/viewall.svg";
 import viewclose from "../assets/viewclose.svg";
 import React, { useContext } from "react";
 import { useState, useEffect } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js"; // Updated import
 import useMediaQuery from "../useMedia";
 import { artist } from "../saavnapi";
 import Home from "../Home/home";
@@ -22,13 +22,11 @@ function ArtistPage({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res=await artist();
-
-        setMusicInfo(
+        const res=await artist();        setMusicInfo(
           res.data.data.results.map((song) => ({
             id: song.id,
             name: song.name,
-            image: song.image[1],
+            image: song.image[2] ? song.image[2] : song.image[1],
           }))
         );
         setLoading(false);
@@ -50,10 +48,9 @@ function ArtistPage({ names }) {
 
   return (
     <>
-    {isAboveMedium ?(
-    <div
-    className="overflow-y-auto h-screen w-screen mb-12"
-    style={{ overflowX: "scroll", minWidth: "100%" }}
+    {isAboveMedium ?(    <div
+    className="overflow-y-auto h-screen w-screen mb-12 no-scrollbar"
+    style={{ minWidth: "100%" }}
   >
     <div className="flex p-4 flex-3 gap-5 mb-12 cursor-pointer " >
       {!loading ? (

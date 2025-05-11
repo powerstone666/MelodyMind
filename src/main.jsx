@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
-import { createContext } from "react";
+import { Context } from "./context.js"; // Import Context from separate file
 import { BrowserRouter } from "react-router-dom";
-
-export const Context = createContext();
 
 const Appwrapper = () => {
   const[selected, setSelected] = useState(localStorage.getItem("selected")||"home");
@@ -24,32 +22,7 @@ const Appwrapper = () => {
     <Context.Provider value={{ songid, setSongid, search, setSearch,languages,setLanguage,innerAlbum,setInneralbum,selected,setSelected,Viewall,setViewall,page,setPage,singer,setSinger,lyrics,setLyrics,spotify,setSpotify
       ,spotifyArtist,setSpotifyArtist,Users,setUsers
     }}>
-      <App
-      selected={selected}
-      setSelected={setSelected}
-        songid={songid}
-        setSongid={setSongid}
-        search={search}
-        setSearch={setSearch}
-        singer={singer}
-        setSinger={setSinger}
-        languages={languages}
-        setLanguage={setLanguage}
-        innerAlbum={innerAlbum}
-        setInneralbum={setInneralbum}
-        Viewall={Viewall}
-        setViewall={setViewall}
-        page={page}
-        setPage={setPage}
-        lyrics={lyrics}
-        setLyrics={setLyrics}
-        spotify={spotify}
-        setSpotify={setSpotify}
-        spotifyArtist={spotifyArtist}
-        setSpotifyArtist={setSpotifyArtist}
-        Users={Users}
-        setUsers={setUsers}
-      />
+      <App />
     </Context.Provider>
   );
 };

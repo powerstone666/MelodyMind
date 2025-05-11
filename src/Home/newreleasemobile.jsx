@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-
 import { addRecents } from "../Firebase/database";
-function Newreleasemobile({ names }) {
+import { Card, CardInfo, AlbumArt, Loader, EmptyState } from '../components/UI';
+
+function Newreleasemobile({ names }) { // MobileNewReleases component
   const { setSongid, Viewall, page } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,18 +14,18 @@ function Newreleasemobile({ names }) {
     const fetchData = async () => {
       try {
         const res = await MelodyMusicsongs(names);
-        if (res) {
-          setMusicInfo(
+        if (res) {          setMusicInfo(
             res.map((song) => ({
               id: song.id,
               name: he.decode(song.name),
-              image: song.image[1],
+              image: song.image[2] ? song.image[2] : song.image[1],
             }))
           );
         }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
@@ -47,30 +48,33 @@ function Newreleasemobile({ names }) {
   };
 
   return (
-    <div className="flex overflow-x-scroll overflow-y-hidden space-x-2 p-2">
-      {!loading ? (
-        musicInfo.map((song) => (
-          <div
-            className="flex flex-col items-center pb-6"
-            key={song.id}
-            onClick={() => play(song.id, song.name, song.image.url)}
-          >
-            <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white mr-2 border-0 rounded-md mt-2">
-              <img
-                src={song.image.url}
-                alt={song.title}
-                className="h-24 w-24 mb-2 object-cover border-0 rounded-md"
-              />
-              <p className="text-center font-bold text-white text-sm truncate">
-                {song.name}
-              </p>
+    <>
+      {loading ? (
+        <Loader />
+      ) : musicInfo.length === 0 ? (
+        <EmptyState 
+          message="No new releases available" 
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+            </svg>
+          } 
+        />
+      ) : (        <div className="flex overflow-x-auto overflow-y-hidden space-x-4 p-2 pb-4 no-scrollbar snap-x snap-mandatory w-full">
+          {musicInfo.map((song) => (
+            <div
+              key={song.id}
+              onClick={() => play(song.id, song.name, song.image.url)}              className="bg-melody-purple-800 rounded-lg overflow-hidden min-w-[130px] max-w-[130px] md:min-w-[160px] md:max-w-[160px] lg:min-w-[180px] lg:max-w-[180px] xl:min-w-[190px] xl:max-w-[190px]
+              transition-all duration-300 hover:scale-102 cursor-pointer snap-start
+              border border-melody-purple-700 hover:border-melody-pink-600/50"
+            >
+              <AlbumArt src={song.image.url} alt={song.name} />
+              <CardInfo title={song.name} />
             </div>
-          </div>
-        ))
-      ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+          ))}
+        </div>
       )}
-    </div>
+    </>
   );
 }
 

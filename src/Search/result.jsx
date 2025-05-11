@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { addRecents } from "../Firebase/database";
 import { useState, useEffect } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js"; // Updated import
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs, Searchsongs, Searchsongs2 } from "../saavnapi";
 import he from "he";
@@ -23,33 +23,29 @@ function Result({ names }) {
     const fetchData = async () => {
       try {
         const res = await Searchsongs(names);
-        const res2 = await Searchsongs2(names);
-        setMusicInfo(
+        const res2 = await Searchsongs2(names);        setMusicInfo(
           res2.results.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
-            image: song.image[1].url,
+            image: song.image[2] ? song.image[2].url : song.image[1].url,
           }))
-        );
-        setAlbuminfo(
+        );        setAlbuminfo(
           res.albums.results.map((song) => ({
             id: song.id,
             name: he.decode(song.title),
-            image: song.image[1].url,
+            image: song.image[2] ? song.image[2].url : song.image[1].url,
           }))
-        );
-        setArtistinfo(
+        );        setArtistinfo(
           res.artists.results.map((song) => ({
             id: song.id,
             name: he.decode(song.title),
-            image: song.image[1].url,
+            image: song.image[2] ? song.image[2].url : song.image[1].url,
           }))
-        );
-        setTopquery(
+        );        setTopquery(
           res.topQuery.results.map((song) => ({
             id: song.id,
             name: he.decode(song.title),
-            image: song.image[1].url,
+            image: song.image[2] ? song.image[2].url : song.image[1].url,
             type: song.type,
           }))
         );
@@ -213,11 +209,10 @@ function Result({ names }) {
               </div>
             </>
           ) : (
-            <>
-              <h1 className="text-2xl p-2 m-2">
+            <>              <h1 className="text-2xl p-2 m-2">
                 Top <span className="text-red font-bold">Songs</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
                 {musicInfo.slice(0, 40).map((song) => (
                   <div
                     className="flex flex-col items-center pb-4"
@@ -236,12 +231,10 @@ function Result({ names }) {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              <h1 className="text-2xl p-2 mt-5">
+              </div>              <h1 className="text-2xl p-2 mt-5">
                 Top <span className="text-red font-bold">Albums</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
                 {albuminfo.slice(0, 10).map((album) => (
                   <Link to="/innerAlbum">
                     <div
@@ -262,12 +255,10 @@ function Result({ names }) {
                     </div>
                   </Link>
                 ))}
-              </div>
-
-              <h1 className="text-2xl p-2 mt-5">
+              </div>              <h1 className="text-2xl p-2 mt-5">
                 Top <span className="text-red font-bold">Artists</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
                 {artistinfo.slice(0, 10).map((artist) => (
                   <Link to="/innerartist">
                     <div
@@ -288,12 +279,10 @@ function Result({ names }) {
                     </div>
                   </Link>
                 ))}
-              </div>
-
-              <h1 className="text-2xl p-2 mt-5">
+              </div>              <h1 className="text-2xl p-2 mt-5">
                 Top <span className="text-red font-bold">Query</span>
               </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
+              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
                 {topquery.slice(0, 10).map((query) => (
                   <div
                     className="flex flex-col items-center pb-4"

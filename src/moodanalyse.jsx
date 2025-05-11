@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useContext } from 'react';
-import { Context } from './main';
+import { Context } from './context.js'; // Updated import
 import useMediaQuery from './useMedia';
 import * as faceapi from 'face-api.js';
 import { songBymood } from './saavnapi';
@@ -90,12 +90,11 @@ function Moodanalyse() {
     if (dominantExpression) {
       const fetchSong = async () => {
         try {
-          const res = await songBymood(dominantExpression);
-          setMusicInfo(
+          const res = await songBymood(dominantExpression);          setMusicInfo(
             res.data.data.results.map((song) => ({
               id: song.id,
               name: he.decode(song.name),
-              image: song.image[1],
+              image: song.image[2] ? song.image[2] : song.image[1],
               artist: song.artists.primary[0].name,
               year: song.year,
             }))
@@ -117,7 +116,7 @@ function Moodanalyse() {
   return (
     <div>
       {isAboveMedium ? (
-        <div className="h-screen flex flex-col items-center overflow-y-scroll overflow-x-hidden">
+        <div className="h-screen flex flex-col items-center overflow-y-scroll overflow-x-hidden no-scrollbar">
           <div>
             <h1 className='text-2xl text-red mt-8'>Let Your Mood Sing For You</h1>
           </div>
@@ -151,7 +150,7 @@ function Moodanalyse() {
             </div>
         </div>
       ) : (
-       <div className='h-screen flex-col flex-wrap items-center overflow-y-scroll justify-center'>
+       <div className='h-screen flex-col flex-wrap items-center overflow-y-scroll no-scrollbar justify-center'>
             <h1 className='text-red ml-12 text-xl'>Let Your Mood Sing For You</h1>
             <div style={{ position: 'relative', width: '300px', height: '300px' }}>
   <h1 className='text-blue mt-4 ml-28'>Face Detection</h1>

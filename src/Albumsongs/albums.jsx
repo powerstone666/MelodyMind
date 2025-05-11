@@ -1,12 +1,10 @@
-import axios from "axios";
-import viewall from "../assets/viewall.svg";
-import viewclose from "../assets/viewclose.svg";
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js";
 import useMediaQuery from "../useMedia";
 import { albumsongs } from "../saavnapi";
 import { Link } from "react-router-dom";
 import he from "he";
+import { Card, CardInfo, AlbumArt, Loader, EmptyState, Button, Section } from '../components/UI';
 
 function Albums() {
   const { setSongid, setInneralbum, setSelected, page, Viewall } = useContext(
@@ -14,7 +12,7 @@ function Albums() {
   );
   const [limit, setLimit] = useState(5);
   const [musicInfo, setMusicInfo] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const isAboveMedium = useMediaQuery("(min-width:1025px)");
 
   // Function to handle expanding to show more results
@@ -25,7 +23,6 @@ function Albums() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
         const res = await albumsongs();
         setMusicInfo(
           res.data.data.results.map((song) => ({
@@ -38,6 +35,7 @@ function Albums() {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
@@ -47,77 +45,42 @@ function Albums() {
   const play = async (id) => {
     localStorage.setItem("innerAlbum", id);
     setInneralbum(id);
-
     localStorage.setItem("selected", "/albums");
     setSelected("/albums");
   };
-
   return (
-    <>
-      {!loading ? (
-        isAboveMedium ? (
-          <div className="flex p-4 flex-3 gap-5 mb-8 cursor-pointer">
-            <div className="flex flex-wrap">
-              {musicInfo.slice(0, limit).map((song) => (
-            <Link to="/innerAlbum">  <div
-                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <img
-                    src={song.image}
-                    alt={song.name}
-                    className="h-48 w-56 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white">
-                    {song.name}
-                  </h1>
-                </div>
-                </Link>
-              ))}
-              {musicInfo.length > 5 && limit === 5 ? (
-                <button onClick={expandResults}>
-                  <img src={viewall} alt="View All" />
-                  <h1 className="font-bold"> View All</h1>
-                </button>
-              ) : (
-                <button onClick={() => setLimit(5)}>
-                  <img src={viewclose} alt="Close" />
-                  <h1 className="font-bold">Close</h1>
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="flex p-4  overflow-x-scroll overflow-y-hidden">
-            {musicInfo
-              .slice(0,musicInfo.length)
-              .map((song) => (
-                <Link to="/innerAlbum">
-                <div
-                  className="flex flex-col items-center pb-4"
-                  key={song.id}
-                  onClick={() => play(song.id)}
-                >
-                  <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white mr-8 border-0 rounded-md mt-2">
-                    <img
-                      src={song.image}
-                      alt={song.name}
-                      className="h-24 w-24 mb-2 object-cover border-0 rounded-md"
-                    />
-                    <p className="text-center font-bold text-white text-sm truncate">
-                      {song.name}
-                    </p>
-                  </div>
-                </div>
-                </Link>
-              ))}
-          </div>
-        )
+    <Section 
+      title="Top Albums" 
+      onViewAll={musicInfo.length > 5 ? (limit === 5 ? expandResults : () => setLimit(5)) : null}
+    >
+      {loading ? (
+        <Loader />
+      ) : musicInfo.length === 0 ? (
+        <EmptyState 
+          message="No albums available" 
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          } 
+        />
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        // Unified view for both mobile and desktop
+        <>
+          {musicInfo.slice(0, limit === 5 && !isAboveMedium ? musicInfo.length : limit).map((song) => (
+            <Link key={song.id} to="/innerAlbum" className="block">
+              <Card onClick={() => play(song.id)}>
+                <AlbumArt src={song.image} alt={song.name} />
+                <CardInfo 
+                  title={song.name} 
+                  subtitle={song.artist} 
+                />
+              </Card>
+            </Link>
+          ))}
+        </>
       )}
-    </>
+    </Section>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js"; // Updated import
 import useMediaQuery from "../useMedia";
 import { searchResult, newsearch, searchSuggestion } from "../saavnapi";
 import { ToastContainer, toast, Bounce } from "react-toastify";
@@ -145,7 +145,7 @@ function Innersongs() {
       setSongid(res)
   };
 
-  const style = `text-white bg-red border-0 rounded-xl`;
+  const style = `text-white bg-melody-pink-600 border-0 rounded-xl shadow-inner shadow-melody-pink-500/30`;
   const handleLikes = async () => {
     try {
       setLiked(true);
@@ -173,7 +173,7 @@ function Innersongs() {
   return (
     <>
       {loading ? (
-        <div className="flex flex-col items-center h-screen overflow-y-scroll mb-24">
+        <div className="flex flex-col items-center h-screen overflow-y-scroll no-scrollbar mb-24">
           <ToastContainer
             position="top-center"
             autoClose={5000}
@@ -189,7 +189,7 @@ function Innersongs() {
           />
           {isAboveMedium ? (
             <>
-              <div className="border-1 bg-deep-grey h-1/2 mb-6 p-4 ">
+              <div className="border-1 bg-melody-purple-800 border border-melody-purple-700 rounded-lg h-1/2 mb-6 p-4 ">
                 <img src={image} alt="song" className="h-full" />
               </div>
               <div className="flex gap-4 items-center justify-center mb-6">
@@ -228,7 +228,7 @@ function Innersongs() {
                   )}
                 </div>
               </div>
-              <div className="h-14 bg-deep-grey flex justify-center w-96 border-0 rounded-xl items-center mb-8">
+              <div className="h-14 bg-melody-purple-800 flex justify-center w-96 border border-melody-purple-700 rounded-xl items-center mb-8">
                 <div
                   className={`${
                     midsection === "song" ? style : ""
@@ -250,7 +250,7 @@ function Innersongs() {
                 <div>
                   {recommendation.map((song, index) => (
                     <div
-                      className="bg-deep-grey flex items-center p-4 m-2 cursor-pointer"
+                      className="bg-melody-purple-800 flex items-center p-4 m-2 cursor-pointer rounded-lg border border-melody-purple-700 hover:border-melody-pink-600/50 hover:shadow-melody-pink-600/30 hover:shadow-md transition-all duration-300"
                       key={index}
                       onClick={() => play(song.song)}
                     >
@@ -274,7 +274,7 @@ function Innersongs() {
                   <h1 className="text-3xl mb-4">
                     Year: {""} <span className="text-red">{details.year}</span>
                   </h1>
-                   <div className="text-xl whitespace-pre-line">
+                   <div className="text-xl whitespace-pre-line no-scrollbar">
                      {lyrics ? lyrics : "Lyrics Not found"}
                     </div>
                  
@@ -283,7 +283,7 @@ function Innersongs() {
             </>
           ) : (
             <>
-              <div className="border-1 bg-deep-grey h-2/6 mb-6 p-4 flex-col">
+              <div className="border-1 bg-melody-purple-800 border border-melody-purple-700 rounded-lg h-2/6 mb-6 p-4 flex-col">
                 <img src={image} alt="song" className="h-full" />
               </div>
               <div className="flex gap-4 items-center justify-center mb-6">
@@ -322,7 +322,7 @@ function Innersongs() {
                   )}
                 </div>
               </div>
-              <div className="h-14 bg-deep-grey flex justify-center w-56 border-0 rounded-xl items-center mb-8">
+              <div className="h-14 bg-melody-purple-800 flex justify-center w-56 border border-melody-purple-700 rounded-xl items-center mb-8">
                 <div
                   className={`${
                     midsection === "song" ? style : ""
@@ -343,7 +343,7 @@ function Innersongs() {
               {midsection === "song" && (
                 <div className="mb-36">
                   {recommendation.map((song, index) => (
-                        <div className="bg-deep-grey flex items-center p-4 m-2 cursor-pointer" key={index} onClick={() => play(song.song)}>
+                        <div className="bg-melody-purple-800 flex items-center p-4 m-2 cursor-pointer rounded-lg border border-melody-purple-700 hover:border-melody-pink-600/50 hover:shadow-melody-pink-600/30 hover:shadow-md transition-all duration-300" key={index} onClick={() => play(song.song)}>
                          <h1 className="text-sm w-12">#{index + 1}</h1>
                          <div className="flex flex-col flex-grow ml-4 gap-1">
                            <h1 className="text-md font-bold">{song.song}</h1>
@@ -368,7 +368,7 @@ function Innersongs() {
                   <h1 className="text-xl mb-4">
                     Year: {""} <span className="text-red">{details.year}</span>
                   </h1>
-                  <div className="text-md whitespace-pre-line">
+                  <div              className="text-md whitespace-pre-line no-scrollbar">
                     {lyrics ? lyrics : "Lyrics Not found"}
                   </div>
                 </div>

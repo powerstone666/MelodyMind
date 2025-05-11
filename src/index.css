@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import custom UI utilities */
+@import './components/ui-utils.css';
+@import './AudioPlayer/custom-audioplayer.css';
+
+:root {
+  --melody-purple-900: rgba(45,30,55,0.98);
+  --melody-purple-800: rgba(69,24,58,0.98);
+  --melody-pink-600: rgba(238, 16, 128, 1);
+  --melody-pink-500: rgba(255, 25, 102, 1);
+  --melody-blue: rgba(14, 158, 239, 1);
+}
+
 body, html {
-  background: linear-gradient(90deg,#1E1E1E 20%, #412C3A 100%);
+  background: linear-gradient(90deg, var(--melody-purple-900) 0%, var(--melody-purple-800) 100%);
   color: white;
   overflow: hidden;
   font-family: "oxanium", sans-serif;
@@ -12,17 +24,115 @@ body, html {
 .custom-caret-color{
   caret-color: #656565;
 }
+
+/* Enhanced Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scroll-behavior: smooth; /* Smooth scrolling animation */
+  padding-bottom: 8px; /* Add some padding so thumb doesn't overlap content */
+  scroll-snap-type: x mandatory; /* Enable scroll snapping */
+  scroll-padding: 16px; /* Add padding to snap points */
+  mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8px, black calc(100% - 8px), transparent);
+}
+
+/* Hide scrollbars on all devices for cleaner look */
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.custom-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  padding-bottom: 4px; /* Reduced padding */
+}
+
+/* Optional: Only show minimal scrollbars on desktop hover */
+@media (min-width: 769px) {
+  .custom-scrollbar:hover::-webkit-scrollbar {
+    display: block;
+    height: 4px;
+    width: 4px;
+  }
+  
+  .custom-scrollbar:hover {
+    scrollbar-width: thin;
+  }
+    .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(var(--melody-pink-600), 0.5);
+    border-radius: 4px;
+  }
+  
+  .custom-scrollbar:hover::-webkit-scrollbar-track {
+    background: rgba(31, 31, 31, 0.3);
+    border-radius: 4px;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, var(--melody-pink-500), var(--melody-pink-600));
+}
+
+/* Scroll snap points for better mobile experience */
+.custom-scrollbar > * {
+  scroll-snap-align: start;
+}
+
+/* Custom grid for desktop layout */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+/* Staggered animation for lists */
+.stagger-animate > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-animate > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-animate > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-animate > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-animate > *:nth-child(5) { animation-delay: 0.5s; }
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 ::-webkit-scrollbar {
   display: none;
 }
-
 
 /* Hide scrollbar for IE, Edge, and Firefox */
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 #text{
   background-color: linear-gradient(90deg, #EE1080 0%, #0E9EEf 100%);
   color:transparent;
@@ -30,34 +140,39 @@ html {
   position: relative;
   top:150px;
 }
+
 .rhap_time{
   color: #fff;
   font-size: 1.2rem;
   font-weight: 500;
   margin: 0 10px;
 }
+
 .rhap_progress-filled{
   background-color: #1ED760;
 }
-.rhap_main-controls-button{
 
+.rhap_main-controls-button{
   color: #fff;
- 
 }
+
 .rhap_volume-button{
   color: #fff;
 }
+
 .rhap_progress-indicator{
   background-color: #1ED760;
 }
+
 .rhap_volume-indicator{
   background-color: white;
-
 }
+
 .rhap_volume-bar{
   background-color: #1ED760;
   color: white;
 }
+
 .swiper {
   display: flex;
   justify-content:start;
@@ -71,7 +186,6 @@ html {
   background: #fff;
 
   /* Center slide text vertically */
-
   align-items: center;
 }
 
@@ -80,4 +194,35 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Add subtle pulsing effect for interactive elements like icons */
+.icon-pulse {
+  transition: all 0.3s ease;
+}
+.icon-pulse:hover {
+  filter: drop-shadow(0 0 5px rgba(var(--melody-pink-600), 0.7));
+  transform: scale(1.05);
+}
+
+/* Visual indicator for active or interactive elements */
+.glow-on-hover:hover {
+  box-shadow: 0 0 15px rgba(238, 16, 128, 0.5);
+}
+
+/* Add subtle gradient borders to elements */
+.gradient-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: -1px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, rgba(238, 16, 128, 0.5), rgba(45, 30, 55, 0.2));
 }

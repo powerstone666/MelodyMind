@@ -2,128 +2,133 @@ import axios from "axios";
 import viewall from "../assets/viewall.svg";
 import viewclose from "../assets/viewclose.svg";
 import React, { useContext, useState, useEffect } from "react";
-import { Context } from "../main";
+import { Context } from "../context.js";
 import useMediaQuery from "../useMedia";
 import { MelodyMusicsongs } from "../saavnapi";
 import he from "he";
-import  {addRecents} from '../Firebase/database';
-
+import { addRecents } from '../Firebase/database';
+import { Card, CardInfo, AlbumArt, Loader, EmptyState, Section } from '../components/UI';
+import logger from '../utils/logger';
 
 function Topsongs({ names }) {
-  const { setSongid } = useContext(Context);
+  const { setSongid, Viewall, page } = useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
   const [limit, setLimit] = useState(5);
-  const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [loading, setLoading] = useState(true);
-  const { Viewall, page } = useContext(Context);
+  const isAboveMedium = useMediaQuery("(min-width: 1025px)");
 
-  // Function to handle expanding to show more results
   const expandResults = () => {
     setLimit(musicInfo.length);
-  };
-
-  useEffect(() => {
+  };  useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Fetching songs for:', names);
         const res = await MelodyMusicsongs(names);
-        if (res) {
+        console.log('API Response for Weekly Hits:', res);
+        if (res && Array.isArray(res)) {          // Log the first song to debug the structure
+          if (res.length > 0) {
+            console.log('Sample song structure:', JSON.stringify(res[0], null, 2));
+          }
+          
           setMusicInfo(
-            res.map((song) => ({
-              id: song.id,
-              name: he.decode(song.name),
-              image: song.image[1].url, // Assuming image is an array and you need the second element
-            }))
+            res.map((song) => {
+              // Handle different image formats from various API endpoints
+              let imageUrl = '';
+              if (typeof song.image === 'string') {
+                imageUrl = song.image;
+              } else if (song.image && song.image.url) {
+                imageUrl = song.image.url;              } else if (song.image && Array.isArray(song.image)) {
+                if (song.image[2]) {
+                  imageUrl = typeof song.image[2] === 'string' ? song.image[2] : song.image[2].url || '';
+                } else if (song.image[1]) {
+                  imageUrl = typeof song.image[1] === 'string' ? song.image[1] : song.image[1].url || '';
+                }
+              } else if (song.image) {
+                imageUrl = typeof song.image === 'object' ? song.image.link || '' : '';
+              }
+              
+              return {
+                id: song.id,
+                name: he.decode(song.name || ''),
+                image: imageUrl,
+                artist: song.primaryArtists ? he.decode(song.primaryArtists) : '',
+                year: song.year || '',
+              };
+            })
           );
+          console.log('Processed music info:', musicInfo);
+        } else {
+          console.log('No data or invalid data format returned from API');
         }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [names]);
 
-  const play = async(id,name,image) => {
+  const play = async (id, name, image) => {
     localStorage.setItem("songid", id);
     setSongid(id);
-    const user=JSON.parse(localStorage.getItem("Users"));
-   
-    if(user){
-    try{
-     await addRecents(user.uid,id,name,image);
+    const user = JSON.parse(localStorage.getItem("Users"));
+    if (user) {
+      try {
+        await addRecents(user.uid, id, name, image);
+      } catch (error) {
+        console.log(error);
+      }
     }
-    catch(error){
-      console.log(error);
-    }
-  }
-  };
-
-  return (
-    <>
-      {!loading ? (
-        <>
-          {isAboveMedium ? (
-            <div className="flex p-4 flex-3 gap-5 mb-4 cursor-pointer">
-                <div className="flex flex-wrap">
-              {musicInfo.slice(0, limit).map((song) => (
-                <div
-                  className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
-                  key={song.id}
-                  onClick={() => play(song.id,song.name,song.image)} 
-                >
-                  <img
-                    src={song.image} // Assuming song.image is an object with a 'url' property
-                    alt={song.name}
-                    className="h-48 w-56 object-cover border-0 rounded-md"
-                  />
-                  <h1 className="text-center font-bold text-white">
-                    {song.name}
-                  </h1>
-                </div>
-              ))}
-              {musicInfo.length > 5 && limit === 5 ? (
-                <button onClick={expandResults}>
-                  <img src={viewall} alt="View All" />
-                  <h1 className="font-bold">View All</h1>
-                </button>
-              ) : (
-                <button onClick={() => setLimit(5)}>
-                  <img src={viewclose} alt="Close" />
-                  <h1 className="font-bold">Close</h1>
-                </button>
-              )}
-              </div>
-            </div>
-          ) : (
-           
-      <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2">
-        {musicInfo.map((song) => (
-          <div
-            className="flex flex-col items-center pb-6"
-            key={song.id}
-            onClick={() => play(song.id,song.name,song.image)}
-          >
-            <div className="h-28 border-1 p-2 bg-deep-grey w-28 text-white border-0 rounded-md mt-2">
-              <img
-                src={song.image}
-                alt={song.name}
-                className="h-24 w-24 object-cover mb-2 rounded-md"
-              />
-              <h1 className="text-center font-bold text-white text-sm truncate">
-                {song.name}
-              </h1>
-            </div>
-          </div>
-        ))}
-      </div>
-
-          )}
-        </>
+  };  return (
+    <Section 
+      title={names || "Weekly Hits"} 
+      onViewAll={musicInfo.length > 5 ? (limit === 5 ? expandResults : () => setLimit(5)) : null}
+    >
+      {loading ? (
+        <Loader />
+      ) : musicInfo.length === 0 ? (
+        <EmptyState
+          message="No songs available right now"
+          icon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+            </svg>
+          }
+        />
       ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        // Unified view for both mobile and desktop
+        <>          {(isAboveMedium ? musicInfo.slice(0, limit) : musicInfo).map((song) => (           
+           <Card
+              key={song.id}
+              onClick={() => play(song.id, song.name, song.image)}
+            >
+              <AlbumArt 
+                src={typeof song.image === 'string' ? song.image : (song.image?.url || '')} 
+                alt={song.name} 
+              />
+              <CardInfo 
+                title={song.name} 
+                subtitle={
+                  <div className="flex items-center">
+                    {song.artist && (
+                      <span className="truncate text-sm">{song.artist}</span>
+                    )}
+                    {song.artist && song.year && (
+                      <span className="mx-1">•</span>
+                    )}
+                    {song.year && (
+                      <span className="text-xs text-gray-400">{song.year}</span>
+                    )}
+                  </div>
+                }
+              />
+            </Card>
+          ))}
+        </>
       )}
-    </>
+    </Section>
   );
 }
 

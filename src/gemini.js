@@ -1,11 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY1;
 
 export async function getLyrics(artist, song, album, year,language) {
-  console.log(artist+song+album+year)
+  
   const genAI = new GoogleGenerativeAI(API_KEY);
-  console.log(API_KEY)
+ 
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp" });
 
   let prompt = `You are a lyricist. Provide the exact,full lyrics for the song "${song}" by ${artist} and language the song was sung was ${language}. `;
@@ -46,9 +46,9 @@ export async function getLyrics(artist, song, album, year,language) {
   }
 }
 
-
+const API_KEY2 = import.meta.env.VITE_GEMINI_API_KEY2;
 export async function getSongRecommendations(song, artist) {  
-   const genAI = new GoogleGenerativeAI(API_KEY);
+   const genAI = new GoogleGenerativeAI(API_KEY2);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   const prompt = `Recommend strictly only 10 songs that are similar in style, genre, or mood to the song "${song}" by ${artist}. 
     Please provide the recommendations in the following format, with comma seperator between the song:

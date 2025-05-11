@@ -1,0 +1,98 @@
+/* Custom utils and styles to enhance UI consistency */
+/* These styles are now moved to index.css for global application */
+
+/* Wave loading animation for currently playing track */
+.wave-bars {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  gap: 2px;
+}
+
+.wave-bars span {
+  display: block;
+  width: 2px;
+  background: linear-gradient(to top, #ff0000, #ff0066);
+  border-radius: 2px;
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+.wave-bars span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.wave-bars span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.wave-bars span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+@keyframes wave {
+  0%, 100% {
+    height: 5px;
+  }
+  50% {
+    height: 15px;
+  }
+}
+
+/* Stagger animation for sections */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.stagger-animate > div:nth-child(1) { animation-delay: 0.1s; }
+.stagger-animate > div:nth-child(2) { animation-delay: 0.2s; }
+.stagger-animate > div:nth-child(3) { animation-delay: 0.3s; }
+.stagger-animate > div:nth-child(4) { animation-delay: 0.4s; }
+.stagger-animate > div:nth-child(5) { animation-delay: 0.5s; }
+
+/* Gradient text effects */
+.bg-gradient-rainblue {
+  background-image: linear-gradient(90deg, #ff0000, #ff4081);
+}
+
+/* Card hover effects */
+.card-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Button hover effects */
+.button-hover-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-hover-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.button-hover-effect:hover::after {
+  transform: translateX(0);
+}

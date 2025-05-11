@@ -1,413 +1,307 @@
 import React, { useContext, useEffect, useState } from "react";
-import menubar from "../assets/menu.svg";
 import useMediaQuery from "../useMedia";
-import { Context } from "../main";
-import close from "../assets/close-icon.svg";
+import { Context } from "../context.js";
 import searchicon from "../assets/searchicon.svg";
-import Search from "../Search/search";
+import close from "../assets/close-icon.svg";
+import menubar from "../assets/menu.svg";
 import { Link } from "react-router-dom";
 import { getLanguages } from "../saavnapi";
 import { auth } from "../Firebase/firebaseConfig";
-import { createUserWithEmailAndPassword,signOut,signInWithPopup,OAuthProvider, signInWithRedirect,updateProfile } from 'firebase/auth';
+import { Button } from "../components/UI";
+
 function Navbar() {
-  const { search, setSearch, setLanguage, languages,selected,setSelected } = useContext(Context);
+  const { search, setSearch, setLanguage, languages, selected, setSelected } = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
-  const selectedStyle = `text-red  `;
-  const localUser=JSON.parse(localStorage.getItem("Users"))
+  const selectedStyle = `text-melody-pink-500 font-medium border-b-2 border-melody-pink-500`;
+  const localUser = JSON.parse(localStorage.getItem("Users"));
+  
   const searchquery = (e) => {
     setSearch(e.target.value);
   };
-  const signout=async()=>{
+  
+  const signout = async () => {
     await auth.signOut(auth);
-      localStorage.removeItem("Users");
-      window.location.reload();
-     }
+    localStorage.removeItem("Users");
+    window.location.reload();
+  };
+  
   const handleClick = (e) => {
     if (e.key === "Enter") {
+      // Navigate to search results
     }
   };
+  
   const clearSearch = () => {
-    setSearch(""); // Clear the search query
+    setSearch("");
   };
+  
   const handleLanguageChange = (event) => {
     const selectedLanguage = event.target.value;
     setLanguage(selectedLanguage);
     localStorage.setItem("languages", selectedLanguage);
     window.location.reload();
   };
+  
   useEffect(() => {
     getLanguages(languages);
   }, [languages]);
+  
   return (
     <>
       {isAboveMedium ? (
         <section>
-          <nav className="z-40 w-full p-4">
-            <ul className="flex items-center gap-12 justify-start hover:cursor-pointer ">
-              <Link to="search">
-              <li className="flex rounded-md bg-grey w-96 h-8">
-                <img
-                  src={searchicon}
-                  alt="search icon"
-                  className="p-2"
-                />
-                <input
-                  type="text"
-                  placeholder="Search For Musics, Artists, Albums..."
-                  className="p-4 h-8 w-80 bg-transparent outline-none "
-                  onChange={(e) => searchquery(e)}
-                  value={search}
-                  onKeyDown={handleClick}
-                  onClick={() => {
-                   
-                  }}
-                />
-                {search && (
-                  <button className="text-blue" onClick={clearSearch}>
-                    X
-                  </button>
-                )}
-              </li>
-              </Link>
-              <Link to="about"> 
-              <li
-                className={`${
-                  selected === "/about" ? selectedStyle : "hover:text-red"
-                }`}
-                onClick={() => {
-                  localStorage.setItem("selected","/about"
-                  );
-                  setSelected("/about");
-                }}
-              >
-                About
-              </li>
-              </Link>
-              <Link to="contact"
-                className={`${
-                  selected === "/contact" ? selectedStyle : "hover:text-red"
-                }`}
-                onClick={() => {
-                  localStorage.setItem("selected","/contact");
-                  setSelected("/contact");
-                }}
-              >
-                Contact
-              </Link>
-              <Link to="mood"
-                className={`${
-                  selected === "/mood" ? selectedStyle : "hover:text-red"
-                }`}
-                onClick={() => {
-                  localStorage.setItem("selected","/mood");
-                  setSelected("/mood");
-                }}
-              >
-                Mood Analyse
-              </Link>
-            <select
-                className={`w-24 h-8 border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none`}
-                value={languages}
-                onChange={handleLanguageChange}
-              >
-                <option className="bg-deep-grey" value="hindi">
-                  Hindi
-                </option>
-                <option className="bg-deep-grey" value="english">
-                  English
-                </option>
-                <option className="bg-deep-grey" value="kannada">
-                  Kannada
-                </option>
-                <option className="bg-deep-grey" value="tamil">
-                  Tamil
-                </option>
-                <option className="bg-deep-grey" value="telugu">
-                  Telugu
-                </option>
-                <option className="bg-deep-grey" value="urdu">
-                  Urdu
-                </option>
-                <option className="bg-deep-grey" value="arabic">
-                  Arabic
-                </option>
-                <option className="bg-deep-grey" value="malayalam">
-                  Malayalam
-                </option>
-                <option className="bg-deep-grey" value="punjabi">
-                  Punjabi
-                </option>
-                <option className="bg-deep-grey" value="korean">
-                  Korean
-                </option>
-                <option className="bg-deep-grey" value="japanese">
-                  Japanese
-                </option>
-                <option className="bg-deep-grey" value="spanish">
-                  Spanish
-                </option>
-                <option className="bg-deep-grey" value="french">
-                  French
-                </option>
-                <option className="bg-deep-grey" value="german">
-                  German
-                </option>
-                <option className="bg-deep-grey" value="italian">
-                  Italian
-                </option>
-                <option className="bg-deep-grey" value="portuguese">
-                  Portuguese
-                </option>
-                <option className="bg-deep-grey" value="turkish">
-                  Turkish
-                </option>
-                <option className="bg-deep-grey" value="dutch">
-                  Dutch
-                </option>
-                <option className="bg-deep-grey" value="swedish">
-                  Swedish
-                </option>
-                <option className="bg-deep-grey" value="indonesian">
-                  Indonesian
-                </option>
-              </select>
-              {!localUser ? (
-                <>
-          <Link to="login">   <button
-                className="bg-deep-grey w-20 h-8 border-0 rounded-md text-red hover:shadow-md hover:shadow-red"
-                onClick={() => {
-                  localStorage.setItem("selected",window.location.pathname);
-                  setSelected(window.location.pathname);
-                }}
-              >
-                Login
-              </button>
-              </Link>
-            <Link to="signup"> <button
-                className="bg-red w-20  h-8 border-0 rounded-md text-deep-grey hover:shadow-md hover:shadow-deep-blue"
-                onClick={() => {
-                  localStorage.setItem("selected",window.location.pathname);
-                  setSelected(window.location.pathname);
-                }}
-              >
-                Sign Up
-              </button>
-              </Link>
-              </>):(
-                <div className="flex items-center justify-center gap-2">
-                <img src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png" className="h-8"/>
-                <h1>{localUser.displayName}</h1>
-                   </div>
-              )}
-            </ul>
+          <nav className="z-40 w-full p-4 backdrop-blur-md bg-black/30 sticky top-0">
+            <div className="max-w-7xl mx-auto">
+              <ul className="flex items-center gap-12 justify-start hover:cursor-pointer">
+                <Link to="search">
+                  <li className="flex items-center rounded-full bg-grey bg-opacity-50 w-96 h-10 px-4 transition-all duration-300 hover:bg-opacity-70 focus-within:ring-2 focus-within:ring-red focus-within:ring-opacity-50">
+                    <img
+                      src={searchicon}
+                      alt="search icon"
+                      className="w-5 h-5 mr-2"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search For Musics, Artists, Albums..."
+                      className="h-full flex-grow bg-transparent outline-none"
+                      onChange={(e) => searchquery(e)}
+                      value={search}
+                      onKeyDown={handleClick}
+                    />
+                    {search && (
+                      <button 
+                        className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-melody-pink-600/20 transition-colors"
+                        onClick={clearSearch}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </li>
+                </Link>
+                
+                <div className="flex items-center space-x-8">
+                  <Link to="about">
+                    <li
+                      className={`${
+                        selected === "/about" ? selectedStyle : "hover:text-melody-pink-500"
+                      } py-2 px-1 transition-colors duration-300`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/about");
+                        setSelected("/about");
+                      }}
+                    >
+                      About
+                    </li>
+                  </Link>
+                  
+                  <Link to="contact">
+                    <li
+                      className={`${
+                        selected === "/contact" ? selectedStyle : "hover:text-melody-pink-500"
+                      } py-2 px-1 transition-colors duration-300`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/contact");
+                        setSelected("/contact");
+                      }}
+                    >
+                      Contact
+                    </li>
+                  </Link>
+                  
+                  <Link to="mood">
+                    <li
+                      className={`${
+                        selected === "/mood" ? selectedStyle : "hover:text-melody-pink-500"
+                      } py-2 px-1 transition-colors duration-300`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/mood");
+                        setSelected("/mood");
+                      }}
+                    >
+                      Mood
+                    </li>
+                  </Link>
+                </div>
+                
+                <div className="ml-auto flex items-center space-x-4">
+                  <select
+                    onChange={handleLanguageChange}
+                    className="bg-deep-grey text-white py-2 px-3 rounded-md outline-none cursor-pointer border border-gray-700 focus:border-red transition-colors"
+                  >
+                    <option value="hindi,english">Hindi & English</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="english">English</option>
+                    <option value="punjabi">Punjabi</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="telugu">Telugu</option>
+                    <option value="marathi">Marathi</option>
+                    <option value="gujarati">Gujarati</option>
+                    <option value="bengali">Bengali</option>
+                    <option value="kannada">Kannada</option>
+                    <option value="bhojpuri">Bhojpuri</option>
+                    <option value="malayalam">Malayalam</option>
+                    <option value="urdu">Urdu</option>
+                    <option value="haryanvi">Haryanvi</option>
+                    <option value="rajasthani">Rajasthani</option>
+                    <option value="odia">Odia</option>
+                    <option value="assamese">Assamese</option>
+                  </select>
+                  
+                  {localUser ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="flex flex-col items-end">
+                        <span className="text-sm font-semibold">{localUser.displayName}</span>
+                        <span className="text-xs text-gray-400">{localUser.email}</span>
+                      </div>
+                      <img
+                        src={localUser.photoURL || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"}
+                        alt="User"
+                        className="h-10 w-10 rounded-full border-2 border-red"
+                      />
+                      <Button 
+                        variant="outline" 
+                        onClick={signout}
+                        className="text-sm"
+                      >
+                        Sign Out
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex space-x-4">
+                      <Link to="login">
+                        <Button variant="primary">Login</Button>
+                      </Link>
+                      <Link to="signup">
+                        <Button variant="secondary">Sign Up</Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </ul>
+            </div>
           </nav>
         </section>
       ) : (
-        <section className="flex justify-end relative right-0">
-          {/*need to be fixed*/}
-          <nav className="z-40 w-full  p-4">
-            <ul className="flex items-center ">
-              <li>
-                <h1 className="bg-gradient-rainbow text-transparent bg-clip-text text-2xl p-6 font-bold text-red">
-                  MelodyMind
-                </h1>
-              </li>
-              <li>
-              <select
-                  className={`w-24  border-0 rounded-md hover:shadow-md bg-transparent text-red outline-none cursor-pointer`}
+        <section className="relative w-full">
+          <nav className="z-40 w-full p-4 backdrop-blur-md bg-black/30 sticky top-0">
+            <div className="flex items-center justify-between">
+              <h1 className="bg-gradient-rainblue text-transparent bg-clip-text text-2xl font-bold">
+                MelodyMind
+              </h1>
+              
+              <div className="flex items-center space-x-2">
+                <Link to="search">
+                  <button className="p-2 rounded-full bg-deep-grey">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
+                </Link>
+                
+                <select
+                  className="p-2 bg-deep-grey rounded-md outline-none border-none text-sm"
                   value={languages}
                   onChange={handleLanguageChange}
-                  >
-                  <option className="bg-deep-grey" value="hindi">
-                    Hindi
-                  </option>
-                  <option className="bg-deep-grey" value="english">
-                    English
-                  </option>
-                  <option className="bg-deep-grey" value="kannada">
-                    Kannada
-                  </option>
-                  <option className="bg-deep-grey" value="tamil">
-                    Tamil
-                  </option>
-                  <option className="bg-deep-grey" value="telugu">
-                    Telugu
-                  </option>
-                  <option className="bg-deep-grey" value="urdu">
-                    Urdu
-                  </option>
-                  <option className="bg-deep-grey" value="arabic">
-                    Arabic
-                  </option>
-                  <option className="bg-deep-grey" value="malayalam">
-                    Malayalam
-                  </option>
-                  <option className="bg-deep-grey" value="punjabi">
-                    Punjabi
-                  </option>
-                  <option className="bg-deep-grey" value="korean">
-                    Korean
-                  </option>
-                  <option className="bg-deep-grey" value="japanese">
-                    Japanese
-                  </option>
-                  <option className="bg-deep-grey" value="spanish">
-                    Spanish
-                  </option>
-                  <option className="bg-deep-grey" value="french">
-                    French
-                  </option>
-                  <option className="bg-deep-grey" value="german">
-                    German
-                  </option>
-                  <option className="bg-deep-grey" value="italian">
-                    Italian
-                  </option>
-                  <option className="bg-deep-grey" value="portuguese">
-                    Portuguese
-                  </option>
-                  <option className="bg-deep-grey" value="swahili">
-                    Swahili
-                  </option>
-                  <option className="bg-deep-grey" value="turkish">
-                    Turkish
-                  </option>
-                  <option className="bg-deep-grey" value="dutch">
-                    Dutch
-                  </option>
-                  <option className="bg-deep-grey" value="swedish">
-                    Swedish
-                  </option>
-                  <option className="bg-deep-grey" value="indonesian">
-                    Indonesian
-                  </option>
+                >
+                  <option className="bg-deep-grey" value="hindi,english">Hindi & English</option>
+                  <option className="bg-deep-grey" value="hindi">Hindi</option>
+                  <option className="bg-deep-grey" value="english">English</option>
+                  <option className="bg-deep-grey" value="punjabi">Punjabi</option>
+                  <option className="bg-deep-grey" value="tamil">Tamil</option>
+                  <option className="bg-deep-grey" value="telugu">Telugu</option>
                 </select>
-              </li>
-              <img
-                src={menubar}
-                alt="menu icon"
-                className="p-2 hover:cursor-pointer"
-                onClick={() => setIsMenuToggled(true)}
-              />
-            </ul>
-          </nav>
-        </section>
-      )}
-      {isMenuToggled && !isAboveMedium && (
-        <section className="w-5/6 bg-deep-blue h-screen right-0 bottom-0 fixed z-40">
-          <div className="flex justify-end p-4 mt-16">
-            <button onClick={() => setIsMenuToggled(!isMenuToggled)}>
-              <img
-                src={close}
-                alt="close"
-                className="w-6 hover:cursor-pointer"
-              />
-            </button>
-          </div>
-          <h1 className="bg-gradient-rainbow text-transparent bg-clip-text text-2xl p-6 font-bold text-red">
-            MelodyMind
-          </h1>
-
-          <div className="align-middle justify-center items-center p-8 hover:cursor-pointer">
-            <Link to="about">
-             <div className="p-2"
-             onClick={() => {
-                localStorage.setItem("selected","/about");
-                setSelected("/about");
-              }}>
-              <h1
-                className={`${
-                  selected === "/about" ? selectedStyle : "hover:text-red"
-                }text-xl`}
-              >
-                About
-              </h1>
+                
+                <button 
+                  className="p-2 rounded-full bg-deep-grey"
+                  onClick={() => setIsMenuToggled(!isMenuToggled)}
+                >
+                  <img src={isMenuToggled ? close : menubar} alt="menu" className="w-5 h-5" />
+                </button>
               </div>
-            </Link>
-            <Link to="contact">
-            <div
-              className="p-2"
-              onClick={() => {
-                localStorage.setItem("selected","/contact");
-                setSelected("/contact");
-              }}
-            >
-              <h1
-                className={`${
-                  selected === "/contact" ? selectedStyle : "hover:text-red"
-                }text-xl`}
-              >
-                Contact
-              </h1>
             </div>
-            </Link>
-            <Link to="mood">
-            <div
-              className="p-2"
-              onClick={() => {
-                localStorage.setItem("selected","/mood");
-                setSelected("/mood");
-              }}
-            >
-              <h1
-                className={`${
-                  selected === "/mood" ? selectedStyle : "hover:text-red"
-                }text-xl`}
-              >
-                Mood Analyser
-              </h1>
-            </div>
-            </Link>
-            <Link to="recently">
-            <div
-              className="p-2"
-              onClick={() => {
-                localStorage.setItem("selected","/recently");
-                setSelected("/recently");
-              }}
-            >
-              <h1
-                className={`${
-                  selected === "/recently" ? selectedStyle : "hover:text-red"
-                }text-xl`}
-              >
-                Recently
-              </h1>
-            </div>
-            </Link>
-            {!localUser ? (
-              <>
-<Link to="login">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected","/login");
-                setSelected("/login");
-              }}
-            >
-              <button className="p-2 text-xl text-blue">Login</button>
-            </div>
-            </Link>
-            <Link to="signup">
-            <div
-              onClick={() => {
-                localStorage.setItem("selected","/signup");
-                setSelected("/signup");
-              }}
-            >
-              <button className="p-2 text-xl text-orange-500">Sign Up</button>
-            </div>
-            </Link>
-            </>):(
-                     <div className="flex p-2 items-center">
-                <img src="https://cdn-icons-png.flaticon.com/128/16802/16802273.png" className="h-8"/>
-                  <h1 className="text-white">{localUser.displayName}</h1>
-                     </div>
+            
+            {/* Mobile menu */}
+            {isMenuToggled && (
+              <div className="absolute right-0 top-full mt-2 bg-deep-grey rounded-lg shadow-lg p-4 w-48 animate-fadeIn">
+                <ul className="space-y-3">
+                  <Link to="about">
+                    <li 
+                      className={`${selected === "/about" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/about");
+                        setSelected("/about");
+                        setIsMenuToggled(false);
+                      }}
+                    >
+                      About
+                    </li>
+                  </Link>
+                  <Link to="contact">
+                    <li 
+                      className={`${selected === "/contact" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/contact");
+                        setSelected("/contact");
+                        setIsMenuToggled(false);
+                      }}
+                    >
+                      Contact
+                    </li>
+                  </Link>
+                  <Link to="mood">
+                    <li 
+                      className={`${selected === "/mood" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/mood");
+                        setSelected("/mood");
+                        setIsMenuToggled(false);
+                      }}
+                    >
+                      Mood
+                    </li>
+                  </Link>
+                  
+                  {localUser ? (
+                    <>
+                      <div className="border-t border-gray-700 my-2 pt-2">
+                        <div className="flex items-center space-x-2 p-2">
+                          <img
+                            src={localUser.photoURL || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"}
+                            alt="User"
+                            className="h-8 w-8 rounded-full border border-red"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-semibold">{localUser.displayName}</span>
+                            <span className="text-xs text-gray-400 truncate max-w-[120px]">{localUser.email}</span>
+                          </div>
+                        </div>
+                        <button 
+                          className="w-full mt-2 p-2 text-sm text-melody-pink-500 hover:bg-melody-pink-600/20 rounded transition-colors"
+                          onClick={signout}
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="border-t border-gray-700 my-2 pt-2 flex flex-col space-y-2">
+                      <Link to="login">                        <button className="w-full p-2 bg-melody-pink-600 text-white rounded-md text-sm hover:bg-melody-pink-500 shadow-md shadow-melody-pink-600/20 transition-colors">
+                          Login
+                        </button>
+                      </Link>
+                      <Link to="signup">                        <button className="w-full p-2 bg-melody-purple-800 border border-melody-pink-500 text-melody-pink-500 rounded-md text-sm hover:bg-melody-pink-600/10 transition-colors">
+                          Sign Up
+                        </button>
+                      </Link>
+                    </div>
+                  )}
+                </ul>
+              </div>
             )}
-            {localUser && (
-            <div className="p-2 text-xl" onClick={signout}>logout</div>
-            )}
-          </div>
+          </nav>
         </section>
       )}
     </>
