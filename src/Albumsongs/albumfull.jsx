@@ -47,109 +47,117 @@ function AlbumFull({ names }) {
 
     localStorage.setItem("selected", "/albums");
     setSelected("/albums");
-  };
-  return (
+  };  return (
     <>
       {!loading ? (
-        <>
-          {isAboveMedium ? (            <div              className="h-screen w-5/6 m-12  mb-12 flex flex-col bg-gradient-album border-1 border-deep-grey shadow-lg overflow-y no-scrollbar"
-            >
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey shadow-2xl">
-                <img src={album} />
-                <h1 className="font-bold text-3xl p-5">
-                  Trending Songs <span className="text-red">Mix</span>
-                </h1>
+        <>          {isAboveMedium ? (
+            <div className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg rounded-lg overflow-y-auto no-scrollbar pb-36">
+              <div className="w-full flex flex-col md:flex-row items-center p-6 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md">
+                <img 
+                  src={album} 
+                  alt="Album Art"
+                  className="h-48 w-48 rounded-lg shadow-lg object-cover" 
+                />
+                <div className="ml-0 md:ml-6 mt-4 md:mt-0 text-center md:text-left">
+                  <h1 className="font-bold text-2xl md:text-3xl text-white">
+                    Trending Songs <span className="text-melody-pink-500">Mix</span>
+                  </h1>
+                  <p className="text-gray-300 mt-2">
+                    {musicInfo.length} Albums • Updated Weekly
+                  </p>
+                </div>
               </div>
-              {musicInfo.slice(0, limit).map((song, index) => (
-                <Link to="/innerAlbum">
-                  {" "}
-                  <div
-                    className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                    key={song.id}
-                    onClick={() => play(song.id)}
-                  >
-                    <h1 className="text-2xl w-12">#{index + 1}</h1>{" "}
-                    {/* Fixed width for index */}
-                    <img src={song.image.url} className="h-12" />{" "}
-                    {/* Keep image size fixed */}
-                    <h1 className="text-md flex-grow">{song.year}</h1>{" "}
-                    {/* Allow year to take remaining space */}
-                    <h1 className="text-md flex-grow">{song.name}</h1>
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/128/9376/9376391.png"
-                      className="h-12"
-                    />{" "}
-                    {/* Keep image size fixed */}
-                  </div>
-                </Link>
-              ))}
-              <div className="flex  ml-8">
-                {musicInfo.length > 5 && limit === 5 ? (
+              
+              <div className="p-4">
+                {musicInfo.slice(0, limit).map((song, index) => (
+                  <Link to="/innerAlbum" key={song.id}>
+                    <div
+                      className="flex items-center gap-4 p-4 m-2 rounded-lg bg-deep-grey/50 hover:bg-melody-pink-600/20 transition-all duration-300 cursor-pointer transform hover:scale-[1.01]"
+                      onClick={() => play(song.id)}
+                    >
+                      <span className="text-sm w-8 text-gray-400 text-center">#{index + 1}</span>
+                      <img src={song.image.url} className="h-12 w-12 rounded-md object-cover" alt={song.name} />
+                      <div className="flex-grow">
+                        <h3 className="text-white font-medium">{song.name}</h3>
+                        <p className="text-sm text-gray-400">{song.artist}</p>
+                      </div>
+                      <span className="text-sm text-gray-400">{song.year}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div className="flex justify-center my-6 mb-4">
+                {musicInfo.length > 5 && (
                   <button
-                    onClick={expandResults}
-                    className="bg-deep-grey w-32 h-12 p-2"
+                    onClick={limit === 5 ? expandResults : () => setLimit(5)}
+                    className="px-4 py-2 rounded-full bg-melody-pink-500 text-white font-medium hover:bg-melody-pink-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-melody-pink-300 shadow-md"
                   >
-                    <h1 className="font-bold mb-24"> View All</h1>
+                    {limit === 5 ? "View All" : "View Less"}
                   </button>
-                ) : (
+                )}
+              </div>            </div>
+          ) : (
+            <div className="h-screen w-full mb-24 flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg overflow-y-auto no-scrollbar">
+              <div className="w-full flex flex-col items-center p-4 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md">
+                <img 
+                  src={album} 
+                  alt="Album Art"
+                  className="h-36 w-36 rounded-lg shadow-lg object-cover" 
+                />
+                <div className="mt-3 text-center">
+                  <h1 className="font-bold text-xl text-white">
+                    Trending Songs <span className="text-melody-pink-500">Mix</span>
+                  </h1>
+                  <p className="text-gray-300 text-sm mt-1">
+                    {musicInfo.length} Albums
+                  </p>
+                </div>
+              </div>
+              
+              <div className="p-2">
+                {musicInfo.slice(0, limit).map((song, index) => (
+                  <Link to="/innerAlbum" key={song.id}>
+                    <div
+                      className="flex items-center gap-3 p-3 mx-2 my-1 rounded-lg bg-deep-grey/50 hover:bg-melody-pink-600/20 transition-all duration-300 cursor-pointer"
+                      onClick={() => play(song.id)}
+                    >
+                      <span className="text-xs w-6 text-gray-400 text-center">#{index + 1}</span>
+                      <img src={song.image.url} className="h-10 w-10 rounded-md object-cover" alt={song.name} />
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-white text-sm font-medium truncate">{song.name}</h3>
+                        <p className="text-xs text-gray-400 truncate">{song.artist}</p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div className="flex justify-center my-6">
+                {musicInfo.length > 5 && (
                   <button
-                    onClick={() => setLimit(5)}
-                    className="bg-deep-grey w-32 h-12 p-2"
+                    onClick={limit === 5 ? expandResults : () => setLimit(5)}
+                    className="px-4 py-2 rounded-full bg-melody-pink-500 text-white text-sm font-medium hover:bg-melody-pink-600 transition-colors duration-300 focus:outline-none shadow-md"
                   >
-                    <h1 className="font-bold mb-24">View Less</h1>
+                    {limit === 5 ? "View All" : "View Less"}
                   </button>
                 )}
               </div>
-              <div className="h-2/6 mb-24"></div>
-            </div>
-          ) : (            <div              className="h-screen w-full mb-24 flex flex-col bg-gradient-album border-1 border-deep-grey overflow-y no-scrollbar"
-            >
-              <div className="w-full h-2/6 bg-white flex bg-gradient-album p-4 border-y-1 border-deep-grey">
-                <img src={album} />
-                <h1 className="font-bold text-3xl p-5">
-                  Trending Songs <span className="text-red">Mix</span>
-                </h1>
-              </div>
-              {musicInfo.slice(0, limit).map((song, index) => (
-                <Link to="/innerAlbum">
-                  <div
-                    className="w-5/6 bg-deep-grey flex items-center gap-8 p-4 m-5 cursor-pointer"
-                    key={song.id}
-                    onClick={() => play(song.id)}
-                  >
-                    <p className="text-sm w-full">#{index + 1}</p>{" "}
-                    {/* Fixed width for index */}
-                    <img src={song.image.url} className="h-12" />{" "}
-                    {/* Keep image size fixed */}
-                    <p className="text-sm flex-grow">{song.year}</p>{" "}
-                    {/* Allow year to take remaining space */}
-                    <p className="text-sm flex-grow">{song.name}</p>
-                    {/* Keep image size fixed */}
-                  </div>
-                </Link>
-              ))}
-              <div className="flex  ml-8  mb-36">
-                {musicInfo.length > 5 && limit === 5 ? (
-                  <button
-                    onClick={expandResults}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24"> View All</h1>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setLimit(5)}
-                    className="bg-deep-grey w-32 h-12 p-2"
-                  >
-                    <h1 className="font-bold mb-24">View Less</h1>
-                  </button>
-                )}
-              </div>
+              <div className="h-20"></div>
             </div>
           )}
-        </>
-      ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        </>      ) : (
+        <div className="flex items-center justify-center h-64 w-full">
+          <div className="animate-pulse flex flex-col items-center">
+            <div className="rounded-full bg-melody-pink-500/30 h-16 w-16 flex items-center justify-center mb-3">
+              <svg className="animate-spin h-8 w-8 text-melody-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <span className="text-melody-pink-500 text-lg font-medium">Loading albums...</span>
+          </div>
+        </div>
       )}
     </>
   );

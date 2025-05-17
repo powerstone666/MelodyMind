@@ -9,8 +9,12 @@
   border-top: 2px solid rgba(255, 0, 102, 0.4);
   padding: 14px 10px;
   border-radius: 18px 18px 0 0;
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   overflow: hidden;
+  z-index: 100;
 }
 
 .custom-player-mobile .rhap_container {
@@ -22,8 +26,12 @@
   border-top: 2px solid rgba(255, 0, 102, 0.4);
   padding: 10px 10px 5px 10px;
   border-radius: 16px 16px 0 0;
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   overflow: hidden;
+  z-index: 100;
 }
 
 /* Add animated gradient overlay */

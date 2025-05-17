@@ -1,60 +1,19 @@
-import AlbumFull from "./Albumsongs/albumfull";
 import AudioPlayerr from "./AudioPlayer/audioplayer";
-import Discover from "./Discover/discover";
-import Home from "./Home/home";
-import Searchfunc from "./Search/search";
 import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
-import ArtistPage from "./Playlist/artistpage";
-import Inneralbum from "./Albumsongs/inneralbum";
-import Innerartist from "./Playlist/innerartist";
-import Innersongs from "./AudioPlayer/innersongs";
-import Moodanalyse from "./moodanalyse";
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import AboutUs from "./about";
-import ContactUs from "./contact";
-import Login from "./login";
-import Signup from "./signup";
-import Likes from "./Library/likes";
-import Recents from "./Library/recents";
-import { useContext } from "react"; // Import useContext
-import { Context } from "./context.js"; // Update Context import
+import {useContext} from "react";
+import {Context} from "./context.js";
+import AppRoutes from "./components/AppRoutes";
 
-function Landing() { // Remove props
-  const { selected, setSelected } = useContext(Context); // Get selected and setSelected from Context
+function Landing() {
+  const { selected, setSelected } = useContext(Context);
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
-  const localUser = JSON.parse(localStorage.getItem("Users"))
 
   return (
     <div className="w-full h-screen flex flex-col">
       <Navbar />
-   
-        <Routes>
-          <Route path="/" element={<Home/>}></Route>
-          <Route path="/discover" element={<Discover/>}></Route>
-          <Route path="/albums" element={<AlbumFull/>}></Route>
-          <Route path="/innerAlbum" element={<Inneralbum/>}></Route>
-          <Route path="albums/innerAlbum" element={<Inneralbum/>}></Route>
-          {isAboveMedium &&(
-          <Route path="/artist" element={<ArtistPage/>}></Route>
-          )}
-          <Route path="/innerartist" element={<Innerartist/>}></Route>
-          <Route path="/search" element={<Searchfunc/>}></Route>
-          <Route path="/mood" element={<Moodanalyse/>}></Route>
-          <Route path="/innersong" element={<Innersongs/>}></Route>
-          <Route path="/about" element={<AboutUs/>}></Route>
-          <Route path="/contact" element={<ContactUs/>}></Route>
-          {!localUser ?(
-            <>
-          <Route path="/login" element={<Login/>}></Route>
-          <Route path="/signup" element={<Signup/>}></Route>
-          </>
-          ):(<Route path="/" element={<Home/>}></Route>)}
-          
-          <Route path="/recently" element={<Recents/>}></Route>
-          <Route path="/liked" element={<Likes/>}></Route>
-          <Route path="*" element={<Home/>}></Route>
-        </Routes>
+      
+      <AppRoutes />
      
       {isAboveMedium ? (
         <div className="fixed bottom-0 w-full">
@@ -68,4 +27,5 @@ function Landing() { // Remove props
     </div>
   );
 }
+
 export default Landing;

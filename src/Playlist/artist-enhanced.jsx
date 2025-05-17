@@ -51,9 +51,9 @@ function Artist({ names }) {
   const ArtistCard = ({ image, name, onClick }) => {
     return (      <div 
         onClick={onClick}
-        className="bg-deep-grey rounded-lg overflow-hidden transition-all duration-300 hover:scale-102 cursor-pointer flex flex-col items-center p-4 min-w-[130px] max-w-[130px] md:min-w-[160px] md:max-w-[160px] lg:min-w-[180px] lg:max-w-[180px] xl:min-w-[190px] xl:max-w-[190px]"
+        className="bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 cursor-pointer flex flex-col items-center p-4 min-w-[130px] max-w-[130px] md:min-w-[160px] md:max-w-[160px] lg:min-w-[180px] lg:max-w-[180px] xl:min-w-[190px] xl:max-w-[190px]"
       >
-        <div className={`relative overflow-hidden rounded-full mb-3 ${isAboveMedium ? 'h-36 w-36' : 'h-28 w-28'}`}>
+        <div className={`relative overflow-hidden rounded-full mb-3 ${isAboveMedium ? 'h-36 w-36' : 'h-28 w-28'} border-2 border-melody-pink-500/30 shadow-lg shadow-melody-pink-500/20`}>
           {image ? (
             <img 
               src={image} 
@@ -61,14 +61,13 @@ function Artist({ names }) {
               className="h-full w-full object-cover transition-transform duration-500 hover:scale-110" 
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center bg-gray-700 text-gray-400">
+            <div className="h-full w-full flex items-center justify-center bg-deep-grey text-gray-400">
               <svg xmlns="http://www.w3.org/2000/svg" className={`${isAboveMedium ? 'h-12 w-12' : 'h-10 w-10'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-          )}
-        </div>
-        <h3 className={`font-medium text-center truncate max-w-full ${isAboveMedium ? 'text-sm' : 'text-xs'}`}>{name}</h3>
+          )}        </div>
+        <h3 className={`font-medium text-center truncate max-w-full ${isAboveMedium ? 'text-sm' : 'text-xs'} text-white group-hover:text-melody-pink-500 transition-colors duration-300`}>{name}</h3>
       </div>
     );
   };

@@ -200,24 +200,24 @@ function AudioPlayerComponent() {
                   <p className="text-xs text-gray-400 truncate max-w-[160px]">{artists}</p>
                 </div>
               </div>
-              
-              <div className="flex-1">
+                <div className="flex-1">
                 <AudioPlayer
                   showSkipControls
                   onClickNext={handleNext}
                   onClickPrevious={handlePrev}
                   onEnded={handleNext}
                   src={music}
-                 // className="custom-player"
+                  autoPlay={true}
+                  //className="custom-player"
+                  className="bg-transparent"
                   showJumpControls={true}
-                    showFilledVolume={false}
+                  showFilledVolume={false}
                   layout="stacked-reverse"
                   customProgressBarSection={[
                     "CURRENT_TIME",
                     "PROGRESS_BAR",
                     "DURATION",
                   ]}
-                  className="bg-transparent" 
                 />
               </div>
             </div>
@@ -238,14 +238,14 @@ function AudioPlayerComponent() {
                   </div>
                 </Link>
               </div>
-              
-              <AudioPlayer
+                <AudioPlayer
                 src={music}
-                //showSkipControls
+                showSkipControls
                 onClickNext={handleNext}
                 onClickPrevious={handlePrev}
                 onEnded={handleNext}
-                //className="custom-player-mobile"
+                autoPlay={true}
+               // className="custom-player-mobile"
                 showJumpControls={true}
                 showFilledVolume={false}
                 layout="horizontal-reverse"
@@ -253,7 +253,7 @@ function AudioPlayerComponent() {
                 customProgressBarSection={[
                   "PROGRESS_BAR"
                 ]}
-                    className="bg-transparent" 
+                className="bg-transparent"
               />
             </div>
           )}
