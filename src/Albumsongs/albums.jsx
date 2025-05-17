@@ -10,7 +10,7 @@ function Albums() {
   const { setSongid, setInneralbum, setSelected, page, Viewall } = useContext(
     Context
   );
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(7);
   const [musicInfo, setMusicInfo] = useState([]);
   const [loading, setLoading] = useState(true);
   const isAboveMedium = useMediaQuery("(min-width:1025px)");
@@ -51,7 +51,7 @@ function Albums() {
   return (
     <Section 
       title="Top Albums" 
-      onViewAll={musicInfo.length > 5 ? (limit === 5 ? expandResults : () => setLimit(5)) : null}
+      onViewAll={musicInfo.length > 5 ? (limit === 7 ? expandResults : () => setLimit(7)) : null}
     >
       {loading ? (
         <Loader />

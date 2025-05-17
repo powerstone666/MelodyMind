@@ -208,8 +208,9 @@ function AudioPlayerComponent() {
                   onClickPrevious={handlePrev}
                   onEnded={handleNext}
                   src={music}
-                  className="custom-player"
+                 // className="custom-player"
                   showJumpControls={true}
+                    showFilledVolume={false}
                   layout="stacked-reverse"
                   customProgressBarSection={[
                     "CURRENT_TIME",
@@ -240,12 +241,12 @@ function AudioPlayerComponent() {
               
               <AudioPlayer
                 src={music}
-                showSkipControls
+                //showSkipControls
                 onClickNext={handleNext}
                 onClickPrevious={handlePrev}
                 onEnded={handleNext}
-                className="custom-player-mobile"
-                showJumpControls={false}
+                //className="custom-player-mobile"
+                showJumpControls={true}
                 showFilledVolume={false}
                 layout="horizontal-reverse"
                 customControlsSection={["MAIN_CONTROLS"]}

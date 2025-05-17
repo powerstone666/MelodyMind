@@ -10,7 +10,7 @@ function Newrelease() {
   const time = new Date().getFullYear();
   const { setSongid } = React.useContext(Context);
   const [musicInfo, setMusicInfo] = useState([]);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(7);
   const [loading, setLoading] = useState(true);
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
 
@@ -64,7 +64,7 @@ function Newrelease() {
   return (
     <Section 
       title={`New Releases ${time}`}
-      onViewAll={musicInfo.length > 5 ? (limit === 5 ? expandResults : () => setLimit(5)) : null}
+      onViewAll={musicInfo.length > 5 ? (limit === 7 ? expandResults : () => setLimit(7)) : null}
     >
       {loading ? (
         <Loader />
