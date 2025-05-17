@@ -71,8 +71,10 @@ function Login() {
         } finally {
             setResetLoading(false);
         }
-    };    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-deep-grey to-deep-blue px-4">
+    };
+    
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-deep-grey to-deep-blue px-4 py-12 overflow-y-auto">
             <ToastContainer
                 position="top-center"
                 autoClose={5000}
@@ -86,15 +88,15 @@ function Login() {
                 theme="dark"
             />
 
-            <div className="w-full max-w-md bg-gradient-to-br from-deep-grey/40 to-deep-blue/40 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-gray-700">
+            <div className="w-full max-w-md bg-gradient-to-br from-deep-grey/40 to-deep-blue/40 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-2xl border border-gray-700 mb-20 mt-6">
                 {!showForgotPassword ? (
                     <>
-                        <div className="text-center mb-8">
-                            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+                        <div className="text-center mb-6">
+                            <h1 className="text-xl md:text-3xl font-bold text-white mb-2">Welcome Back</h1>
                             <p className="text-gray-300">Sign in to continue to MelodyMind</p>
                         </div>
 
-                        <form onSubmit={handleLogin} className="space-y-6">
+                        <form onSubmit={handleLogin} className="space-y-5">
                             <div className="space-y-2">
                                 <label htmlFor="email" className="text-sm font-medium text-gray-300 block">Email</label>
                                 <input 
@@ -135,7 +137,7 @@ function Login() {
 
                             <button 
                                 type="submit" 
-                                className="w-full py-3 px-4 rounded-lg bg-melody-pink-600 hover:bg-melody-pink-500 text-white font-medium transition duration-200 focus:outline-none focus:ring-2 focus:ring-melody-pink-300 disabled:opacity-70"
+                                className="w-full py-3 px-4 rounded-lg bg-melody-pink-600 hover:bg-melody-pink-500 text-white font-medium transition duration-200 focus:outline-none focus:ring-2 focus:ring-melody-pink-300 disabled:opacity-70 mt-4"
                                 disabled={loading}
                             >
                                 {loading ? (
@@ -180,7 +182,7 @@ function Login() {
                             </div>
                         </div>
 
-                        <div className="mt-8 text-center">
+                        <div className="mt-6 text-center">
                             <p className="text-sm text-gray-400">
                                 Don't have an account?{' '}
                                 <Link to="/signup" className="text-melody-pink-400 hover:text-melody-pink-300 font-medium">
@@ -188,15 +190,21 @@ function Login() {
                                 </Link>
                             </p>
                         </div>
+                        
+                        <div className="mt-4 text-center">
+                            <Link to="/" className="text-sm text-gray-400 hover:text-melody-pink-300">
+                                Back to home
+                            </Link>
+                        </div>
                     </>
                 ) : (
                     <>
-                        <div className="text-center mb-8">
-                            <h1 className="text-2xl font-bold text-white mb-2">Reset Your Password</h1>
+                        <div className="text-center mb-6">
+                            <h1 className="text-xl md:text-2xl font-bold text-white mb-2">Reset Your Password</h1>
                             <p className="text-gray-300">We'll send you a link to reset your password</p>
                         </div>
 
-                        <form onSubmit={handlePasswordReset} className="space-y-6">
+                        <form onSubmit={handlePasswordReset} className="space-y-5">
                             <div className="space-y-2">
                                 <label htmlFor="resetEmail" className="text-sm font-medium text-gray-300 block">Email</label>
                                 <input 
@@ -238,6 +246,12 @@ function Login() {
                                 </button>
                             </div>
                         </form>
+                        
+                        <div className="mt-6 text-center">
+                            <Link to="/" className="text-sm text-gray-400 hover:text-melody-pink-300">
+                                Back to home
+                            </Link>
+                        </div>
                     </>
                 )}
             </div>
