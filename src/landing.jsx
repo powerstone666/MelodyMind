@@ -1,9 +1,11 @@
 import AudioPlayerr from "./AudioPlayer/audioplayer";
+
 import Navbar from "./navbar/navbar";
 import useMediaQuery from "./useMedia";
 import {useContext} from "react";
 import {Context} from "./context.js";
 import AppRoutes from "./components/AppRoutes";
+import AudioPlayerComponent from "./AudioPlayer/audioplayer";
 
 function Landing() {
   const { selected, setSelected } = useContext(Context);
@@ -17,11 +19,11 @@ function Landing() {
      
       {isAboveMedium ? (
         <div className="fixed bottom-0 w-full">
-          <AudioPlayerr />
+          <AudioPlayerComponent />
         </div>
       ) : (
         <div className="fixed  w-full z-40">
-          <AudioPlayerr />
+          <AudioPlayerComponent />
         </div>
       )}
     </div>

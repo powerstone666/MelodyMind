@@ -216,21 +216,20 @@ function Navbar() {
                 </button>
               </div>
             </div>
-            
-            {/* Mobile menu */}
+              {/* Mobile menu */}
             {isMenuToggled && (
-              <div className="absolute right-0 top-full mt-2 bg-deep-grey rounded-lg shadow-lg p-4 w-48 animate-fadeIn">
+              <div className="absolute right-0 top-full mt-2 bg-gray-900 border border-gray-800 rounded-lg shadow-xl p-4 w-56 z-50 animate-fadeIn">
                 <ul className="space-y-3">
-                  <Link to="about">
+                  <Link to="/">
                     <li 
-                      className={`${selected === "/about" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      className={`${selected === "/" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
                       onClick={() => {
-                        localStorage.setItem("selected", "/about");
-                        setSelected("/about");
+                        localStorage.setItem("selected", "/");
+                        setSelected("/");
                         setIsMenuToggled(false);
                       }}
                     >
-                      About
+                      Home
                     </li>
                   </Link>
                   <Link to="contact">
@@ -244,8 +243,7 @@ function Navbar() {
                     >
                       Contact
                     </li>
-                  </Link>
-                  <Link to="mood">
+                  </Link>                  <Link to="mood">
                     <li 
                       className={`${selected === "/mood" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
                       onClick={() => {
@@ -258,8 +256,33 @@ function Navbar() {
                     </li>
                   </Link>
                   
-                  {localUser ? (
+                  <Link to="recent">
+                    <li 
+                      className={`${selected === "/recent" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/recent");
+                        setSelected("/recent");
+                        setIsMenuToggled(false);
+                      }}
+                    >
+                      Recents
+                    </li>
+                  </Link>
+                    {localUser ? (
                     <>
+                      <Link to="profile">
+                        <li 
+                          className={`${selected === "/profile" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                          onClick={() => {
+                            localStorage.setItem("selected", "/profile");
+                            setSelected("/profile");
+                            setIsMenuToggled(false);
+                          }}
+                        >
+                          Profile
+                        </li>
+                      </Link>
+
                       <div className="border-t border-gray-700 my-2 pt-2">
                         <div className="flex items-center space-x-2 p-2">
                           <img

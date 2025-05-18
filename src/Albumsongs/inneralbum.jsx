@@ -116,7 +116,7 @@ function Inneralbum({ names }) {
                 </div>
               </div>
               
-              <div className="p-2">
+              <div className="p-2 ">
                 {musicInfo.map((song, index) => (
                   <div
                     className="flex items-center gap-3 p-3 mx-2 my-1 rounded-lg bg-deep-grey/50 hover:bg-melody-pink-600/20 transition-all duration-300 cursor-pointer"

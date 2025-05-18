@@ -34,7 +34,7 @@ function AudioPlayerComponent() {
   const [music, setMusic] = useState("");
   const [names, setNames] = useState("");
   const [array, setArray] = useState("");
-  const [image, setImage] = useState("");  
+  const [image, setImage] = useState("");
   const [isFetching, setIsFetching] = useState(false);
   const [artists, setArtists] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -42,9 +42,10 @@ function AudioPlayerComponent() {
   const [playingRecommendation, setPlayingRecommendation] = useState(false);
   const [recommendationType, setRecommendationType] = useState('api'); // 'api' or 'gemini'
 
+  // Check if the browser supports the Media Session API
   useEffect(() => {
     if ("mediaSession" in navigator && names) {
-      navigator.mediaSession.metadata = new window.MediaMetadata({
+      navigator.mediaSession.metadata = new MediaMetadata({
         title: names,
         album: array,
         artist: artists,
@@ -64,19 +65,26 @@ function AudioPlayerComponent() {
     setIsLoading(true);
     let retryCount = 0;
     const maxRetries = 2;
+    
     const attemptFetch = async () => {
       try {
         const res = await searchResult(songid);
         const song = res.data.data[0];
         const decodedName = he.decode(song.name);
         const artistName = song.artists.primary[0].name;
-        if (decodedName) setSpotify(artistName + " " + decodedName);
+        
+        if (decodedName) {
+          setSpotify(artistName + " " + decodedName);
+        }
+        
         setArtists(artistName);
         setArray(song.album.name);
         setImage(song.image[1].url);
         setNames(decodedName);
         const url = song.downloadUrl[4].url;
         setMusic(url);
+        
+        // Add song to history if it's a new song
         const songInfo = {
           id: songid,
           name: decodedName,
@@ -86,23 +94,32 @@ function AudioPlayerComponent() {
           timestamp: new Date().toISOString(),
           songYear: song.year
         };
-        const { newHistory, newIndex } = addSongToHistory(songInfo, songHistory, currentHistoryIndex, false);
+        
+        // Add to history - simplified approach
+        const { newHistory, newIndex } = addSongToHistory(songInfo, songHistory, currentHistoryIndex);
         setSongHistory(newHistory);
         setCurrentHistoryIndex(newIndex);
+        
+        // Reset recommendation indicator when loading a new song directly
         setPlayingRecommendation(false);
+        
+        // Prefetch recommendations for this song
         prefetchRecommendations(songInfo);
-        return true;
+        
+        return true; // Success
       } catch (error) {
         console.error(`Error fetching song data (attempt ${retryCount + 1}/${maxRetries}):`, error);
         if (retryCount < maxRetries) {
           retryCount++;
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-          return attemptFetch();
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Increasing backoff
+          return attemptFetch(); // Retry
         }
+        
         toast.error("Failed to load song. Please try another one.");
-        return false;
+        return false; // Failed after retries
       }
     };
+    
     try {
       await attemptFetch();
     } finally {
@@ -110,54 +127,87 @@ function AudioPlayerComponent() {
     }
   };
 
+  // Prefetch recommendations for smooth navigation experience
   const prefetchRecommendations = async (songInfo, forceNewRecommendations = false) => {
-    if (recommendationTimeoutRef.current) clearTimeout(recommendationTimeoutRef.current);
+    // Clear any existing recommendation timeout
+    if (recommendationTimeoutRef.current) {
+      clearTimeout(recommendationTimeoutRef.current);
+    }
+      
+    // Ensure we have valid data
     if (!songInfo || !songInfo.id) {
       console.error('Invalid song info for prefetching recommendations:', songInfo);
       return;
     }
+    
+    // Ensure we have valid song name and artist
     const songName = songInfo.name || '';
     const artistName = songInfo.artists || '';
+    
+    // If we're close to the end of our history, proactively load recommendations
     if (currentHistoryIndex >= songHistory.length - 3 || forceNewRecommendations) {
       setIsLoadingRecommendations(true);
+      
       try {
         const { recommendations: recs, source } = await fetchRecommendations(
-          songInfo.id, songName, artistName, songHistory, forceNewRecommendations
+          songInfo.id, 
+          songName, 
+          artistName, 
+          songHistory,
+          forceNewRecommendations
         );
+        
         setRecommendations(recs);
+        
+        // If recommendations are from Gemini, we'll need to search for them          
         if (source === 'gemini' && recs.length > 0) {
+          // Schedule async search for the first recommendation to get actual song ID
           recommendationTimeoutRef.current = setTimeout(async () => {
             try {
               const firstRec = recs[0];
+              
+              // Ensure we have valid song and artist names - check both name/artists and song/artist fields
               const songName = firstRec.name || firstRec.song;
               const artistName = firstRec.artists || firstRec.artist;
+              
               if (!songName || !artistName) {
                 console.warn('Missing song info for recommendation search:', firstRec);
                 return;
               }
+              
               const searchQuery = `${songName} ${artistName}`.trim();
+              
               if (searchQuery.length < 3) {
                 console.error('Search query too short:', searchQuery);
                 return;
               }
+              
               const songId = await newsearch(searchQuery);
+              
               if (songId) {
+                // Update the recommendation with the actual song ID
                 const updatedRecs = [...recs];
                 updatedRecs[0].id = songId;
                 setRecommendations(updatedRecs);
               } else {
                 console.warn('No song ID found for:', searchQuery);
+                // If we couldn't find the song ID for the first recommendation,
+                // try with the next one if available
                 if (recs.length > 1) {
                   const nextRec = recs[1];
+                  // Check for both naming conventions
                   const nextSongName = nextRec.name || nextRec.song;
                   const nextArtistName = nextRec.artists || nextRec.artist;
+                  
                   if (nextSongName && nextArtistName) {
                     const nextQuery = `${nextSongName} ${nextArtistName}`.trim();
+                    
                     const nextSongId = await newsearch(nextQuery);
                     if (nextSongId) {
+                      // Move the successful recommendation to the front
                       const newRecs = [...recs];
                       newRecs[0] = { ...nextRec, id: nextSongId };
-                      newRecs.splice(1, 1);
+                      newRecs.splice(1, 1); // Remove the second item that we just processed
                       setRecommendations(newRecs);
                     }
                   }
@@ -166,7 +216,7 @@ function AudioPlayerComponent() {
             } catch (error) {
               console.error("Error searching for recommendation:", error);
             }
-          }, 2000);
+          }, 2000); // Delay to prevent API rate limiting
         }
       } catch (error) {
         console.error("Error prefetching recommendations:", error);
@@ -177,21 +227,30 @@ function AudioPlayerComponent() {
   };
 
   useEffect(() => {
-    if (songid) fetchSongData();
+    if (songid) {
+      fetchSongData();
+    }
   }, [songid]);
 
+  // Clear the recommendation timeout when component unmounts
   useEffect(() => {
     return () => {
-      if (recommendationTimeoutRef.current) clearTimeout(recommendationTimeoutRef.current);
+      if (recommendationTimeoutRef.current) {
+        clearTimeout(recommendationTimeoutRef.current);
+      }
     };
   }, []);
 
   const handleNext = useCallback(async () => {
-    if (isFetching) return;
+    if (isFetching) return; // Prevent multiple calls
     setIsFetching(true);
+
     try {
+      // Ensure we have valid song info
       const currentSongName = names || '';
       const currentArtist = artists || '';
+      
+      // Check if we have a song in history to navigate to
       const result = await navigateToNextSong({
         currentIndex: currentHistoryIndex,
         songHistory: songHistory,
@@ -204,60 +263,66 @@ function AudioPlayerComponent() {
         setLoadingRecommendations: setIsLoadingRecommendations
       });
 
+      // Check if we're about to play a different song
       if (result.songId !== songid) {
         localStorage.setItem("songid", result.songId);
         setSongid(result.songId);
-
+        
+        // SIMPLE APPROACH: Handle differently based on whether we're adding to history
         if (result.addToHistory && result.song) {
+          // This is a new song (recommendation) that needs to be added to history
           setPlayingRecommendation(true);
           setRecommendationType(result.song.type || 'api');
+          
+          // Add to history
           const { newHistory, newIndex } = addSongToHistory(
             result.song,
             songHistory,
             currentHistoryIndex
           );
+          
           setSongHistory(newHistory);
           setCurrentHistoryIndex(newIndex);
-
+          
+          // Remove the used recommendation from the list
           if (recommendations.length > 1) {
             setRecommendations(prev => prev.slice(1));
           } else {
             setRecommendations([]);
             const currentSong = songHistory[currentHistoryIndex];
             if (currentSong && currentSong.id) {
+              // Force new recommendations
               prefetchRecommendations(currentSong, true);
               toast.info("Loading fresh recommendations...");
             }
           }
         } else {
+          // This is navigation through existing history
           setPlayingRecommendation(false);
           setCurrentHistoryIndex(result.newIndex);
         }
 
-        if (recommendations.length > 1) {
-          setRecommendations(prev => prev.slice(1));
-        } else {
-          setRecommendations([]);
-          const currentSong = songHistory[currentHistoryIndex];
-          if (currentSong && currentSong.id) {
-            prefetchRecommendations(currentSong, true);
-            toast.info("Loading fresh recommendations...");
-          } else {
-            console.error('Cannot prefetch: Invalid current song', currentSong);
-          }
+        // Add to Firebase recents if user is logged in
+        const user = JSON.parse(localStorage.getItem("Users"));
+        if (user && result.song) {
+          await addRecents(
+            user.uid, 
+            result.songId, 
+            result.song.name || result.song.songName || he.decode(result.song.name), 
+            result.song.image
+          );
         }
       } else {
-        setCurrentHistoryIndex(result.newIndex);
-      }
-
-      const user = JSON.parse(localStorage.getItem("Users"));
-      if (user && result.song) {
-        await addRecents(
-          user.uid, 
-          result.songId, 
-          result.song.name || result.song.songName || he.decode(result.song.name), 
-          result.song.image
-        );
+        // If we couldn't navigate to a new song, show a message and try to load recommendations
+        if (recommendations.length === 0 && !isLoadingRecommendations) {
+          toast.info("Loading recommendations...");
+          
+          // Trigger recommendation loading
+          const currentSong = songHistory[currentHistoryIndex];
+          if (currentSong) {
+            prefetchRecommendations(currentSong);
+          }
+        }
       }
     } catch (error) {
       console.error("Error handling next song:", error);
@@ -278,8 +343,9 @@ function AudioPlayerComponent() {
   ]);
 
   const handlePrev = useCallback(async () => {
-    if (isFetching) return;
+    if (isFetching) return; // Prevent multiple calls
     setIsFetching(true);
+
     try {
       const result = navigateToPrevSong({
         currentIndex: currentHistoryIndex,
@@ -289,8 +355,15 @@ function AudioPlayerComponent() {
       if (result.songId && result.songId !== songid) {
         localStorage.setItem("songid", result.songId);
         setSongid(result.songId);
+        
+        // SIMPLE APPROACH: Just update the index pointer
+        // No manipulation of history structure
         setCurrentHistoryIndex(result.newIndex);
+        
+        // Reset recommendation indicator when going back
         setPlayingRecommendation(false);
+        
+        // Add this song lookup to Firebase if logged in
         const user = JSON.parse(localStorage.getItem("Users"));
         if (user && result.song) {
           await addRecents(
@@ -312,10 +385,12 @@ function AudioPlayerComponent() {
   }, [isFetching, songid, songHistory, currentHistoryIndex, setSongid]);
 
   useEffect(() => {
+    // Set up Media Session API handlers
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("nexttrack", handleNext);
       navigator.mediaSession.setActionHandler("previoustrack", handlePrev);
     }
+    
     return () => {
       if ("mediaSession" in navigator) {
         navigator.mediaSession.setActionHandler("nexttrack", null);
@@ -324,189 +399,22 @@ function AudioPlayerComponent() {
     };
   }, [handleNext, handlePrev]);
 
+  // Initialize song history if it's empty and we have a song playing
   useEffect(() => {
     const initializeHistory = async () => {
       if (songid && songHistory.length === 0) {
         await fetchSongData();
       }
     };
+    
     initializeHistory();
   }, [songid, songHistory.length]);
 
-  useEffect(() => {
-    if (
-      currentHistoryIndex === songHistory.length - 1 &&
-      songHistory.length > 0 &&
-      recommendations.length === 0 &&
-      !isLoadingRecommendations
-    ) {
-      const currentSong = songHistory[currentHistoryIndex];
-      const hasRecentlyUsedRecs = songHistory.some((song, idx) =>
-        idx < currentHistoryIndex &&
-        song.id === currentSong?.id &&
-        Date.now() - new Date(song.timestamp).getTime() < 1000 * 60 * 10
-      );
-      if (currentSong && currentSong.id) {
-        prefetchRecommendations(currentSong, hasRecentlyUsedRecs);
-      }
-    }
-  }, [currentHistoryIndex, songHistory, recommendations.length, isLoadingRecommendations]);
-
-  const setdisplay = () => {
-    localStorage.setItem("selected", "innersong");
-    setSelected("innersong");
-  };
-
-  const LoadingState = () => (
-    <div className="flex animate-pulse items-center gap-4 p-4 w-full">
-      <div className="rounded-lg bg-deep-grey h-14 w-14"></div>
-      <div className="flex-1">
-        <div className="h-4 bg-deep-grey rounded w-3/4 mb-2"></div>
-        <div className="h-3 bg-deep-grey rounded w-1/2"></div>
-      </div>
-    </div>
-  );
+  // Keep the rest of your component code here...
 
   return (
     <div>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition={Bounce}
-      />
-      <RecommendationIndicator 
-        visible={playingRecommendation || isLoadingRecommendations}
-        loading={isLoadingRecommendations}
-        recommendationType={recommendationType}
-      />
-      {isAboveMedium ? (
-        <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md bg-deep-blue/90 border-t border-gray-700 shadow-lg z-50 animate-slideUp">
-          {isLoading ? (
-            <LoadingState />
-          ) : (
-            <div className="flex items-center gap-4 px-6 py-3 max-w-7xl mx-auto">
-              <div
-                className="flex items-center gap-4 min-w-[240px] hover:cursor-pointer group"
-                onClick={setdisplay}
-              >
-                <Link to="innersong" className="block">
-                  <div className="relative overflow-hidden rounded-lg">
-                    <img 
-                      src={image} 
-                      alt={names}
-                      className="h-16 w-16 object-cover transition-transform duration-500 group-hover:scale-110" 
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-                <div className="flex flex-col">
-                  <h1 className="text-sm font-semibold truncate max-w-[160px]">{names}</h1>
-                  <p className="text-xs text-gray-400 truncate max-w-[160px]">{artists}</p>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {songHistory.length > 0 && (
-                      <span>{currentHistoryIndex + 1} of {songHistory.length}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1 relative">
-                <div className={`nav-indicator ${isLoadingRecommendations ? 'visible' : ''}`}>
-                  Loading recommendations
-                  <span className="nav-loading"></span>
-                </div>
-                <div className={`recommendation-ready ${recommendations.length > 0 ? 'visible' : ''}`} 
-                     style={{ top: '10px', right: '30%' }}></div>
-                <AudioPlayer
-                  showSkipControls
-                  onClickNext={handleNext}
-                  onClickPrevious={handlePrev}
-                  onEnded={handleNext}
-                  onError={(e) => {
-                    console.error("Audio playback error:", e);
-                    toast.error("Unable to play this song. Skipping to next...");
-                    setTimeout(handleNext, 1500);
-                  }}
-                  src={music}
-                  autoPlay={true}
-                  className="bg-transparent"
-                  showJumpControls={true}
-                  showFilledVolume={false}
-                  layout="stacked-reverse"
-                  customProgressBarSection={[
-                    "CURRENT_TIME",
-                    "PROGRESS_BAR",
-                    "DURATION",
-                  ]}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="fixed bottom-16 inset-x-0 backdrop-blur-md bg-deep-blue/90 border-t border-gray-700 shadow-lg z-50 animate-slideUp">
-          {isLoading ? (
-            <LoadingState />
-          ) : (
-            <div className="p-2">
-              <div className="flex items-center justify-between mb-2 px-2">
-                <Link to="innersong" className="flex items-center gap-2" onClick={setdisplay}>
-                  <img src={image} alt={names} className="h-10 w-10 rounded-md" />
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-xs font-bold truncate">{names}</h2>
-                    <p className="text-xs text-gray-400 truncate">{artists}</p>
-                    <div className="text-xs text-gray-500">
-                      {songHistory.length > 0 && (
-                        <span>{currentHistoryIndex + 1}/{songHistory.length}</span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              </div>
-              <div className="relative">
-                <div className={`nav-indicator ${isLoadingRecommendations ? 'visible' : ''}`}>
-                  Loading
-                  <span className="nav-loading"></span>
-                </div>
-                <div className={`recommendation-ready ${recommendations.length > 0 ? 'visible' : ''}`}></div>
-                <AudioPlayer
-                  src={music}
-                  showSkipControls
-                  onClickNext={handleNext}
-                  onClickPrevious={handlePrev}
-                  onEnded={handleNext}
-                  onError={(e) => {
-                    console.error("Audio playback error:", e);
-                    toast.error("Unable to play this song. Skipping to next...");
-                    setTimeout(handleNext, 1500);
-                  }}
-                  autoPlay={true}
-                  showJumpControls={true}
-                  showFilledVolume={false}
-                  layout="horizontal-reverse"
-                  customControlsSection={["MAIN_CONTROLS"]}
-                  customProgressBarSection={[
-                    "PROGRESS_BAR"
-                  ]}
-                  className="bg-transparent"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Keep the rest of your JSX code here */}
     </div>
   );
 }

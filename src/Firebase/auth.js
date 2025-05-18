@@ -6,7 +6,10 @@ import {
   updateProfile,
   signOut,
   GoogleAuthProvider,
-  OAuthProvider
+  OAuthProvider,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword as firebaseUpdatePassword
 } from "firebase/auth";
 import { auth, db } from "./firebaseConfig";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
@@ -254,10 +257,36 @@ export const updateUserProfile = async (displayName, photoURL = null) => {
     
     // Store in localStorage
     localStorage.setItem("Users", JSON.stringify(userData));
-    
-    return userData;
+      return userData;
   } catch (error) {
     console.error("Error updating profile:", error);
+    throw error;
+  }
+};
+
+// Function to update user password
+export const updatePassword = async (currentPassword, newPassword) => {
+  try {
+    const user = auth.currentUser;
+    
+    if (!user) {
+      throw new Error("No authenticated user found");
+    }
+    
+    if (!user.email) {
+      throw new Error("User has no email to re-authenticate with");
+    }
+    
+    // Re-authenticate user before changing password
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+    
+    // Update password
+    await firebaseUpdatePassword(user, newPassword);
+    
+    return true;
+  } catch (error) {
+    console.error("Error updating password:", error);
     throw error;
   }
 };

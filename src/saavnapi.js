@@ -17,8 +17,7 @@ export const MelodyMusicsongs=async(names)=>{
         let searchTerm;
         let apiEndpoint = 'https://saavn.dev/api/search/songs';
 
-        if (names && names.includes("New Release")) {
-            searchTerm = `latest releases ${year} ${language}`;
+        if (names && names.includes("New Release")) {            searchTerm = `latest releases ${year} ${language}`;
             // Try charts API for new releases
             apiEndpoint = 'https://saavn.dev/api/charts';
         } else if (names && names.includes("Weekly Hits")) {
@@ -34,21 +33,17 @@ export const MelodyMusicsongs=async(names)=>{
         } else {
             searchTerm = names ? `${language} ${names}` : `topsongs ${language}`;
         }
-            
-        console.log('Search query:', searchTerm, 'API endpoint:', apiEndpoint); // For debugging
         
         let res;
           if (apiEndpoint.includes('charts') || apiEndpoint.includes('trending')) {
             // First try with charts/trending API
             try {
                 res = await axios.get(apiEndpoint);
-                console.log('Special API response:', res.data);
                 
                 // Handle trending API response
                 if (apiEndpoint.includes('trending') && res?.data?.data) {
                     // For trending endpoint
-                    if (Array.isArray(res.data.data.songs)) {
-                        return res.data.data.songs;
+                    if (Array.isArray(res.data.data.songs)) {                    return res.data.data.songs;
                     } else if (Array.isArray(res.data.data.trending)) {
                         return res.data.data.trending.songs || res.data.data.trending;
                     }
@@ -63,7 +58,6 @@ export const MelodyMusicsongs=async(names)=>{
                     }
                 }
             } catch (err) {
-                console.log('Falling back to search API:', err.message);
                 // Fall back to search API if charts/trending fails
             }
         }
@@ -84,7 +78,6 @@ export const MelodyMusicsongs=async(names)=>{
                 // First try with trending API
                 const trendingRes = await axios.get('https://saavn.dev/api/trending');
                 if (trendingRes?.data?.data?.songs && Array.isArray(trendingRes.data.data.songs)) {
-                    console.log('Found weekly hits from trending songs');
                     return trendingRes.data.data.songs;
                 }
                 
@@ -98,18 +91,16 @@ export const MelodyMusicsongs=async(names)=>{
                     );
                     
                     if (topChart?.songs && Array.isArray(topChart.songs)) {
-                        console.log('Found weekly hits from charts');
                         return topChart.songs;
                     }
                     
                     // If no matching chart found but we have charts, use the first one
                     if (chartsRes.data.data[0]?.songs) {
-                        console.log('Using first available chart for weekly hits');
                         return chartsRes.data.data[0].songs;
                     }
                 }
             } catch (err) {
-                console.log('Failed to get weekly hits from specialized endpoints:', err.message);
+                console.error('Failed to get weekly hits:', err.message);
             }
         }
         
@@ -117,7 +108,6 @@ export const MelodyMusicsongs=async(names)=>{
         res = await axios.request(options);
         
         if (res?.data?.data?.results) {
-            console.log('API returned results:', res.data.data.results.length);
             return res.data.data.results;
         } else {
             console.error('Invalid API response structure');
@@ -289,16 +279,68 @@ export const searchSuggestion=async(songid)=>{
         }catch(error){
           console.error('Error fetching data:', error);
         }
-    }
-
-   export const newsearch=async(names)=>{
+    }  
+     export const newsearch=async(names)=>{
     try {
-          console.log("saavn intake"+" "+names)
-      const res=await Searchsongs(names);
- 
+      // Validate input
+      if (!names || typeof names !== 'string' || names === 'undefined') {
+        console.error("Invalid query for song search:", names);
+        return null;
+      }
+        // Trim and validate the search query
+      let query = names.trim();
+      
+      // Remove any quotes from the query
+      query = query.replace(/["']/g, '');
+      
+      if (query.length < 3) {
+        console.error("Search query too short:", query);
+        return null;
+      }
+      
+      // Add retries for API calls
+      let attempts = 0;
+      const maxAttempts = 2;
+      let res = null;
+      
+      while (attempts < maxAttempts) {
+        try {
+          res = await Searchsongs(query);
+          if (res && res.songs && res.songs.results && res.songs.results.length > 0) {
+            break; // Success, exit the loop
+          }
+            // If we get here, the API returned successfully but with no results
+          
+          // Try with a simplified query on the second attempt
+          if (attempts === 0 && query.includes(' ')) {
+            // Extract just the first two words if the query is too complex
+            const simplifiedQuery = query.split(' ').slice(0, 2).join(' ');
+            if (simplifiedQuery !== query) {
+              query = simplifiedQuery;
+            }
+          }
+          
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between attempts
+        } catch (error) {
+          console.error(`API call failed on attempt ${attempts + 1}:`, error);
+          attempts++;
+          if (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Longer delay after an error
+          }
+        }
+      }
+      
+      // Validate results
+      if (!res || !res.songs || !res.songs.results || res.songs.results.length === 0) {
+        console.warn("No search results found for:", query);
+        return null;
+      }
+      
       return res.songs.results[0].id;
     }
     catch (error) {
       console.error('Error fetching data:', error);
+      return null;
     }
   }

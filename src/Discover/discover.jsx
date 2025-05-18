@@ -1,4 +1,3 @@
-// filepath: d:\MERN\MelodyMind\src\Discover\discover.jsx
 import React, { useState } from "react";
 import useMediaQuery from "../useMedia";
 import Topsongs from "../Home/topsong";
@@ -61,10 +60,9 @@ function Discover() {
             <Artist />
           </div>
        
-        </div>
-      ) : (
+        </div>      ) : (
         <div
-          className="overflow-y h-screen w-full no-scrollbar"
+          className="overflow-y-auto h-screen w-full no-scrollbar pb-24"
         >
            <h1 className="text-2xl p-2 m-0">
             New Releases <span className="text-red font-bold">Songs</span>

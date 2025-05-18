@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
@@ -19,8 +19,21 @@ const Appwrapper = () => {
   const [spotify,setSpotify]=useState(localStorage.getItem("spotify")||"");
   const [spotifyArtist,setSpotifyArtist]=useState(localStorage.getItem("spotifyArtist")||"");
   const [Users,setUsers]=useState(localStorage.getItem("Users") ? JSON.parse(localStorage.getItem("Users")) : "");
+  const [songHistory, setSongHistory] = useState(JSON.parse(localStorage.getItem("songHistory") || "[]"));
+  const [currentHistoryIndex, setCurrentHistoryIndex] = useState(parseInt(localStorage.getItem("currentHistoryIndex") || "0"));
+  const [recommendations, setRecommendations] = useState([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   
-  return (
+  // Save song history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("songHistory", JSON.stringify(songHistory));
+  }, [songHistory]);
+  
+  // Save current history index to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("currentHistoryIndex", currentHistoryIndex.toString());
+  }, [currentHistoryIndex]);
+    return (
     <Context.Provider value={{ 
       songid, setSongid, 
       search, setSearch,
@@ -33,7 +46,11 @@ const Appwrapper = () => {
       lyrics, setLyrics,
       spotify, setSpotify,
       spotifyArtist, setSpotifyArtist,
-      Users, setUsers
+      Users, setUsers,
+      songHistory, setSongHistory,
+      currentHistoryIndex, setCurrentHistoryIndex,
+      recommendations, setRecommendations,
+      isLoadingRecommendations, setIsLoadingRecommendations
     }}>
       <BrowserRouter>
         <AuthProvider>

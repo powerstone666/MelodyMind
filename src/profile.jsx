@@ -3,43 +3,43 @@ import { Context } from './context';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./Firebase/firebaseConfig";
 import { updateUserProfile } from './Firebase/auth';
-import { fetchUserProfileData, getUserListeningStats, getUserRecentActivity, getUserDailyPlayStats, uploadProfilePhoto, deleteProfilePhoto } from './Firebase/userProfile';
+import { fetchUserProfileData, uploadProfilePhoto, deleteProfilePhoto } from './Firebase/userProfile';
 import { fetchUser } from './Firebase/database';
 import { toast } from "react-toastify";
-import { Link } from 'react-router-dom';
-import PlayCountChart from './components/PlayCountChart';
-import DailyPlayStatsChart from './components/DailyPlayStatsChart';
-import RecentActivity from './components/RecentActivity';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiUser, FiMail, FiLock, FiLogOut, FiEdit, FiCheck, FiUpload, FiTrash2, FiX } from 'react-icons/fi';
+import useMediaQuery from './useMedia';
 
 function Profile() {
   const { Users, setUsers } = useContext(Context);
   const [userData, setUserData] = useState(null);
-  const [userStats, setUserStats] = useState(null);
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [dailyStats, setDailyStats] = useState([]);
-  const [likedSongs, setLikedSongs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activityLoading, setActivityLoading] = useState(true);
-  const [statsLoading, setStatsLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [displayName, setDisplayName] = useState('');
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);  const fileInputRef = useRef(null);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+  const isAboveMedium = useMediaQuery("(min-width: 768px)");
 
   // Fetch user data from Firestore  
   useEffect(() => {
     const fetchUserData = async () => {
       if (!Users || !Users.uid) {
         setLoading(false);
-        setActivityLoading(false);
-        setStatsLoading(false);
+        navigate('/login', { state: { returnUrl: '/profile' } });
         return;
       }
 
       try {
         // Fetch extended profile data
         const profileData = await fetchUserProfileData(Users.uid);
-        
+         
         if (profileData) {
+         
           setUserData(profileData);
           setDisplayName(profileData.displayName || '');
         } else {
@@ -47,8 +47,16 @@ function Profile() {
           setUserData(Users);
           setDisplayName(Users.displayName || '');
         }
-        
-        // Get liked songs directly from database.js
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.error("Failed to load profile data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [Users]);
         const likes = await fetchUser();
         setLikedSongs(likes || []);
 

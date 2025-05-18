@@ -125,9 +125,8 @@ function Recents() {
                     ))}
                   <div className="h-36 mb-32"></div>
                 </div>
-              ) : (
-                <div className="h-screen w-full mb-28 flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg overflow-y-auto no-scrollbar pb-32">
-                  <div className="w-full flex flex-col items-center p-4 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md">
+              ) : (                <div className="h-screen w-full mb-28 flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg overflow-y-auto no-scrollbar pb-32">
+                  <div className="w-full flex flex-col items-center p-4 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md sticky top-0 z-10">
                     <div className="flex items-center justify-center h-28 w-28 rounded-lg shadow-lg bg-melody-pink-500/20 border border-melody-pink-500/30">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-melody-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -142,7 +141,7 @@ function Recents() {
                       </p>
                     </div>
                   </div>
-                  <div className="p-2">                    {localUser && likes.map((song, index) => (
+                  <div className="p-2 flex-1 overflow-y-auto">                    {localUser && likes.map((song, index) => (
                       <div
                         className="flex items-center gap-3 p-3 mx-2 my-1 rounded-lg bg-deep-grey/50 hover:bg-melody-pink-600/20 transition-all duration-300 cursor-pointer"
                         key={song.id}

@@ -226,3 +226,19 @@ html {
   border-radius: inherit;
   background: linear-gradient(45deg, rgba(238, 16, 128, 0.5), rgba(45, 30, 55, 0.2));
 }
+
+/* Animations for recommendation indicators */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}

@@ -47,19 +47,33 @@ export async function getLyrics(artist, song, album, year,language) {
 }
 
 const API_KEY2 = import.meta.env.VITE_GEMINI_API_KEY2;
-export async function getSongRecommendations(song, artist) {  
-   const genAI = new GoogleGenerativeAI(API_KEY2);
+export async function getSongRecommendations(song, artist) {    // Validate inputs
+  if (!song || !artist || song === 'undefined' || artist === 'undefined' || 
+      typeof song !== 'string' || typeof artist !== 'string') {
+    console.error("Invalid song or artist provided to recommendation API:", { song, artist });
+    return [];
+  }
+  
+  // Trim any whitespace
+  const trimmedSong = song.trim();
+  const trimmedArtist = artist.trim();
+  
+  // Further validation
+  if (trimmedSong.length < 2 || trimmedArtist.length < 2) {
+    console.error("Song or artist name too short:", { song: trimmedSong, artist: trimmedArtist });
+    return [];
+  }
+  
+  const genAI = new GoogleGenerativeAI(API_KEY2);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-  const prompt = `Recommend strictly only 10 songs that are similar in style, genre, or mood to the song "${song}" by ${artist}. 
+  const prompt = `Recommend strictly only 10 songs that are similar in style, genre, or mood to the song "${trimmedSong}" by ${trimmedArtist}. 
     Please provide the recommendations in the following format, with comma seperator between the song:
     Song Name - Artist Name ~ Movie Name 
      follow  format strictly dont jumble each part
     Example: 
     "Kun Faya Kun" - "A.R. Rahman" ~ "Rockstar" 
     "Aadat" - "Atif Aslam" ~ "Kalyug" 
-    "Tum Se Hi" - "Mohit Chauhan" ~ "Jab We Met" `;
-   
-  try {
+    "Tum Se Hi" - "Mohit Chauhan" ~ "Jab We Met" `;  try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const data = response.candidates[0].content.parts[0].text;
@@ -70,14 +84,26 @@ export async function getSongRecommendations(song, artist) {
     
           recommendations.forEach((rec) => {
            const [songArtist, movie] = rec.split("~").map((part) => part.trim());
-            const [song, artist] = songArtist.split("-").map((part) => part.trim());
-    
-            if (song && artist) {
-              recommendationsArray.push({ song, artist, movie: movie});
+            let [song, artist] = songArtist.split("-").map((part) => part.trim());
+            
+            // Remove quotes from song and artist names
+            if (song) {
+              song = song.replace(/^["'](.*)["']$/, '$1'); // Remove surrounding quotes
+            }
+            
+            if (artist) {
+              artist = artist.replace(/^["'](.*)["']$/, '$1'); // Remove surrounding quotes
+            }
+            
+            // Remove quotes from movie name if present
+            let cleanedMovie = movie;
+            if (cleanedMovie) {
+              cleanedMovie = cleanedMovie.replace(/^["'](.*)["']$/, '$1');
+            }            if (song && artist) {
+              recommendationsArray.push({ song, artist, movie: cleanedMovie });
             }
           });
         }
-        console.log(recommendationsArray);
         return recommendationsArray;
       
     

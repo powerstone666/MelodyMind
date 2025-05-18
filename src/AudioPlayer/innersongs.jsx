@@ -230,28 +230,31 @@ function Innersongs() {
               </div>
               <div className="flex gap-4 items-center justify-center mb-6">
                 <h1 className="text-xl ">{songName}</h1>
-                <div>
+                <div className="flex flex-row items-center gap-3">
                   {!dloading ? (
                     <>
                       {liked ? (
                         <button onClick={handleDelete}>
                           <img
                             src="https://cdn-icons-png.flaticon.com/128/16887/16887092.png"
-                            className="h-8  mr-2"
+                            className="h-8"
+                            alt="Unlike"
                           />
                         </button>
                       ) : (
+                        <button onClick={handleLikes}>
                           <img
                             src="https://cdn-icons-png.flaticon.com/128/3641/3641323.png"
-                            className="h-8 mr-2"
-                            onClick={handleLikes}
-                        />
+                            className="h-8"
+                            alt="Like"
+                          />
+                        </button>
                       )}
-
                       <button onClick={downloadAudio}>
                         <img
                           src="https://cdn-icons-png.flaticon.com/128/2810/2810387.png"
-                          className="h-8 "
+                          className="h-8"
+                          alt="Download"
                         />
                       </button>
                     </>
@@ -259,7 +262,7 @@ function Innersongs() {
                     <img
                       src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
                       className="animate-spin h-8"
-                      viewBox="0 0 24 24"
+                      alt="Loading"
                     />
                   )}
                 </div>
@@ -324,28 +327,31 @@ function Innersongs() {
               </div>
               <div className="flex gap-4 items-center justify-center mb-6">
                 <h1 className="text-xl ">{songName}</h1>
-                <div>
+                <div className="flex flex-row items-center gap-3">
                   {!dloading ? (
                     <>
                       {liked ? (
                         <button onClick={handleDelete}>
                           <img
                             src="https://cdn-icons-png.flaticon.com/128/16887/16887092.png"
-                            className="h-8  mr-2"
+                            className="h-8"
+                            alt="Unlike"
                           />
                         </button>
                       ) : (
+                        <button onClick={handleLikes}>
                           <img
                             src="https://cdn-icons-png.flaticon.com/128/3641/3641323.png"
-                            className="h-8 mr-2"
-                            onClick={handleLikes}
-                        />
+                            className="h-8"
+                            alt="Like"
+                          />
+                        </button>
                       )}
-
                       <button onClick={downloadAudio}>
                         <img
                           src="https://cdn-icons-png.flaticon.com/128/2810/2810387.png"
-                          className="h-8 "
+                          className="h-8"
+                          alt="Download"
                         />
                       </button>
                     </>
@@ -353,7 +359,7 @@ function Innersongs() {
                     <img
                       src="https://cdn-icons-png.flaticon.com/128/1665/1665733.png"
                       className="animate-spin h-8"
-                      viewBox="0 0 24 24"
+                      alt="Loading"
                     />
                   )}
                 </div>
