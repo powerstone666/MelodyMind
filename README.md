@@ -15,7 +15,7 @@ Welcome to the AI Music Player repository! This is a full-stack progressive web 
 
 - **Frontend**: React.js
 - **Backend**: Firebase, Firestore
-- **APIs**: Spotify, JioSaavn, Last.fm
+- **APIs**: Gemini
 - **Emotion Detection**: face-api.js
 
 ## Installation 📦
