@@ -22,8 +22,8 @@ function Innerartist({ names }) {
   const [topSongs, setTopSongs] = useState([]);
   const [topAlbums, setTopAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [limit, setLimit] = useState(10);
-  const [albumLimit, setAlbumLimit] = useState(6);
+  const [limit, setLimit] = useState(6);
+  const [albumLimit, setAlbumLimit] = useState(10);
 
   // Function to handle expanding to show more results
   const expandSongResults = () => {
@@ -138,7 +138,7 @@ function Innerartist({ names }) {
     );
   }
   return (
-    <div className="w-full p-4 md:p-8 overflow-y-auto h-screen pb-24">
+    <div className="w-full p-4 md:p-8 overflow-y-auto h-screen pb-40">
       {/* Artist Header */}
       {artistData && (
         <div className="flex flex-col md:flex-row items-center md:items-start mb-10">
@@ -301,6 +301,8 @@ function Innerartist({ names }) {
             </button>
           </div>
         )}
+        {/* Spacer for audio player */}
+        <div className="h-32 md:h-20"></div>
       </div>
     </div>
   );

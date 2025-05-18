@@ -6,7 +6,7 @@ export async function getLyrics(artist, song, album, year,language) {
   
   const genAI = new GoogleGenerativeAI(API_KEY);
  
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-thinking-exp" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   let prompt = `You are a lyricist. Provide the exact,full lyrics for the song "${song}" by ${artist} and language the song was sung was ${language}. `;
 

@@ -49,7 +49,7 @@ function ArtistPage({ names }) {
   return (
     <>
     {isAboveMedium ?(    <div
-    className="overflow-y-auto h-screen w-screen mb-12 no-scrollbar"
+    className="overflow-y-auto h-full w-screen mb-12 no-scrollbar"
     style={{ minWidth: "100%" }}
   >
     <div className="flex p-4 flex-3 gap-5 mb-12 cursor-pointer " >
