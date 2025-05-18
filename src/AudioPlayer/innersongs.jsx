@@ -44,17 +44,11 @@ function Innersongs() {
     fetchLikes();
   }, [songid]);
 
-  const downloadAudio = async () => {
+ const downloadAudio = async () => {
     const url = download;
     try {
-      if (!url) {
-        toast.error("No download link available for this song.");
-        return;
-      }
       setDloading(true);
-      // Try fetch first
       const response = await fetch(url);
-      if (!response.ok) throw new Error("Network response was not ok");
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -66,9 +60,8 @@ function Innersongs() {
       setDloading(false);
       toast.success("Downloaded Successfully");
     } catch (error) {
-      // Fallback: open the link in a new tab
-      window.open(url, "_blank");
-      toast.error("Direct download failed. Opened the audio in a new tab. If it plays, right-click and save.");
+      console.error("Error downloading audio:", error);
+      toast.error("Download Failed");
       setDloading(false);
     }
   };
