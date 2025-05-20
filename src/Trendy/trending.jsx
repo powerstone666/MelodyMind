@@ -53,6 +53,7 @@ function Trending({ names }) {
     <Section 
       title="Top Tracks" 
       onViewAll={musicInfo.length > 5 ? (limit === 5 ? expandResults : () => setLimit(5)) : null}
+      className="pb-32 pt-4"
     >
       {loading ? (
         <Loader />
@@ -76,7 +77,6 @@ function Trending({ names }) {
             <span className="w-16 text-center hidden sm:block">TIME</span>
             <span className="w-8"></span> {/* Play button space */}
           </div>
-          
           {/* Table rows */}
           <div className="space-y-1">
             {musicInfo.slice(0, limit).map((song, index) => (
@@ -101,7 +101,9 @@ function Trending({ names }) {
               </div>
             ))}
           </div>
-        </div>      ) : (
+          <div className="h-24" />
+        </div>
+      ) : (
         <div className="w-full overflow-x-auto overflow-y-hidden no-scrollbar snap-x snap-mandatory">
           {/* Mobile view - horizontal scroll */}
           <div className="flex space-x-3 p-2 pb-4">

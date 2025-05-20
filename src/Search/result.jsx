@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { FaMusic, FaCompactDisc, FaUserAlt, FaSearch } from "react-icons/fa";
 
 import { addRecents } from "../Firebase/database";
 import { useState, useEffect } from "react";
@@ -23,25 +24,29 @@ function Result({ names }) {
     const fetchData = async () => {
       try {
         const res = await Searchsongs(names);
-        const res2 = await Searchsongs2(names);        setMusicInfo(
+        const res2 = await Searchsongs2(names);
+        setMusicInfo(
           res2.results.map((song) => ({
             id: song.id,
             name: he.decode(song.name),
             image: song.image[2] ? song.image[2].url : song.image[1].url,
           }))
-        );        setAlbuminfo(
+        );
+        setAlbuminfo(
           res.albums.results.map((song) => ({
             id: song.id,
             name: he.decode(song.title),
             image: song.image[2] ? song.image[2].url : song.image[1].url,
           }))
-        );        setArtistinfo(
+        );
+        setArtistinfo(
           res.artists.results.map((song) => ({
             id: song.id,
             name: he.decode(song.title),
             image: song.image[2] ? song.image[2].url : song.image[1].url,
           }))
-        );        setTopquery(
+        );
+        setTopquery(
           res.topQuery.results.map((song) => ({
             id: song.id,
             name: he.decode(song.title),
@@ -111,202 +116,221 @@ function Result({ names }) {
     }
   };
 
+  // Check if all results are empty (no results found)
+  const noResults =
+    !loading &&
+    musicInfo.length === 0 &&
+    albuminfo.length === 0 &&
+    artistinfo.length === 0 &&
+    topquery.length === 0 &&
+    names;
+
+  if (!names) {
+    // Default search page (no query entered)
+    return (
+      <div className="relative min-h-screen bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] pb-16 flex flex-col items-center justify-center">
+        <div className="relative z-10 flex flex-col items-center justify-center py-16 px-4 md:px-0 w-full">
+          <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-10 w-full max-w-2xl flex flex-col items-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-lg text-center">
+              Search MelodyMind
+            </h1>
+            <p className="text-lg text-white/80 font-medium mb-2 text-center">
+              Find your favorite songs, albums, and artists instantly.
+            </p>
+          </div>
+          <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-[#ff6b81]/40 to-[#232946]/0 rounded-full blur-2xl -z-10" />
+          <div className="absolute bottom-0 right-0 w-56 h-56 bg-gradient-to-tr from-[#6b81ff]/40 to-[#232946]/0 rounded-full blur-2xl -z-10" />
+        </div>
+        <div className="flex flex-col items-center justify-center w-full mt-10">
+          <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl p-8 flex flex-col items-center max-w-xl w-full">
+            <FaSearch className="w-16 h-16 text-[#ff6b81] mb-4 animate-bounce-slow" />
+            <h2 className="text-2xl font-bold text-white mb-2 text-center">
+              Start your search
+            </h2>
+            <p className="text-white/70 text-center mb-2">
+              Type a song, album, or artist in the search bar above to discover
+              music on MelodyMind.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (noResults) {
+    // No results found UI
+    return (
+      <div className="relative min-h-screen bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] pb-16 flex flex-col items-center justify-center">
+        <div className="relative z-10 flex flex-col items-center justify-center py-16 px-4 md:px-0 w-full">
+          <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-10 w-full max-w-2xl flex flex-col items-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-lg text-center">
+              No Results Found
+            </h1>
+            <p className="text-lg text-white/80 font-medium mb-2 text-center">
+              Sorry, we couldn't find anything for{" "}
+              <span className="text-[#ff6b81] font-bold">"{names}"</span>.
+            </p>
+          </div>
+          <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-[#ff6b81]/40 to-[#232946]/0 rounded-full blur-2xl -z-10" />
+          <div className="absolute bottom-0 right-0 w-56 h-56 bg-gradient-to-tr from-[#6b81ff]/40 to-[#232946]/0 rounded-full blur-2xl -z-10" />
+        </div>
+        <div className="flex flex-col items-center justify-center w-full mt-10">
+          <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl p-8 flex flex-col items-center max-w-xl w-full">
+            <FaSearch className="w-16 h-16 text-[#ff6b81] mb-4 animate-bounce-slow" />
+            <h2 className="text-2xl font-bold text-white mb-2 text-center">
+              Try another search
+            </h2>
+            <p className="text-white/70 text-center mb-2">
+              Check your spelling or try a different keyword.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className=" p-4  gap-5 mb-12 cursor-pointer ">
-      {!loading ? (
-        <>
-          {isAboveMedium ? (
-            <>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Songs</span>
-              </h1>
-              <div className="flex flex-wrap p-4  gap-5">
-                {musicInfo.slice(0, 20).map((song) => (
+    <div className="relative min-h-screen bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] pb-56">
+      {/* Hero Banner */}
+      <div className="relative z-10 flex flex-col items-center justify-center  px-4 md:px-0">
+       
+        {/* Decorative gradient shapes */}
+        <div className="absolute top-0 left-0 w-40 h-40 bg-gradient-to-br from-[#ff6b81]/40 to-[#232946]/0 rounded-full blur-2xl -z-10" />
+        <div className="absolute bottom-0 right-0 w-56 h-56 bg-gradient-to-tr from-[#6b81ff]/40 to-[#232946]/0 rounded-full blur-2xl -z-10" />
+      </div>
+      {!loading && (
+        <div className="flex flex-col gap-10 px-2 md:px-10">
+          {/* Songs Section */}
+          {musicInfo.length > 0 && (
+            <div className="rounded-3xl bg-white/10 backdrop-blur-md shadow-xl p-6 md:p-8 mb-2 border border-white/10">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-gradient-to-tr from-[#ff6b81] to-[#ffb86b] p-3 rounded-full text-white text-2xl shadow-lg">
+                  <FaMusic />
+                </span>
+                <h2 className="text-2xl font-bold text-white tracking-tight">
+                  Songs
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {musicInfo.slice(0, 12).map((song) => (
                   <div
-                    className="h-68 border-1 bg-deep-grey w-56 text-white mr-5 border-0 rounded-md p-4 mt-5"
                     key={song.id}
+                    className="group bg-gradient-to-br from-[#232946]/60 to-[#ff6b81]/10 rounded-2xl p-3 flex flex-col items-center shadow-md hover:scale-105 hover:shadow-2xl transition-all cursor-pointer border border-white/10"
                     onClick={() => play(song.id, song.name, song.image)}
                   >
                     <img
                       src={song.image}
-                      alt={song.title}
-                      className="h-48 w-56 object-cover border-0 rounded-md"
+                      alt={song.name}
+                      className="h-28 w-28 object-cover rounded-xl mb-2 border-2 border-white/20 group-hover:border-[#ff6b81] transition-all"
                     />
-                    <h1 className="text-center font-bold text-white">
+                    <h3 className="text-white font-semibold text-center truncate w-full">
                       {song.name}
-                    </h1>
+                    </h3>
                   </div>
                 ))}
               </div>
-
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Albums</span>
-              </h1>
-
-              <div className="flex flex-wrap p-4  gap-5">
-                {albuminfo.slice(0, limit).map((song) => (
-                  <Link to="/innerAlbum">
-                    <div
-                      className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
-                      key={song.id}
-                      onClick={() => playalbum(song.id)}
-                    >
-                      <img
-                        src={song.image}
-                        alt={song.title}
-                        className="h-48 w-56 object-cover border-0 rounded-md"
-                      />
-                      <h1 className="text-center font-bold text-white">
-                        {song.name}
-                      </h1>
-                    </div>
-                  </Link>
-                ))}
+            </div>
+          )}
+          {/* Albums Section */}
+          {albuminfo.length > 0 && (
+            <div className="rounded-3xl bg-white/10 backdrop-blur-md shadow-xl p-6 md:p-8 mb-2 border border-white/10">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-gradient-to-tr from-[#6b81ff] to-[#81ffb6] p-3 rounded-full text-white text-2xl shadow-lg">
+                  <FaCompactDisc />
+                </span>
+                <h2 className="text-2xl font-bold text-white tracking-tight">
+                  Albums
+                </h2>
               </div>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Artist</span>
-              </h1>
-              <div className="flex flex-wrap p-4  gap-5">
-                {artistinfo.slice(0, limit).map((song) => (
-                  <Link to="/innerartist">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {albuminfo.slice(0, 8).map((album) => (
+                  <Link to="/innerAlbum" key={album.id}>
                     <div
-                      className="h-68 border-1 bg-transparent w-56 text-white mr-5 border-0 rounded-md  p-4 mt-5"
-                      key={song.id}
-                      onClick={() => playsinger(song.id)}
-                    >
-                      <img
-                        src={song.image}
-                        alt={song.title}
-                        className="h-48 w-56 object-cover border-0 rounded-full"
-                      />
-                      <h1 className="text-center font-bold text-white">
-                        {song.name}
-                      </h1>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Query</span>
-              </h1>
-              <div className="flex flex-wrap p-4 mb-8 gap-5">
-                {topquery.slice(0, limit).map((song) => (
-                  <div
-                    className="h-68 border-1 bg-deep-grey w-56 text-white mr-5  rounded-md p-4 mt-5"
-                    key={song.id}
-                    onClick={() => playquery(song.id)}
-                  >
-                    <img
-                      src={song.image}
-                      alt={song.title}
-                      className="h-48 w-56 object-cover border-0 rounded-md"
-                    />
-                    <h1 className="text-center font-bold text-white">
-                      {song.name}
-                    </h1>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>              <h1 className="text-2xl p-2 m-2">
-                Top <span className="text-red font-bold">Songs</span>
-              </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
-                {musicInfo.slice(0, 40).map((song) => (
-                  <div
-                    className="flex flex-col items-center pb-4"
-                    key={song.id}
-                    onClick={() => play(song.id, song.name, song.image)}
-                  >
-                    <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                      <img
-                        src={song.image}
-                        alt={song.name}
-                        className="h-24 w-24 mb-2 object-cover "
-                      />
-                      <h1 className="text-center font-bold text-white text-sm truncate">
-                        {song.name}
-                      </h1>
-                    </div>
-                  </div>
-                ))}
-              </div>              <h1 className="text-2xl p-2 mt-5">
-                Top <span className="text-red font-bold">Albums</span>
-              </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
-                {albuminfo.slice(0, 10).map((album) => (
-                  <Link to="/innerAlbum">
-                    <div
-                      className="flex flex-col items-center pb-4"
-                      key={album.id}
+                      className="group bg-gradient-to-br from-[#232946]/60 to-[#6b81ff]/10 rounded-2xl p-3 flex flex-col items-center shadow-md hover:scale-105 hover:shadow-2xl transition-all cursor-pointer border border-white/10"
                       onClick={() => playalbum(album.id)}
                     >
-                      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                        <img
-                          src={album.image}
-                          alt={album.name}
-                          className="h-24 w-24 mb-2 object-cover"
-                        />
-                        <h1 className="text-center font-bold text-white text-sm truncate">
-                          {album.name}
-                        </h1>
-                      </div>
+                      <img
+                        src={album.image}
+                        alt={album.name}
+                        className="h-28 w-28 object-cover rounded-xl mb-2 border-2 border-white/20 group-hover:border-[#6b81ff] transition-all"
+                      />
+                      <h3 className="text-white font-semibold text-center truncate w-full">
+                        {album.name}
+                      </h3>
                     </div>
                   </Link>
                 ))}
-              </div>              <h1 className="text-2xl p-2 mt-5">
-                Top <span className="text-red font-bold">Artists</span>
-              </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
-                {artistinfo.slice(0, 10).map((artist) => (
-                  <Link to="/innerartist">
+              </div>
+            </div>
+          )}
+          {/* Artists Section */}
+          {artistinfo.length > 0 && (
+            <div className="rounded-3xl bg-white/10 backdrop-blur-md shadow-xl p-6 md:p-8 mb-2 border border-white/10">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-gradient-to-tr from-[#81ffb6] to-[#ffb86b] p-3 rounded-full text-white text-2xl shadow-lg">
+                  <FaUserAlt />
+                </span>
+                <h2 className="text-2xl font-bold text-white tracking-tight">
+                  Artists
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {artistinfo.slice(0, 8).map((artist) => (
+                  <Link to="/innerartist" key={artist.id}>
                     <div
-                      className="flex flex-col items-center pb-4"
-                      key={artist.id}
+                      className="group bg-gradient-to-br from-[#232946]/60 to-[#81ffb6]/10 rounded-2xl p-3 flex flex-col items-center shadow-md hover:scale-105 hover:shadow-2xl transition-all cursor-pointer border border-white/10"
                       onClick={() => playsinger(artist.id)}
                     >
-                      <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                        <img
-                          src={artist.image}
-                          alt={artist.name}
-                          className="h-24 w-24 mb-2 object-cover "
-                        />
-                        <h1 className="text-center font-bold text-white text-sm truncate">
-                          {artist.name}
-                        </h1>
-                      </div>
+                      <img
+                        src={artist.image}
+                        alt={artist.name}
+                        className="h-28 w-28 object-cover rounded-full mb-2 border-2 border-white/20 group-hover:border-[#81ffb6] transition-all"
+                      />
+                      <h3 className="text-white font-semibold text-center truncate w-full">
+                        {artist.name}
+                      </h3>
                     </div>
                   </Link>
                 ))}
-              </div>              <h1 className="text-2xl p-2 mt-5">
-                Top <span className="text-red font-bold">Query</span>
-              </h1>
-              <div className="flex overflow-x-scroll overflow-y-hidden space-x-4 p-2 no-scrollbar">
-                {topquery.slice(0, 10).map((query) => (
+              </div>
+            </div>
+          )}
+          {/* Top Query Section */}
+          {topquery.length > 0 && (
+            <div className="rounded-3xl bg-white/10 backdrop-blur-md shadow-xl p-6 md:p-8 mb-2 border border-white/10">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-gradient-to-tr from-[#ffb86b] to-[#ff6b81] p-3 rounded-full text-white text-2xl shadow-lg">
+                  <FaSearch />
+                </span>
+                <h2 className="text-2xl font-bold text-white tracking-tight">Top Results</h2>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {topquery.slice(0, 8).map((item) => (
                   <div
-                    className="flex flex-col items-center pb-4"
-                    key={query.id}
-                    onClick={() => playquery(query.id)}
+                    key={item.id}
+                    className="group bg-gradient-to-br from-[#232946]/60 to-[#ffb86b]/10 rounded-2xl p-3 flex flex-col items-center shadow-md hover:scale-105 hover:shadow-2xl transition-all cursor-pointer border border-white/10"
+                    onClick={() => playquery(item.id)}
                   >
-                    <div className="h-28 p-2 border-1 bg-deep-grey w-28 text-white rounded-md mt-2">
-                      <img
-                        src={query.image}
-                        alt={query.name}
-                        className="h-24 w-24 mb-2 object-cover "
-                      />
-                      <h1 className="text-center font-bold text-white text-sm truncate">
-                        {query.name}
-                      </h1>
-                    </div>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="h-28 w-28 object-cover rounded-xl mb-2 border-2 border-white/20 group-hover:border-[#ffb86b] transition-all"
+                    />
+                    <h3 className="text-white font-semibold text-center truncate w-full">{item.name}</h3>
+                    <span className="text-xs text-white/60 mt-1 capitalize">{item.type}</span>
                   </div>
                 ))}
               </div>
-            </>
+            </div>
           )}
-        </>
-      ) : (
-        <span className="text-red text-3xl font-bold">Loading.....</span>
+        </div>
+      )}
+      {loading && (
+        <div className="flex justify-center items-center h-64">
+          <span className="text-[#ff6b81] text-3xl font-bold animate-pulse">
+            Loading...
+          </span>
+        </div>
       )}
     </div>
   );

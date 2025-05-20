@@ -1,8 +1,6 @@
 import React from 'react';
 import { useForm } from "react-hook-form";
-import linkedin from './assets/linkedin.png';
-import github from './assets/github.png';
-import gmail from './assets/gmail.png';
+import { FaEnvelope, FaGithub, FaLinkedin, FaInstagram, FaUser } from "react-icons/fa";
 import contact from "./assets/contact.png";
 import useMediaQuery from './useMedia';
 import bgimage from "../src/assets/7tqQ0e.jpg";
@@ -26,77 +24,28 @@ export default function ContactUs() {
   };
 
   return (
-    <div  style={mystyle.bg1}>{
-    isAboveMedium ? (
-     <div className='h-screen w-full flex justify-center gap-12 mt-24 '>
-          <section className='w-1/3 ml-16'>
-           <img src={contact} alt="contact" className="hover:filter hover:saturate-200 transition duration-500 mb-48"/>
-          </section>
-          <section className='w-2/3 flex-col'>
-          <h1 className='text-2xl text-yellow font-bold ml-16'>CONTACT US</h1>
-          <form target="_blank" onSubmit={onSubmit} method="post" action="https://formspree.io/f/mgegrqwy"> 
-          <input type='text' placeholder='Name' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("name", { required: true })} />
-          <input type='email' placeholder='Email' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("email", { required: true })} />
-        <textarea placeholder='Message' className='w-1/2 h-32 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("message", { required: true })} />
-        <button type='submit' className='w-1/2 h-12 mt-8 ml-16  bg-yellow text-black'>Submit</button>
-        </form>
-        <div className="flex justify-start  my-10 gap-7 mx-24">
-                <a className="hover:opacity-50 transition duration-500" href="https://www.linkedin.com/in/imranpasha636/" target="_blank" rel="noreferrer">
-                <img src={linkedin} alt="linkedin"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://github.com/powerstone666" target="_blank" rel="noreferrer">
-                <img src={github} alt="github" className="h-8"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://www.geeksforgeeks.org/user/powerstone666" target="_blank" rel="noreferrer">
-                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210628182253/gfglogo.png" alt="geekforgeeks" className="h-8"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://leetcode.com/powerstone666/" target="_blank" rel="noreferrer">
-                <img src="https://cdn.iconscout.com/icon/free/png-512/leetcode-3628885-3030025.png" alt="leetcode" className="h-8"/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="mailto:imranpasha8225@gmail.com" target="_blank" rel="noreferrer">
-                <img src={gmail} alt="gmail" className="h-8"/>
-                </a>
+    <div className="min-h-screen bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] flex flex-col items-center justify-center py-8 px-2">
+      <div className="w-full max-w-2xl mx-auto animate-fadeIn">
+        <div className="bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-8 backdrop-blur-md">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="bg-gradient-to-tr from-[#ff6b81] to-[#ffb86b] p-3 rounded-full text-white text-2xl shadow-lg"><FaEnvelope /></span>
+            <h2 className="font-bold text-3xl">Contact Us</h2>
+          </div>
+          <form target="_blank" onSubmit={onSubmit} method="post" action="https://formspree.io/f/mgegrqwy" className="flex flex-col gap-4">
+            <input type="text" placeholder="Name" className="rounded-lg px-4 py-3 bg-white/10 text-white placeholder:text-white/60 border border-white/20 focus:ring-2 focus:ring-[#ff6b81] outline-none" {...register("name", { required: true })} />
+            <input type="email" placeholder="Email" className="rounded-lg px-4 py-3 bg-white/10 text-white placeholder:text-white/60 border border-white/20 focus:ring-2 focus:ring-[#ff6b81] outline-none" {...register("email", { required: true })} />
+            <textarea placeholder="Message" className="rounded-lg px-4 py-3 bg-white/10 text-white placeholder:text-white/60 border border-white/20 focus:ring-2 focus:ring-[#ff6b81] outline-none min-h-[100px]" {...register("message", { required: true })} />
+            <button type="submit" className="bg-gradient-to-r from-[#ffb86b] to-[#ff6b81] text-white font-bold py-3 rounded-full shadow-lg hover:scale-105 transition-all">Submit</button>
+          </form>
+          <div className="flex justify-center mt-8 gap-7">
+            <a className="hover:scale-110 transition-transform" href="https://www.linkedin.com/in/imranpasha636/" target="_blank" rel="noreferrer"><FaLinkedin className="text-2xl text-[#6b81ff]" /></a>
+            <a className="hover:scale-110 transition-transform" href="https://github.com/powerstone666" target="_blank" rel="noreferrer"><FaGithub className="text-2xl text-white" /></a>
+            <a className="hover:scale-110 transition-transform" href="https://www.geeksforgeeks.org/user/powerstone666" target="_blank" rel="noreferrer"><img src="https://media.geeksforgeeks.org/wp-content/uploads/20210628182253/gfglogo.png" alt="geekforgeeks" className="h-8" /></a>
+            <a className="hover:scale-110 transition-transform" href="https://leetcode.com/powerstone666/" target="_blank" rel="noreferrer"><img src="https://cdn.iconscout.com/icon/free/png-512/leetcode-3628885-3030025.png" alt="leetcode" className="h-8" /></a>
+            <a className="hover:scale-110 transition-transform" href="mailto:imranpasha8225@gmail.com" target="_blank" rel="noreferrer"><FaEnvelope className="text-2xl text-[#ff6b81]" /></a>
+          </div>
         </div>
-          </section>
-     </div>
-    ) : (
-        <div className='h-screen w-full  mt-18 ' style={{...mystyle.bg1,overflowY:"scroll"}}>
-          <section className='h-1/3 ml-12 p-4'>
-           <img src={contact} alt="contact" className="hover:filter hover:saturate-200 transition duration-500 h-full "/>
-          </section>
-          <section className='h-2/3 flex-col'>
-          <h1 className='text-2xl text-yellow font-bold ml-16'>CONTACT US</h1>
-          <form target="_blank" onSubmit={onSubmit} method="post" action="https://formspree.io/f/mgegrqwy"> 
-          <input type='text' placeholder='Name' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("name", { required: true })} />
-          <input type='email' placeholder='Email' className='w-1/2 h-12 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("email", { required: true })} />
-        <textarea placeholder='Message' className='w-1/2 h-32 mt-8 ml-16 bg-blue placeholder:text-deep-blue p-2' {...register("message", { required: true })} />
-        <button type='submit' className='w-1/2 h-12 mt-4 ml-16  bg-yellow text-black'>Submit</button>
-        </form>
-        <div className="flex justify-start  my-8 gap-7 mx-24">
-                <a className="hover:opacity-50 transition duration-500" href="https://www.linkedin.com/in/imranpasha636/" target="_blank" rel="noreferrer">
-                <img src={linkedin} alt="linkedin" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://github.com/powerstone666" target="_blank" rel="noreferrer">
-                <img src={github} alt="github" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://www.geeksforgeeks.org/user/powerstone666" target="_blank" rel="noreferrer">
-                <img src="https://media.geeksforgeeks.org/wp-content/uploads/20210628182253/gfglogo.png" alt="geekforgeeks" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="https://leetcode.com/powerstone666/" target="_blank" rel="noreferrer">
-                <img src="https://cdn.iconscout.com/icon/free/png-512/leetcode-3628885-3030025.png" alt="leetcode" className='w-18 h-8'/>
-                </a>
-                <a className="hover:opacity-50 transition duration-500" href="mailto:imranpasha8225@gmail.com" target="_blank" rel="noreferrer">
-                <img src={gmail} alt="gmail" className='w-18 h-8' />
-                </a>
-        </div>
-          </section>
-          <section className='h-72'>
-
-          </section>
-     </div>
-      
-    )
-}
+      </div>
     </div>
   );
 }

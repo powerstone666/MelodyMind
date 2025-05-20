@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 var  sharedLanguage= '';
@@ -344,3 +343,39 @@ export const searchSuggestion=async(songid)=>{
       return null;
     }
   }
+
+// Fetch playlists for a category (Quick Access)
+export const fetchPlaylistsByCategory = async (category) => {
+  try {
+    const res = await axios.get('https://saavn.dev/api/search/playlists', {
+      params: { query: category, limit: 12 }
+    });
+    if (res?.data?.data?.results) {
+      return res.data.data.results;
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching playlists:', error);
+    return [];
+  }
+};
+
+// Fetch playlist details by ID
+export const fetchPlaylistDetails = async (playlistId) => {
+  try {
+    const res = await axios.get('https://saavn.dev/api/playlists', {
+      params: { id: playlistId }
+    });
+    // Extract external URL if available
+    if (res?.data?.data) {
+      const playlistData = res.data.data;
+      // Try to find a URL field (commonly 'url' or 'perma_url')
+      const externalUrl = playlistData.url || playlistData.perma_url || null;
+      return { ...playlistData, externalUrl };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching playlist details:', error);
+    return null;
+  }
+};

@@ -51,15 +51,15 @@ function AlbumFull({ names }) {
       {!loading ? (
         <>
           {isAboveMedium ? (
-            <div className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg rounded-lg overflow-y-auto no-scrollbar pb-36">
-              <div className="w-full flex flex-col md:flex-row items-center p-6 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md">
+            <div className="h-screen w-5/6 m-12 mb-12 flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg rounded-lg overflow-y-auto no-scrollbar pb-32 pt-4">
+              <div className="w-full flex flex-col md:flex-row items-center p-6 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md mb-8">
                 <img
                   src={album}
                   alt="Album Art"
                   className="h-48 w-48 rounded-lg shadow-lg object-cover"
                 />
                 <div className="ml-0 md:ml-6 mt-4 md:mt-0 text-center md:text-left">
-                  <h1 className="font-bold text-2xl md:text-3xl text-white">
+                  <h1 className="font-bold text-2xl md:text-3xl text-white mb-2">
                     Trending Songs <span className="text-melody-pink-500">Mix</span>
                   </h1>
                   <p className="text-gray-300 mt-2">
@@ -67,7 +67,6 @@ function AlbumFull({ names }) {
                   </p>
                 </div>
               </div>
-
               <div className="p-4">
                 {musicInfo.slice(0, limit).map((song, index) => (
                   <Link to="/innerAlbum" key={song.id}>
@@ -86,7 +85,6 @@ function AlbumFull({ names }) {
                   </Link>
                 ))}
               </div>
-
               <div className="flex justify-center my-6 mb-4">
                 {musicInfo.length > 5 && (
                   <button
@@ -97,10 +95,11 @@ function AlbumFull({ names }) {
                   </button>
                 )}
               </div>
+              <div className="h-24" />
             </div>
           ) : (
-            <div className="h-screen w-full flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg overflow-y-auto no-scrollbar pb-32">
-              <div className="w-full flex flex-col items-center p-4 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md">
+            <div className="h-screen w-full flex flex-col bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg overflow-y-auto no-scrollbar pb-32 pt-4">
+              <div className="w-full flex flex-col items-center p-4 bg-gradient-to-tr from-deep-grey via-deep-blue to-deep-blue border-b border-gray-700 shadow-md mb-8">
                 <img
                   src={album}
                   alt="Album Art"
@@ -144,6 +143,7 @@ function AlbumFull({ names }) {
                   </button>
                 )}
               </div>
+              <div className="h-24" />
             </div>
           )}
         </>

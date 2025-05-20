@@ -201,7 +201,7 @@ html {
   transition: all 0.3s ease;
 }
 .icon-pulse:hover {
-  filter: drop-shadow(0 0 5px rgba(var(--melody-pink-600), 0.7));
+  filter: drop-shadow(0 0 5px rgba(238, 16, 128, 0.7));
   transform: scale(1.05);
 }
 
@@ -241,4 +241,53 @@ html {
 
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Add animation for ping-slow effect */
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Add animation for pulse-slow effect */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced section styling for mobile */
+.section-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: rgba(31, 31, 31, 0.5);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.section-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }

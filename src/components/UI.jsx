@@ -59,15 +59,21 @@ export const Card = ({ children, onClick }) => {
     <div 
       onClick={onClick}
       className={`
-        bg-deep-grey rounded-lg overflow-hidden 
+        bg-gradient-to-b from-deep-grey to-deep-grey/70
+        rounded-lg overflow-hidden 
         transition-all duration-300 hover:shadow-xl hover:scale-103 
-        hover:shadow-red/30 cursor-pointer group        ${isMobile 
+        hover:shadow-red/30 cursor-pointer group
+        ${isMobile 
           ? 'min-w-[130px] w-[130px] flex-shrink-0 snap-center' 
           : 'min-w-[160px] w-[160px] lg:min-w-[180px] lg:w-[180px] xl:min-w-[190px] xl:w-[190px]'
         }
         border border-transparent hover:border-red/20
+        backdrop-filter backdrop-blur-sm
+        relative
       `}
     >
+      {/* Add a subtle shine effect on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       {children}
     </div>
   );
@@ -92,21 +98,29 @@ export const AlbumArt = ({ src, alt, isNew }) => {
       <img 
         src={!imgError ? normalizedSrc : 'https://via.placeholder.com/300?text=No+Image'} 
         alt={alt} 
-        className="w-full h-auto aspect-square object-cover transition-transform duration-500 group-hover:scale-110" 
+        className="w-full h-auto aspect-square object-cover transition-transform duration-500 group-hover:scale-110 filter saturate-75 group-hover:saturate-100" 
         loading="lazy"
         onError={() => setImgError(true)}
-      />{isNew && (
+      />
+      
+      {isNew && (
         <div className="absolute top-2 right-2 z-10">
-          <span className="bg-gradient-to-r from-melody-pink-600 to-melody-pink-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg shadow-melody-pink-600/40">
+          <span className="bg-gradient-to-r from-melody-pink-600 to-melody-pink-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg shadow-melody-pink-600/40 animate-pulse-slow">
             NEW
           </span>
         </div>
-      )}<div className="absolute inset-0 bg-gradient-to-t from-melody-purple-900/80 via-melody-purple-800/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">        <button className="bg-gradient-to-r from-melody-pink-600 to-melody-pink-500 rounded-full p-2 transform scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 shadow-lg shadow-melody-pink-600/40 hover:shadow-melody-pink-500/60">
+      )}
+
+      <div className="absolute inset-0 bg-gradient-to-t from-melody-purple-900/80 via-melody-purple-800/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+        <button className="bg-gradient-to-r from-melody-pink-600 to-melody-pink-500 rounded-full p-2 transform scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 shadow-lg shadow-melody-pink-600/40 hover:shadow-melody-pink-500/60">
           <svg xmlns="http://www.w3.org/2000/svg" className={isMobile ? "h-5 w-5" : "h-6 w-6"} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
           </svg>
         </button>
       </div>
+      
+      {/* Add subtle overlay gradient at bottom for better text readability */}
+      <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black/50 to-transparent"></div>
     </div>
   );
 };
@@ -114,12 +128,16 @@ export const AlbumArt = ({ src, alt, isNew }) => {
 // Content Card Info
 export const CardInfo = ({ title, subtitle }) => {
   return (
-    <div className="p-3">      <h3 className="font-medium truncate leading-tight mb-1 transition-colors duration-300 group-hover:text-melody-pink-500" 
+    <div className="p-3 relative z-10">
+      {/* Add subtle gradient background overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-70 -z-10 rounded-b-lg"></div>
+      
+      <h3 className="font-medium truncate leading-tight mb-1 transition-colors duration-300 group-hover:text-melody-pink-500" 
           style={{ fontSize: '0.95rem' }}>
         {title}
       </h3>
       {subtitle && (
-        <div className="text-xs text-gray-400 leading-tight overflow-hidden">
+        <div className="text-xs text-gray-300 leading-tight overflow-hidden group-hover:text-white transition-colors duration-300">
           {typeof subtitle === 'string' ? (
             <p className="truncate">{subtitle}</p>
           ) : (

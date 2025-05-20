@@ -10,52 +10,35 @@ function Searchfunc() {
   const { search, setSearch } = useContext(Context);
   const [rerender, setRerender] = useState(false);
   const isAboveMedium = useMediaQuery("(min-width:1025px)");
-
   // Listen for changes in the search state
   useEffect(() => {
     setRerender(true);
-  }, [search]);
+  }, [search]); // Update the dependency array to include search
 
   const searchquery = (e) => {
     setSearch(e.target.value);
   };
-
   const clearSearch = () => {
-    setSearch("");
-  };
-
-  return (
-    <div className="min-h-screen overflow-y-auto no-scrollbar pb-32 pt-4 bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] text-white">
+    setSearch(""); // Clear the search query
+  };  return (
+    <div
+      className="min-h-screen overflow-y-auto no-scrollbar pb-32 pt-4 bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] text-white"
+    >
       {isAboveMedium ? (
         <>
-        
-
-          {rerender && search ? (
-            <div className="h-screen">
-              <Result names={search} />
-            </div>
-          ) : (
-            <div>
-              
-              <Topsongs names={"Top songs"} />
-            </div>
-          )}
-        </>
-      ) : (
-        <div className="h-screen">
-          <div className="sticky top-2 z-50 mx-auto w-[90%] max-w-xs mb-4">
-            <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-full shadow-lg px-4 py-2.5 backdrop-blur-md">
-              <FaSearch className="text-[#ff6b81] text-sm" />
+          <div className="max-w-2xl mx-auto px-4 mb-8">
+            <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-2xl shadow-lg px-4 py-3 backdrop-blur-md">
+              <FaSearch className="text-[#ff6b81] text-xl" />
               <input
                 type="text"
-                placeholder="Search music..."
-                className="flex-grow bg-transparent outline-none text-white placeholder:text-white/60 text-sm"
-                onChange={searchquery}
+                placeholder="Search for songs, artists, albums..."
+                className="flex-grow bg-transparent outline-none text-white placeholder:text-white/60 px-2 text-lg"
+                onChange={(e) => searchquery(e)}
                 value={search}
               />
               {search && (
-                <button
-                  className="text-[#ff6b81] text-sm p-1 hover:bg-white/10 rounded-full transition-all"
+                <button 
+                  className="text-[#ff6b81] text-xl font-bold p-1 hover:bg-white/10 rounded-full transition-all"
                   onClick={clearSearch}
                 >
                   <FaTimes />
@@ -63,18 +46,47 @@ function Searchfunc() {
               )}
             </div>
           </div>
-
+          {rerender && search ? (
+            <div className="h-screen">
+              <Result names={search} />
+            </div>
+          ) : (
+            <div>
+              <h2 className="text-2xl font-semibold px-4 mb-2">Top <span className="text-[#ff6b81] font-bold">Songs</span></h2>
+              <Topsongs names={"Top songs"} />
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="h-screen">          <div className="sticky top-2 z-50 mx-auto w-[90%] max-w-xs">
+            <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-full shadow-lg px-4 py-2.5 backdrop-blur-md">
+              <FaSearch className="text-[#ff6b81] text-sm" />
+              <input
+                type="text"
+                placeholder="Search music..."
+                className="flex-grow bg-transparent outline-none text-white placeholder:text-white/60 text-sm"
+                onChange={(e) => searchquery(e)}
+                value={search}
+              />
+              {search && (
+                <button 
+                  className="text-[#ff6b81] text-sm p-1 hover:bg-white/10 rounded-full transition-all" 
+                  onClick={clearSearch}
+                >
+                  <FaTimes />
+                </button>
+              )}
+            </div>
+          </div>
+          </div>
           {rerender && search ? (
             <div>
               <Result names={search} />
               <div className="h-24"></div>
             </div>
           ) : (
-            <div className="px-4">
-              <div className="flex flex-col items-center justify-center py-6 mb-2">
-             
-              </div>
-             
+            <div>
+              <h2 className="text-xl sm:text-2xl font-semibold px-4 mb-2">Top <span className="text-red font-bold">Songs</span></h2>
               <Topsongs names={"Top songs"} />
             </div>
           )}

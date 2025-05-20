@@ -368,33 +368,36 @@ function AudioPlayerComponent() {
   );
 
   return (
-    <div>
-      <ToastContainer
+    <div>      <ToastContainer
         position="top-center"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick
+        closeOnClick={false}
         rtl={false}
-        pauseOnFocusLoss
-        draggable
+        pauseOnFocusLoss={false}
+        draggable={false}
         pauseOnHover
         theme="dark"
         transition={Bounce}
+        limit={3}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
       />
       <RecommendationIndicator 
         visible={playingRecommendation || isLoadingRecommendations}
         loading={isLoadingRecommendations}
         recommendationType={recommendationType}
       />
-      {isAboveMedium ? (
-        <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md bg-deep-blue/90 border-t border-gray-700 shadow-lg z-50 animate-slideUp">
+      {isAboveMedium ? (        <div className="fixed bottom-0 left-0 right-0 backdrop-blur-md bg-deep-blue/90 border-t border-gray-700 shadow-lg z-50 animate-slideUp">
           {isLoading ? (
             <LoadingState />
           ) : (
-            <div className="flex items-center gap-4 px-6 py-3 max-w-7xl mx-auto">
+            <div className="flex items-center gap-2 px-4 py-2 max-w-7xl mx-auto">
               <div
-                className="flex items-center gap-4 min-w-[240px] hover:cursor-pointer group"
+                className="flex items-center gap-3 min-w-[200px] hover:cursor-pointer group"
                 onClick={setdisplay}
               >
                 <Link to="innersong" className="block">
@@ -402,10 +405,10 @@ function AudioPlayerComponent() {
                     <img 
                       src={image} 
                       alt={names}
-                      className="h-16 w-16 object-cover transition-transform duration-500 group-hover:scale-110" 
+                      className="h-14 w-14 object-cover transition-transform duration-500 group-hover:scale-110" 
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
@@ -413,8 +416,8 @@ function AudioPlayerComponent() {
                   </div>
                 </Link>
                 <div className="flex flex-col">
-                  <h1 className="text-sm font-semibold truncate max-w-[160px]">{names}</h1>
-                  <p className="text-xs text-gray-400 truncate max-w-[160px]">{artists}</p>
+                  <h1 className="text-sm font-semibold truncate max-w-[140px]">{names}</h1>
+                  <p className="text-xs text-gray-400 truncate max-w-[140px]">{artists}</p>
                   <div className="text-xs text-gray-500 mt-1">
                     {songHistory.length > 0 && (
                       <span>{currentHistoryIndex + 1} of {songHistory.length}</span>
@@ -455,18 +458,17 @@ function AudioPlayerComponent() {
             </div>
           )}
         </div>
-      ) : (
-        <div className="fixed bottom-16 inset-x-0 backdrop-blur-md bg-deep-blue/90 border-t border-gray-700 shadow-lg z-50 animate-slideUp">
+      ) : (        <div className="fixed bottom-16 inset-x-0 backdrop-blur-md bg-deep-blue/90 border-t border-gray-700 shadow-lg z-50 animate-slideUp">
           {isLoading ? (
             <LoadingState />
           ) : (
-            <div className="p-2">
-              <div className="flex items-center justify-between mb-2 px-2">
+            <div className="p-1">
+              <div className="flex items-center justify-between mb-1 px-2">
                 <Link to="innersong" className="flex items-center gap-2" onClick={setdisplay}>
-                  <img src={image} alt={names} className="h-10 w-10 rounded-md" />
+                  <img src={image} alt={names} className="h-8 w-8 rounded-md" />
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-xs font-bold truncate">{names}</h2>
-                    <p className="text-xs text-gray-400 truncate">{artists}</p>
+                    <h2 className="text-xs font-bold truncate max-w-[140px]">{names}</h2>
+                    <p className="text-xs text-gray-400 truncate max-w-[140px]">{artists}</p>
                     <div className="text-xs text-gray-500">
                       {songHistory.length > 0 && (
                         <span>{currentHistoryIndex + 1}/{songHistory.length}</span>
