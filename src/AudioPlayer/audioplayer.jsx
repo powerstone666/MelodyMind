@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { addRecents } from "../Firebase/database";
 import './custom-audioplayer.css';
-import { addSongToHistory, fetchRecommendations, navigateToNextSong, navigateToPrevSong } from "../utils/musicNavigation";
+import { addSongToHistory, fetchRecommendations, navigateToNextSong, navigateToPrevSong } from "../utils/musicNavigation_fixed.js";
 import RecommendationIndicator from "../components/RecommendationIndicator";
 
 function AudioPlayerComponent() {
@@ -61,37 +61,78 @@ function AudioPlayerComponent() {
   }, [names, array, image, artists]);
 
   const fetchSongData = async () => {
+    if (!songid) return;
     setIsLoading(true);
     let retryCount = 0;
     const maxRetries = 2;
+
     const attemptFetch = async () => {
       try {
         const res = await searchResult(songid);
-        const song = res.data.data[0];
-        const decodedName = he.decode(song.name);
-        const artistName = song.artists.primary[0].name;
+        const songData = res.data.data[0];
+        const decodedName = he.decode(songData.name);
+        const artistName = songData.artists.primary[0].name;
+
         if (decodedName) setSpotify(artistName + " " + decodedName);
         setArtists(artistName);
-        setArray(song.album.name);
-        setImage(song.image[1].url);
+        setArray(songData.album.name);
+        setImage(songData.image[1].url);
         setNames(decodedName);
-        const url = song.downloadUrl[4].url;
+        const url = songData.downloadUrl[4].url;
         setMusic(url);
+
         const songInfo = {
           id: songid,
           name: decodedName,
           artists: artistName,
-          image: song.image[1].url,
-          album: song.album.name,
+          image: songData.image[1].url,
+          album: songData.album.name,
           timestamp: new Date().toISOString(),
-          songYear: song.year
+          songYear: songData.year
         };
-        const { newHistory, newIndex } = addSongToHistory(songInfo, songHistory, currentHistoryIndex, false);
-        setSongHistory(newHistory);
-        setCurrentHistoryIndex(newIndex);
-        setPlayingRecommendation(false);
+
+        // Check if the song we are fetching is already at the currentHistoryIndex
+        const songIsAlreadyAtCurrentIndexInHistory = 
+          songHistory[currentHistoryIndex] && songHistory[currentHistoryIndex].id === songid;
+
+        if (songIsAlreadyAtCurrentIndexInHistory) {
+          // This is a history navigation (next/prev) where currentHistoryIndex was already updated by the caller.
+          // Or it's a re-fetch of the current song. No need to manipulate songHistory array itself.
+        } else {
+          // This is a new selection (e.g. clicked from a list), a recommendation, 
+          // or a jump in history not handled by prior setCurrentHistoryIndex.
+          let updatedHistory = [...songHistory];
+          // currentHistoryIndex from context is the index of the song *before* this new one is effectively inserted.
+          let insertionPointIndex = currentHistoryIndex; 
+
+          const existingSongHistIndex = updatedHistory.findIndex(s => s.id === songInfo.id);
+
+          if (existingSongHistIndex !== -1) {
+            // Song exists, remove it from its old position
+            updatedHistory.splice(existingSongHistIndex, 1);
+            // If the removed song was before or at the point where we intend to insert,
+            // our insertionPointIndex needs to be adjusted because the array shifted.
+            if (existingSongHistIndex <= insertionPointIndex) {
+              insertionPointIndex--; 
+            }
+          }
+
+          // Add the new songInfo after the (potentially adjusted) insertionPointIndex.
+          // All songs after this point in the original history are effectively truncated.
+          updatedHistory.splice(insertionPointIndex + 1, updatedHistory.length - (insertionPointIndex + 1), songInfo);
+          const newIndexForThisSong = insertionPointIndex + 1;
+
+          setSongHistory(updatedHistory);
+          setCurrentHistoryIndex(newIndexForThisSong); 
+        }
+        
+        const user = JSON.parse(localStorage.getItem("Users"));
+        if (user && songInfo.id && songInfo.name && songInfo.image) {
+          addRecents(user.uid, songInfo.id, songInfo.name, songInfo.image).catch(err => console.error("Error adding recents:", err));
+        }
         prefetchRecommendations(songInfo);
         return true;
+
       } catch (error) {
         console.error(`Error fetching song data (attempt ${retryCount + 1}/${maxRetries}):`, error);
         if (retryCount < maxRetries) {
@@ -190,74 +231,54 @@ function AudioPlayerComponent() {
     if (isFetching) return;
     setIsFetching(true);
     try {
-      const currentSongName = names || '';
-      const currentArtist = artists || '';
       const result = await navigateToNextSong({
         currentIndex: currentHistoryIndex,
-        songHistory: songHistory,
+        songHistory,
         recommendations,
         isLoadingRecommendations,
         currentSongId: songid,
-        currentSongName,
-        artistName: currentArtist,
-        setSongId: setSongid,
-        setLoadingRecommendations: setIsLoadingRecommendations
+        currentSongName: names, 
+        artistName: artists,   
+        setSongId: setSongid, // Though setSongid is called later, navigateToNextSong might use it for internal logic
+        setLoadingRecommendations: setIsLoadingRecommendations 
       });
 
       if (result.songId !== songid) {
         localStorage.setItem("songid", result.songId);
-        setSongid(result.songId);
+        setCurrentHistoryIndex(result.newIndex); // Update index BEFORE setSongid
 
-        if (result.addToHistory && result.song) {
+        if (result.addToHistory && result.song) { // Song is a recommendation
           setPlayingRecommendation(true);
           setRecommendationType(result.song.type || 'api');
-          const { newHistory, newIndex } = addSongToHistory(
-            result.song,
-            songHistory,
-            currentHistoryIndex
-          );
-          setSongHistory(newHistory);
-          setCurrentHistoryIndex(newIndex);
+          
+          const playedRec = result.song;
+          setRecommendations(prevRecs => {
+            const newRecs = prevRecs.filter(r => {
+              if (r.id && playedRec.id) return r.id !== playedRec.id;
+              if (r.name && playedRec.name && r.artists && playedRec.artists) {
+                return !(r.name.toLowerCase() === playedRec.name.toLowerCase() && 
+                         r.artists.toLowerCase() === playedRec.artists.toLowerCase());
+              }
+              return true; 
+            });
 
-          if (recommendations.length > 1) {
-            setRecommendations(prev => prev.slice(1));
-          } else {
-            setRecommendations([]);
-            const currentSong = songHistory[currentHistoryIndex];
-            if (currentSong && currentSong.id) {
-              prefetchRecommendations(currentSong, true);
-              toast.info("Loading fresh recommendations...");
+            if (newRecs.length === 0 && playedRec.id) { 
+              prefetchRecommendations(playedRec, true); 
             }
-          }
-        } else {
+            return newRecs;
+          });
+        } else { // Song is from history
           setPlayingRecommendation(false);
-          setCurrentHistoryIndex(result.newIndex);
         }
-
-        if (recommendations.length > 1) {
-          setRecommendations(prev => prev.slice(1));
+        setSongid(result.songId); // Triggers fetchSongData
+      } else { // Song ID is the same (e.g., repeat current, or end of playlist with no repeat)
+        setCurrentHistoryIndex(result.newIndex); 
+        if (result.addToHistory && result.song) { 
+            setPlayingRecommendation(true);
+            setRecommendationType(result.song.type || 'api');
         } else {
-          setRecommendations([]);
-          const currentSong = songHistory[currentHistoryIndex];
-          if (currentSong && currentSong.id) {
-            prefetchRecommendations(currentSong, true);
-            toast.info("Loading fresh recommendations...");
-          } else {
-            console.error('Cannot prefetch: Invalid current song', currentSong);
-          }
+            setPlayingRecommendation(false);
         }
-      } else {
-        setCurrentHistoryIndex(result.newIndex);
-      }
-
-      const user = JSON.parse(localStorage.getItem("Users"));
-      if (user && result.song) {
-        await addRecents(
-          user.uid, 
-          result.songId, 
-          result.song.name || result.song.songName || he.decode(result.song.name), 
-          result.song.image
-        );
       }
     } catch (error) {
       console.error("Error handling next song:", error);
@@ -274,34 +295,36 @@ function AudioPlayerComponent() {
     currentHistoryIndex, 
     recommendations, 
     isLoadingRecommendations, 
-    setSongid
+    setSongid,
+    setRecommendations, 
+    // setSongHistory, // setSongHistory is called by fetchSongData, not directly here
+    setCurrentHistoryIndex,
+    setIsLoadingRecommendations,
+    setPlayingRecommendation,
+    setRecommendationType,
+    prefetchRecommendations // Added prefetchRecommendations
   ]);
 
   const handlePrev = useCallback(async () => {
     if (isFetching) return;
     setIsFetching(true);
     try {
-      const result = navigateToPrevSong({
-        currentIndex: currentHistoryIndex,
-        songHistory: songHistory
+      const result = navigateToPrevSong({ 
+        currentIndex: currentHistoryIndex, 
+        songHistory
       });
 
       if (result.songId && result.songId !== songid) {
         localStorage.setItem("songid", result.songId);
-        setSongid(result.songId);
-        setCurrentHistoryIndex(result.newIndex);
-        setPlayingRecommendation(false);
-        const user = JSON.parse(localStorage.getItem("Users"));
-        if (user && result.song) {
-          await addRecents(
-            user.uid, 
-            result.songId, 
-            result.song.name || result.song.songName || he.decode(result.song.name), 
-            result.song.image
-          );
-        }
-      } else if (!result.songId) {
+        setCurrentHistoryIndex(result.newIndex); // Update index BEFORE setSongid
+        setSongid(result.songId); 
+        setPlayingRecommendation(false); 
+      } else if (result.songId && result.songId === songid) {
+        // Navigated to the same song (e.g., at beginning of history and tried to go prev)
+        setCurrentHistoryIndex(result.newIndex); 
+      } else if (!result.songId && songHistory.length > 0) { 
         toast.info("You're at the beginning of your listening history");
+        if (currentHistoryIndex !== 0) setCurrentHistoryIndex(0);
       }
     } catch (error) {
       console.error("Error handling previous song:", error);
@@ -309,7 +332,15 @@ function AudioPlayerComponent() {
     } finally {
       setIsFetching(false);
     }
-  }, [isFetching, songid, songHistory, currentHistoryIndex, setSongid]);
+  }, [
+    isFetching, 
+    songid, 
+    songHistory, 
+    currentHistoryIndex, 
+    setSongid, 
+    setCurrentHistoryIndex, 
+    setPlayingRecommendation
+  ]);
 
   useEffect(() => {
     if ("mediaSession" in navigator) {

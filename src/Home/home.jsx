@@ -105,6 +105,17 @@ function Home() {
     }
   }, [selectedPlaylist]);
 
+  // Effect to handle navigation to Home view (e.g., from sidebar or clearing a category)
+  // This ensures that if the user navigates "home" while a playlist modal or category view is active,
+  // the view resets correctly.
+  useEffect(() => {
+    if (!page || page === "") { // Assuming an empty 'page' string signifies the main home view
+      setShowPlaylistModal(false);
+      setSelectedPlaylist(null);
+      setPlaylistDetails(null); // Clear details when returning to home
+    }
+  }, [page]); // Dependency: re-run when 'page' from context changes
+
   // Determine which category is selected (other than 'Love' = Home)
   const selectedQuickCategory = quickAccessCategories.find(
     (cat) => page === cat.name 
@@ -177,7 +188,7 @@ function Home() {
           </div>
           {/* Quick Access Categories - Enhanced with Icons */}
           <div className="px-4 mb-8">
-            <h2 className="text-sm uppercase text-gray-400 font-medium mb-3 ml-1">Quick Access</h2>
+            <h2 className="text-sm uppercase text-gray-400 font-medium mb-3 ml-1">Quick Access <span>(playlists are under development you can only view)</span></h2>
             <div className="flex overflow-x-auto gap-3 pb-3 no-scrollbar">
               {quickAccessCategories.map((category) => (
                 <div 
