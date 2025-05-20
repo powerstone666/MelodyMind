@@ -221,7 +221,7 @@ function Moodanalyse() {
   };
 
   return (
-    <div className="h-screen w-full overflow-y-auto pb-32 pt-4 bg-gradient-to-b from-black via-gray-900 to-black">
+    <div className="h-screen w-full overflow-y-auto pb-20 pt-4 bg-gradient-to-b from-black via-gray-900 to-black">
       {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-emerald-500/20 mix-blend-plus-lighter blur-3xl animate-blob"></div>

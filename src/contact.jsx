@@ -24,7 +24,7 @@ export default function ContactUs() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] flex flex-col items-center justify-center py-8 px-2">
+    <div className="min-h-screen bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] flex flex-col items-center justify-center py-8 px-2 pb-20">
       <div className="w-full max-w-2xl mx-auto animate-fadeIn">
         <div className="bg-white/10 border border-white/20 rounded-3xl shadow-2xl p-8 mb-8 backdrop-blur-md">
           <div className="flex items-center gap-3 mb-4">

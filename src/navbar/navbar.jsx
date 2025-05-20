@@ -232,6 +232,18 @@ function Navbar() {
                       Home
                     </li>
                   </Link>
+                      <Link to="/about">
+                    <li 
+                      className={`${selected === "/about" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/about");
+                        setSelected("/about");
+                        setIsMenuToggled(false);
+                      }}
+                    >
+                      About
+                    </li>
+                  </Link>
                   <Link to="contact">
                     <li 
                       className={`${selected === "/contact" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
