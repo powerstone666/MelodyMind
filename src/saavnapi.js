@@ -154,6 +154,24 @@ export const Searchsongs2=async(names)=>{
       console.error('Error fetching data:', error);
   }
 }
+export const Searchsongs3=async(names)=>{
+  try {
+      const language=languages();
+      const options = {
+          method: 'GET',
+          url: 'https://saavn.dev/api/search',
+          params: { query: names ? names : `topsongs ${language}`,
+          
+           }
+      };
+      const res2 = await axios.request(options);
+  
+      return res2.data.data;
+
+  } catch (error) {
+      console.error('Error fetching data:', error);
+  }
+}
 export const searchResult=async(songid)=>{
     if(songid){
     const options = {
