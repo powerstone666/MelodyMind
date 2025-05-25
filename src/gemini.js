@@ -33,7 +33,7 @@ export async function getLyrics(artist, song, album, year,language) {
     const response = await result.response;
     const text = response.text();
     if (text) {
-        console.log(text)
+    
       return text;
     }
       else {
@@ -47,10 +47,10 @@ export async function getLyrics(artist, song, album, year,language) {
 }
 
 const API_KEY2 = import.meta.env.VITE_GEMINI_API_KEY2;
-export async function getSongRecommendations(song, artist) {    // Validate inputs
+export async function getSongRecommendations(song, artist, historySummary = [], forceNew = false) {    // Validate inputs
   if (!song || !artist || song === 'undefined' || artist === 'undefined' || 
       typeof song !== 'string' || typeof artist !== 'string') {
-    console.error("Invalid song or artist provided to recommendation API:", { song, artist });
+ 
     return [];
   }
   
@@ -65,22 +65,50 @@ export async function getSongRecommendations(song, artist) {    // Validate inpu
   }
   
   const genAI = new GoogleGenerativeAI(API_KEY2);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-  const prompt = `Recommend strictly only 10 songs that are similar in style, genre, or mood to the song "${trimmedSong}" by ${trimmedArtist}. 
-    Please provide the recommendations in the following format, with comma seperator between the song:
-    Song Name - Artist Name ~ Movie Name 
-     follow  format strictly dont jumble each part
-    Example: 
-    "Kun Faya Kun" - "A.R. Rahman" ~ "Rockstar" 
-    "Aadat" - "Atif Aslam" ~ "Kalyug" 
-    "Tum Se Hi" - "Mohit Chauhan" ~ "Jab We Met" `;  try {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Consider using a model that might be better for nuanced understanding if needed
+
+  let prompt = `You are a music recommendation expert. Recommend strictly 10 songs similar to "${trimmedSong}" by ${trimmedArtist}. 
+Consider the potential tone, emotions, and genre of the input song.`;
+
+  if (historySummary && historySummary.length > 0) {
+    prompt += `\n\nThe user has recently listened to the following songs (most recent first):\n`;
+    historySummary.forEach(histSong => {
+      prompt += `- "${histSong.name}" by ${histSong.artists}\n`;
+    });
+    prompt += `\nPlease provide recommendations that complement this listening history, 
+weighting towards similar tones and emotions, while trying to avoid direct duplicates from this recent history. 
+If the history suggests a certain mood (e.g., upbeat, melancholic, energetic), try to align recommendations with that, unless the primary song ("${trimmedSong}") strongly contrasts it.`;
+  }
+  
+  if (forceNew) {
+    prompt += `\nProvide a fresh set of recommendations, distinct from any previous suggestions for this song if possible.`;
+  }
+
+  prompt += `\n\nPlease provide the recommendations ONLY in the following strict format, with each song on a new line, and parts separated by " - " and " ~ ":
+Song Name - Artist Name ~ Movie Name (if applicable, otherwise omit the " ~ Movie Name" part)
+
+Example:
+"Kun Faya Kun" - "A.R. Rahman" ~ "Rockstar"
+"Aadat" - "Atif Aslam" ~ "Kalyug"
+"Namo Namo" - "Amit Trivedi"
+"Let It Be" - "The Beatles"
+
+Do NOT include any other text, numbering, or explanations.`;
+
+  try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
+    // Check if candidates and parts exist before accessing them
+    if (!response.candidates || !response.candidates[0] || !response.candidates[0].content || !response.candidates[0].content.parts || !response.candidates[0].content.parts[0]) {
+        console.error("Unexpected response structure from Gemini:", response);
+        return [];
+    }
     const data = response.candidates[0].content.parts[0].text;
     
      let recommendationsArray = [];
         if (typeof data === "string") {
-          const recommendations = data.split(",").map((item) => item.trim());
+          // Split by newline, as each recommendation is expected on a new line
+          const recommendations = data.split('\n').map((item) => item.trim()).filter(item => item.length > 0);
     
           recommendations.forEach((rec) => {
            const [songArtist, movie] = rec.split("~").map((part) => part.trim());
@@ -88,19 +116,19 @@ export async function getSongRecommendations(song, artist) {    // Validate inpu
             
             // Remove quotes from song and artist names
             if (song) {
-              song = song.replace(/^["'](.*)["']$/, '$1'); // Remove surrounding quotes
+              song = song.replace(/^["\'](.*)["\']$/, '$1'); // Remove surrounding quotes
             }
             
             if (artist) {
-              artist = artist.replace(/^["'](.*)["']$/, '$1'); // Remove surrounding quotes
+              artist = artist.replace(/^["\'](.*)["\']$/, '$1'); // Remove surrounding quotes
             }
             
             // Remove quotes from movie name if present
             let cleanedMovie = movie;
             if (cleanedMovie) {
-              cleanedMovie = cleanedMovie.replace(/^["'](.*)["']$/, '$1');
+              cleanedMovie = cleanedMovie.replace(/^["\'](.*)["\']$/, '$1');
             }            if (song && artist) {
-              recommendationsArray.push({ song, artist, movie: cleanedMovie });
+              recommendationsArray.push({ song, artist, movie: cleanedMovie || '' }); // Ensure movie is always a string
             }
           });
         }
@@ -112,4 +140,3 @@ export async function getSongRecommendations(song, artist) {    // Validate inpu
     return [];
     }
   }
-  

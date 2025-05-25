@@ -65,6 +65,24 @@ crossorigin="anonymous"></script>
 </head>
 <body>
   <div id="root"></div>
+  <div id="loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #1A1A1A; display: flex; justify-content: center; align-items: center; z-index: 9999;">
+      <style>
+        .spinner {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          padding: 7px;
+          background: conic-gradient(from 1turn, #FF6B6B00 10%, #FF6B6B) content-box,
+                      linear-gradient(#FF6B6B40 0 0) padding-box,
+                      linear-gradient(#FF6B6B20 0 0) border-box;
+          animation: l12 .8s infinite linear;
+        }
+        @keyframes l12 {
+          100% {transform: rotate(1turn)}
+        }
+      </style>
+      <div class="spinner"></div>
+    </div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

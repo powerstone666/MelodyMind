@@ -1,4 +1,4 @@
-﻿import React, { useContext, useEffect, useState, useCallback, useRef } from "react";
+import React, { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { Context } from "../context.js";
 import useMediaQuery from "../useMedia";
 import { searchResult, newsearch } from "../saavnapi";
@@ -47,7 +47,7 @@ function Innersongs() {
     fetchLikes();
   }, [songid]);
 
-  const downloadAudio = async () => {
+ const downloadAudio = async () => {
     const url = download;
     try {
       setDloading(true);
@@ -70,55 +70,34 @@ function Innersongs() {
   };
 
   const fetchLyrics = useCallback(async () => {
-    if (!songid) {
-      setDetails("");
-      setImage("");
-      setSongName("");
-      setLyrics("");
-      setRecommendation([]);
-      setDownload(""); // Clear download URL
-      setLoading(false); // Not loading if no songid
-      return;
-    }
+    setLoading(false);
+    if (songid) {
+      try {
+        const res = await searchResult(songid);
+        const songData = res.data.data[0];
 
-    setLoading(true); // Indicate loading has started
-    try {
-      const res = await searchResult(songid);
-      if (!res.data.data || !res.data.data[0]) {
-        console.error("Song data not found for songid:", songid);
-        throw new Error("Song data not found");
+        setDetails(songData);
+        setSongName(songData.name);
+        setDownload(songData.downloadUrl[4].url);
+        const lyricdata = await getLyrics(
+          songData.artists.all[0].name,
+          songData.name,
+          songData.album.name,
+          songData.year,
+          songData.language
+        );
+        const decodedName = he.decode(songData.name);
+
+        setImage(songData.image[2].url);
+        setSongName(decodedName);
+
+        setLyrics(lyricdata);
+      } catch (error) {
+        setLyrics("Lyrics Not found");
       }
-      const songData = res.data.data[0];
-
-      setDetails(songData); // This will trigger fetchRecommendations effect
-      const decodedName = he.decode(songData.name);
-      setSongName(decodedName);
-      // Ensure downloadUrl and image arrays are accessed safely
-      setDownload(songData.downloadUrl?.[4]?.url || "");
-      setImage(songData.image?.[2]?.url || "");
-
-      // Fetch lyrics after setting basic song details
-      const lyricdata = await getLyrics(
-        songData.artists?.all?.[0]?.name || songData.primaryArtists || "Unknown Artist",
-        songData.name, // Use original name for lyrics API
-        songData.album?.name || "Unknown Album",
-        songData.year || "N/A",
-        songData.language || "N/A"
-      );
-      setLyrics(lyricdata);
-    } catch (error) {
-      console.error("Error in fetchLyrics for songid:", songid, error);
-      // Reset states to a clean slate on error
-      setDetails("");
-      setImage("");
-      setSongName("Error loading song");
-      setLyrics("Lyrics Not found");
-      setRecommendation([]);
-      setDownload("");
-    } finally {
-      setLoading(false); // Indicate loading has finished
     }
-  }, [songid, setLyrics, setDetails, setSongName, setImage, setDownload, setRecommendation]);
+    setLoading(true);
+  }, [songid, setLyrics]);
 
   const fetchRecommendations = useCallback(async () => {
     if (
@@ -159,14 +138,14 @@ function Innersongs() {
   }, [details]);
 
   useEffect(() => {
-    // if (details.name) { // This check is implicitly handled by details dependency
-    fetchRecommendations();
-    // }
-  }, [details, fetchRecommendations]); // Depend on the 'details' object directly
+    if (details.name) {
+      fetchRecommendations();
+    }
+  }, [details.name, fetchRecommendations]);
 
   useEffect(() => {
     fetchLyrics();
-  }, [fetchLyrics]); // Depends on the fetchLyrics callback, which correctly depends on songid and setters
+  }, [songid, fetchLyrics]);
 
   // Check if song is saved offline
   useEffect(() => {
@@ -174,9 +153,11 @@ function Innersongs() {
       const isAvailable = isSongAvailableOffline(download);
       setSavedOffline(isAvailable);
     }
-  }, [download]);  const play = async (songName, expectedSongName = null, expectedArtistName = null, expectedAlbumName = null) => {
+  }, [download]);
+
+  const play = async (songName) => {
     try {
-      const res = await newsearch(songName, expectedSongName, expectedArtistName, expectedAlbumName);
+      const res = await newsearch(songName);
       localStorage.setItem("spotify", songName);
       setSpotify(songName);
       localStorage.setItem("songid", res);
@@ -303,26 +284,25 @@ function Innersongs() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-deep-blue">
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        transition={Bounce}
-      />
-      {!loading ? (
-        // Main Content View
-        <div className="flex-1 overflow-y-auto pb-32">
+    <>
+      {loading ? (
+        <div className="flex flex-col items-center h-screen overflow-y-scroll no-scrollbar mb-24">
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
+          {/* Desktop */}
           {isAboveMedium ? (
-            // Desktop View
-            <div className="w-full max-w-6xl mx-auto mt-10 mb-20 bg-gradient-to-br from-deep-grey/90 to-deep-blue/95 rounded-3xl shadow-2xl p-0 overflow-hidden">
+            <div className="w-full max-w-6xl mx-auto mt-10 bg-gradient-to-br from-deep-grey/90 to-deep-blue/95 rounded-3xl shadow-2xl p-0 overflow-hidden">
               {/* Banner with blur effect */}
               <div className="relative h-60 overflow-hidden">
                 <div 
@@ -368,7 +348,9 @@ function Innersongs() {
                             {/* Like/Unlike button */}
                             <button 
                               onClick={liked ? handleDelete : handleLikes} 
-                              className={`flex items-center gap-1 px-4 py-2 rounded-full ${ liked ? 'bg-melody-pink-600 text-white' : 'bg-gray-800/70 text-white hover:bg-melody-pink-700'} transition-all`}
+                              className={`flex items-center gap-1 px-4 py-2 rounded-full ${
+                                liked ? 'bg-melody-pink-600 text-white' : 'bg-gray-800/70 text-white hover:bg-melody-pink-700'
+                              } transition-all`}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill={liked ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={liked ? 0 : 2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -403,14 +385,16 @@ function Innersongs() {
                             {/* Save Offline button */}
                             <button
                               onClick={handleSaveOffline}
-                              className={`flex items-center gap-1 px-4 py-2 rounded-full ${ savedOffline ? 'bg-melody-purple-700 text-white' : 'bg-gray-800/70 text-white hover:bg-melody-purple-700'} transition-all`}
+                              className={`flex items-center gap-1 px-4 py-2 rounded-full ${
+                                savedOffline ? 'bg-melody-purple-700 text-white' : 'bg-gray-800/70 text-white hover:bg-melody-purple-700'
+                              } transition-all`}
                               disabled={savingOffline}
                             >
                               {savingOffline ? (
                                 <>
-                                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                   </svg>
                                   <span>Processing</span>
                                 </>
@@ -439,168 +423,11 @@ function Innersongs() {
                   </div>
                 </div>
               </div>
-              
-              {/* Tab navigation */}
-              <div className="flex gap-1 border-b border-gray-700/50 px-8">
-                <button
-                  className={`px-6 py-4 font-semibold transition-all duration-300 relative ${
-                    midsection === "song"
-                      ? "text-melody-pink-500"
-                      : "text-gray-400 hover:text-gray-200"
-                  }`}
-                  onClick={() => setMidsection("song")}
-                >
-                  Recommendations
-                  {midsection === "song" && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-melody-pink-500"></span>
-                  )}
-                </button>
-                <button
-                  className={`px-6 py-4 font-semibold transition-all duration-300 relative ${
-                    midsection === "lyric"
-                      ? "text-melody-pink-500"
-                      : "text-gray-400 hover:text-gray-200"
-                  }`}
-                  onClick={() => setMidsection("lyric")}
-                >
-                  Lyrics & Info
-                  {midsection === "lyric" && (
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-melody-pink-500"></span>
-                  )}
-                </button>
-              </div>
-              {midsection === "song" && (
-                <div className="p-8 pb-36 space-y-3">
-                  <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Similar Songs You Might Like
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-2">
-                    {recommendation.map((song, index) => {
-                      // Construct the search query robustly
-                      let searchQuery = song.song; // song.song is already cleaned
-                      if (song.artist && typeof song.artist === 'string' && song.artist.trim() !== "") {
-                        searchQuery += " " + song.artist; // song.artist is already cleaned
-                      }
-
-                      return (                        <div
-                          className="bg-melody-purple-900/50 backdrop-blur-sm flex items-center p-4 rounded-xl border border-melody-purple-700/50 hover:border-melody-pink-600/50 hover:shadow-melody-pink-600/20 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                          key={index}
-                          onClick={() => play(searchQuery, song.song, song.artist, song.movie || song.album || '')} // Use the constructed searchQuery and include album info
-                        >
-                          <div className="flex items-center justify-center h-12 w-12 bg-melody-purple-800 rounded-lg text-center mr-4 group-hover:bg-melody-pink-600 transition-colors duration-300 relative">
-                            <span className="text-sm text-gray-300 font-medium group-hover:opacity-0 transition-opacity">{index + 1}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white absolute opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                            </svg>
-                          </div>
-                          <div className="flex flex-col flex-grow gap-0.5">
-                            <span className="text-md font-semibold text-white group-hover:text-melody-pink-400 transition-colors line-clamp-1">{song.song}</span>
-                            <div className="flex items-center">
-                              <span className="text-xs font-medium text-melody-pink-400/80">
-                                {song.artist}
-                              </span>
-                              {song.movie && (
-                                <>
-                                  <span className="mx-1.5 text-xs text-gray-500">•</span>
-                                  <span className="text-xs text-gray-400 line-clamp-1">{song.movie}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="p-2 rounded-full bg-melody-pink-600/20 text-melody-pink-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                            </svg>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              {midsection === "lyric" && (
-                <div className="p-8 pb-40">
-                  {/* Song info panel */}
-                  <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="flex-grow lg:w-1/3 lg:max-w-md bg-melody-purple-900/40 backdrop-blur-sm border border-melody-purple-700/50 rounded-xl p-6 shadow-xl">
-                      <h3 className="text-lg font-semibold text-white border-b border-gray-700/50 pb-3 mb-4 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h1m-7 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Track Details
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <span className="text-xs font-medium text-melody-pink-400">TITLE</span>
-                          <div className="text-white font-medium mt-1">{he.decode(details.name)}</div>
-                        </div>
-                        <div>
-                          <span className="text-xs font-medium text-melody-pink-400">ARTIST</span>
-                          <div className="text-white font-medium mt-1">{details.primaryArtists || "Unknown Artist"}</div>
-                        </div>
-                        <div>
-                          <span className="text-xs font-medium text-melody-pink-400">ALBUM</span>
-                          <div className="text-white font-medium mt-1">{details.album ? he.decode(details.album.name) : "Single"}</div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <span className="text-xs font-medium text-melody-pink-400">LANGUAGE</span>
-                            <div className="text-white font-medium mt-1">{details.language || "Unknown"}</div>
-                          </div>
-                          <div>
-                            <span className="text-xs font-medium text-melody-pink-400">YEAR</span>
-                            <div className="text-white font-medium mt-1">{details.year || "Unknown"}</div>
-                          </div>
-                        </div>
-                        {details.label && (
-                          <div>
-                            <span className="text-xs font-medium text-melody-pink-400">LABEL</span>
-                            <div className="text-white font-medium mt-1">{details.label}</div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Lyrics panel */}
-                    <div className="flex-grow lg:w-2/3 bg-melody-purple-900/40 backdrop-blur-sm border border-melody-purple-700/50 rounded-xl p-6 shadow-xl">
-                      <h3 className="text-lg font-semibold text-white border-b border-gray-700/50 pb-3 mb-4 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Lyrics
-                      </h3>
-                      <div className="relative">
-                        <div className="max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-                          <div className="text-md whitespace-pre-line text-gray-200 leading-relaxed">
-                            {lyrics ? lyrics : (
-                              <div className="flex flex-col items-center py-10 text-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span className="text-gray-400 text-lg">Lyrics not available for this song</span>
-                                <p className="text-gray-500 text-sm mt-2">We couldn't find lyrics for this track.</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        {/* Fading effect at the bottom */}
-                        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-melody-purple-900/40 to-transparent pointer-events-none"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Add extra bottom spacing for audio player */}
-              <div className="h-36"></div>
             </div>
           ) : (
-            // Mobile View
-            <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-deep-grey/95 to-deep-blue/95 min-h-screen">
-              {/* Mobile song header */}
+            // Mobile
+            <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-deep-grey/95 to-deep-blue/95 overflow-hidden min-h-screen pb-32">
+              {/* Song header with image and gradient overlay */}
               <div className="relative">
                 <div className="absolute inset-0 bg-cover bg-center blur-sm opacity-20" style={{ backgroundImage: `url(${image})` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/70 to-deep-blue"></div>
@@ -672,7 +499,7 @@ function Innersongs() {
                         >
                           {savingOffline ? (
                             <>
-                              <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white">
+                              <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                               </svg>
@@ -702,8 +529,8 @@ function Innersongs() {
                 </div>
               </div>
               
-              {/* Make tabs sticky for mobile */}
-              <div className="sticky top-0 z-10 px-4 py-2 bg-deep-blue/90 backdrop-blur-md">
+              {/* Tab navigation - pill style */}
+              <div className="flex justify-center px-4 mb-4">
                 <div className="flex w-full bg-deep-grey/30 backdrop-blur-sm rounded-full overflow-hidden border border-gray-700/30 shadow-inner">
                   <button
                     className={`flex-1 py-2.5 px-4 font-medium text-sm transition-all duration-300 ${
@@ -729,7 +556,7 @@ function Innersongs() {
               </div>
               
               {midsection === "song" && (
-                <div className="px-4 pb-40">
+                <div className="px-4 pb-36">
                   <h2 className="text-lg font-semibold text-white mb-3 flex items-center px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -737,16 +564,11 @@ function Innersongs() {
                     Similar Songs You Might Like
                   </h2>
                   <div className="space-y-3">
-                    {recommendation.map((song, index) => (                      <div
+                    {recommendation.map((song, index) => (
+                      <div
                         className="bg-melody-purple-900/50 backdrop-blur-sm flex items-center p-3 rounded-xl border border-melody-purple-700/50 hover:border-melody-pink-600/50 hover:shadow-melody-pink-600/20 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                        key={index}                        onClick={() => {
-                          // Construct the search query robustly for mobile version too
-                          let searchQuery = song.song; // song.song is already cleaned
-                          if (song.artist && typeof song.artist === 'string' && song.artist.trim() !== "") {
-                            searchQuery += " " + song.artist; // song.artist is already cleaned
-                          }
-                          play(searchQuery, song.song, song.artist, song.movie || song.album || '');
-                        }}
+                        key={index}
+                        onClick={() => play(song.song)}
                       >
                         <div className="flex items-center justify-center h-10 w-10 bg-melody-purple-800 rounded-lg text-center mr-4 group-hover:bg-melody-pink-600 transition-colors duration-300 relative">
                           <span className="text-xs text-gray-300 font-medium group-hover:opacity-0 transition-opacity">{index + 1}</span>
@@ -780,140 +602,86 @@ function Innersongs() {
               )}
               
               {midsection === "lyric" && (
-                <div className="pb-40 px-4">
+                <div className="pb-36 px-4">
                   <div className="bg-melody-purple-900/50 backdrop-blur-sm border border-melody-purple-700/50 p-5 rounded-xl shadow-lg mb-4">
                     <h3 className="text-md font-semibold text-white border-b border-gray-700/50 pb-2 mb-3 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h1m-7 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      Track Details
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <span className="text-xs font-medium text-melody-pink-400">TITLE</span>
-                        <div className="text-white text-sm font-medium mt-1">{he.decode(details.name)}</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h1m-7 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Track Details
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <span className="text-xs font-medium text-melody-pink-400">TITLE</span>
+                          <div className="text-white text-sm font-medium mt-1">{he.decode(details.name)}</div>
+                        </div>
+                        <div>
+                          <span className="text-xs font-medium text-melody-pink-400">YEAR</span>
+                          <div className="text-white text-sm font-medium mt-1">{details.year}</div>
+                        </div>
+                        <div>
+                          <span className="text-xs font-medium text-melody-pink-400">ALBUM</span>
+                          <div className="text-white text-sm font-medium mt-1">{details.album && he.decode(details.album.name)}</div>
+                        </div>
+                        <div>
+                          <span className="text-xs font-medium text-melody-pink-400">LANGUAGE</span>
+                          <div className="text-white text-sm font-medium mt-1">{details.language}</div>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-xs font-medium text-melody-pink-400">YEAR</span>
-                        <div className="text-white text-sm font-medium mt-1">{details.year || "Unknown"}</div>
-                      </div>
-                      <div>
-                        <span className="text-xs font-medium text-melody-pink-400">ALBUM</span>
-                        <div className="text-white text-sm font-medium mt-1">{details.album ? he.decode(details.album.name) : "Single"}</div>
-                      </div>
-                      <div>
-                        <span className="text-xs font-medium text-melody-pink-400">LANGUAGE</span>
-                        <div className="text-white text-sm font-medium mt-1">{details.language || "Unknown"}</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-melody-purple-900/50 backdrop-blur-sm border border-melody-purple-700/50 p-5 rounded-xl shadow-lg">
-                    <h3 className="text-md font-semibold text-white border-b border-gray-700/50 pb-2 mb-3 flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-melody-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Lyrics
-                    </h3>
-                    <div className="relative">
-                      <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                        <div className="text-sm whitespace-pre-line text-gray-200 leading-relaxed">
+                      <div className="bg-deep-grey/50 rounded-lg p-4 mt-2 max-h-96 overflow-y-auto custom-scrollbar">
+                        <div className="text-md whitespace-pre-line text-gray-200">
                           {lyrics ? lyrics : (
                             <div className="flex flex-col items-center py-6 text-center">
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
-                              <span>Lyrics not available for this song</span>
+                              <span>Lyrics not found for this song</span>
                             </div>
                           )}
                         </div>
                       </div>
-                      {/* Fading effect at the bottom */}
-                      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-melody-purple-900/40 to-transparent pointer-events-none"></div>
                     </div>
                   </div>
-                </div>
-              )}
-              
-              {/* Add extra bottom spacing for audio player */}
-              <div className="h-40"></div>
+                )}
+                {/* Spacer for audio player */}
+                <div className="h-32"></div>
+              </div>
             </div>
           )}
         </div>
       ) : (
-        // Skeleton Loading View - Shown when loading is TRUE
-        <div className="flex-1 overflow-y-auto pb-32">
-          {/* Skeleton structure */}
-          {isAboveMedium ? (
-            // Desktop Skeleton
-            <div className="w-full max-w-6xl mx-auto mt-10 mb-20 bg-gradient-to-br from-deep-grey/90 to-deep-blue/95 rounded-3xl shadow-2xl p-0 overflow-hidden animate-pulse">
-              <div className="h-60 bg-gray-700/50"></div> {/* Banner placeholder */}
-              <div className="flex gap-1 border-b border-gray-700/50 px-8 mt-[-60px] relative z-10"> {/* Adjusted margin for overlap */}
-                 {/* Song details overlay skeleton */}
-                 <div className="w-full flex items-center gap-8 p-8 pt-0"> {/* Removed pt if banner is placeholder */}
-                    <div className="h-48 w-48 rounded-2xl bg-gray-600/50"></div> {/* Image placeholder */}
-                    <div className="flex-grow space-y-3">
-                      <div className="h-8 bg-gray-600/50 rounded w-3/4"></div> {/* Song name placeholder */}
-                      <div className="h-6 bg-gray-600/50 rounded w-1/2"></div> {/* Artist placeholder */}
-                      <div className="h-4 bg-gray-600/50 rounded w-2/3"></div> {/* Album placeholder */}
-                      <div className="flex gap-3 mt-2">
-                        <div className="h-10 w-24 bg-gray-700/50 rounded-full"></div> {/* Button placeholder */}
-                        <div className="h-10 w-24 bg-gray-700/50 rounded-full"></div> {/* Button placeholder */}
-                        <div className="h-10 w-24 bg-gray-700/50 rounded-full"></div> {/* Button placeholder */}
-                      </div>
-                    </div>
-                  </div>
+        <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gradient-to-br from-deep-grey/80 to-deep-blue/80">
+          <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-deep-grey/80 to-deep-blue/80 rounded-2xl shadow-2xl p-6 animate-pulse">
+            {/* Image skeleton */}
+            <div className="flex flex-col items-center">
+              <div className="bg-gray-700 rounded-xl w-40 h-40 mb-4"></div>
+              {/* Title skeleton */}
+              <div className="h-6 w-2/3 bg-gray-700 rounded mb-4"></div>
+              {/* Buttons skeleton */}
+              <div className="flex flex-row gap-4 mb-4 w-full justify-center">
+                <div className="h-8 w-8 bg-gray-700 rounded-full"></div>
+                <div className="h-8 w-8 bg-gray-700 rounded-full"></div>
+                <div className="h-8 w-8 bg-gray-700 rounded-full"></div>
               </div>
-              <div className="flex gap-1 border-b border-gray-700/50 px-8">
-                <div className="px-6 py-4 h-10 w-36 bg-gray-700/30 rounded-t-md"></div> {/* Tab placeholder */}
-                <div className="px-6 py-4 h-10 w-36 bg-gray-700/30 rounded-t-md"></div> {/* Tab placeholder */}
+              {/* Tabs skeleton */}
+              <div className="flex w-full gap-2 mb-6">
+                <div className="flex-1 h-10 bg-gray-700 rounded-full"></div>
+                <div className="flex-1 h-10 bg-gray-700 rounded-full"></div>
               </div>
-              <div className="p-8 space-y-3">
-                <div className="h-6 bg-gray-600/50 rounded w-1/3 mb-4"></div> {/* Section title placeholder */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={i} className="flex items-center p-4 rounded-xl bg-melody-purple-900/30 h-20">
-                      <div className="h-12 w-12 bg-gray-700/50 rounded-lg mr-4"></div>
-                      <div className="flex-grow space-y-2">
-                        <div className="h-4 bg-gray-600/50 rounded w-5/6"></div>
-                        <div className="h-3 bg-gray-600/50 rounded w-3/4"></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* Content skeleton */}
+              <div className="w-full space-y-4">
+                <div className="h-6 bg-gray-700 rounded w-3/4 mx-auto"></div>
+                <div className="h-6 bg-gray-700 rounded w-2/3 mx-auto"></div>
+                <div className="h-6 bg-gray-700 rounded w-1/2 mx-auto"></div>
+                <div className="h-6 bg-gray-700 rounded w-5/6 mx-auto"></div>
               </div>
             </div>
-          ) : (
-            // Mobile Skeleton
-            <div className="w-full p-4 animate-pulse">
-              <div className="h-64 bg-gray-700/50 rounded-2xl mb-4"></div> {/* Image placeholder */}
-              <div className="space-y-3 mb-6">
-                <div className="h-8 bg-gray-600/50 rounded w-3/4 mx-auto"></div> {/* Song name placeholder */}
-                <div className="h-6 bg-gray-600/50 rounded w-1/2 mx-auto"></div> {/* Artist placeholder */}
-              </div>
-              <div className="flex justify-around mb-6">
-                <div className="h-12 w-12 bg-gray-700/50 rounded-full"></div> {/* Button placeholder */}
-                <div className="h-12 w-12 bg-gray-700/50 rounded-full"></div> {/* Button placeholder */}
-                <div className="h-12 w-12 bg-gray-700/50 rounded-full"></div> {/* Button placeholder */}
-              </div>
-              <div className="space-y-3">
-                <div className="h-6 bg-gray-600/50 rounded w-1/3 mb-2"></div> {/* Section title placeholder */}
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center p-3 rounded-xl bg-melody-purple-900/30 h-16">
-                    <div className="h-10 w-10 bg-gray-700/50 rounded-lg mr-3"></div>
-                    <div className="flex-grow space-y-1">
-                      <div className="h-4 bg-gray-600/50 rounded w-5/6"></div>
-                      <div className="h-3 bg-gray-600/50 rounded w-3/4"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
 export default Innersongs;
+

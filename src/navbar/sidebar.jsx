@@ -10,6 +10,7 @@ import liked from "../assets/liked.svg";
 import logout from "../assets/logout.svg";
 import recent from "../assets/recent.svg";
 import login from "../assets/user.svg"; // Login icon
+import offline from "../assets/offline_icon_blue_outline.svg"; // Offline icon
 import { logoutUser } from "../Firebase/auth";
 import AudioPlayer from "../AudioPlayer/audioplayer";
 import { useContext } from "react";
@@ -141,7 +142,24 @@ function Sidebar() {
                   Liked
                 </h1>
               </div>
-            </Link>            <h1 className="text-melody-pink-500 mb-4 mt-2">Account</h1>
+            </Link>
+            <Link to="/offline">
+              <div className="p-2 flex">
+                <img src={offline} alt="offline icon" className="mr-2 h-8" />
+                <h1
+                  className={`${
+                    selected === "/offline" ? selectedStyle : "hover:text-red"
+                  } text-2xl`}
+                  onClick={() => {
+                    localStorage.setItem("selected", "/offline");
+                    setSelected("/offline");
+                  }}
+                >
+                  Offline
+                </h1>
+              </div>
+            </Link>
+            <h1 className="text-melody-pink-500 mb-4 mt-2">Account</h1>
             {Users ? (
               <>
                 <Link to="/profile">
@@ -255,24 +273,27 @@ function Sidebar() {
                   Library
                 </h2>
               </div>
-            </Link>            <Link to="/search">
+            </Link>
+           
+            <Link to="/search">
               <div
                 onClick={() => {
-                  localStorage.setItem("selected", "/search");
+                  localStorage.setItem("/search");
                   setSelected("/search");
                 }}
               >
                 <img src={search} alt="search icon" className="p-2" />
                 <h2
                   className={`${
-                    selected === "/search" ? selectedStyle : "hover:text-red"
+                    selected === "/search"
+                      ? selectedStyle
+                      : "hover:text-red"
                   } `}
                 >
                   Search
                 </h2>
               </div>
             </Link>
-            
           </nav>
         </footer>
       )}

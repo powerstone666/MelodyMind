@@ -25,7 +25,7 @@ function Searchfunc() {
   };
 
   return (
-    <div className="min-h-screen overflow-y-auto no-scrollbar pb-32 pt-4 bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] text-white">
+    <div className="min-h-screen overflow-y-auto no-scrollbar pb-24 pt-4 bg-gradient-to-br from-[#1e2746] via-[#232946] to-[#2d3250] text-white">
       {isAboveMedium ? (
         <>
         
@@ -67,7 +67,7 @@ function Searchfunc() {
           {rerender && search ? (
             <div>
               <Result names={search} />
-              <div className="h-24"></div>
+              
             </div>
           ) : (
             <div className="px-4">
@@ -80,7 +80,6 @@ function Searchfunc() {
           )}
         </div>
       )}
-      <div className="h-24" />
     </div>
   );
 }

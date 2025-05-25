@@ -268,16 +268,28 @@ function Navbar() {
                     </li>
                   </Link>
                   
-                  <Link to="recent">
+                  <Link to="recently">
                     <li 
-                      className={`${selected === "/recent" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      className={`${selected === "/recently" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
                       onClick={() => {
-                        localStorage.setItem("selected", "/recent");
-                        setSelected("/recent");
+                        localStorage.setItem("selected", "/recently");
+                        setSelected("/recently");
                         setIsMenuToggled(false);
                       }}
                     >
                       Recents
+                    </li>
+                  </Link>
+                      <Link to="offline">
+                    <li 
+                      className={`${selected === "/offline" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
+                      onClick={() => {
+                        localStorage.setItem("selected", "/offline");
+                        setSelected("/offline");
+                        setIsMenuToggled(false);
+                      }}
+                    >
+                      Offline
                     </li>
                   </Link>
                     {localUser ? (

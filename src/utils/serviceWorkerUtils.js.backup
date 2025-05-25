@@ -1,0 +1,214 @@
+// Offline audio functionality using IndexedDB
+
+// Initialize IndexedDB
+const initializeIndexedDB = () => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('MelodyMindOfflineDB', 1);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('audioFiles')) {
+        db.createObjectStore('audioFiles', { keyPath: 'url' });
+      }
+    };
+    
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+    
+    request.onerror = (event) => {
+      console.error('IndexedDB error:', event.target.error);
+      reject(event.target.error);
+    };
+  });
+};
+
+// Store audio blob in IndexedDB
+const storeAudioInIndexedDB = async (url, blob) => {
+  const db = await initializeIndexedDB();
+  
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['audioFiles'], 'readwrite');
+    const store = transaction.objectStore('audioFiles');
+    
+    const request = store.put({ url, blob, timestamp: Date.now() });
+    
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+// Get audio blob from IndexedDB
+const getAudioFromIndexedDB = async (url) => {
+  const db = await initializeIndexedDB();
+  
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['audioFiles'], 'readonly');
+    const store = transaction.objectStore('audioFiles');
+    
+    const request = store.get(url);
+    
+    request.onsuccess = (event) => {
+      if (event.target.result) {
+        resolve(event.target.result.blob);
+      } else {
+        resolve(null);
+      }
+    };
+    
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+// Delete audio blob from IndexedDB
+const deleteAudioFromIndexedDB = async (url) => {
+  const db = await initializeIndexedDB();
+  
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['audioFiles'], 'readwrite');
+    const store = transaction.objectStore('audioFiles');
+    
+    const request = store.delete(url);
+    
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event.target.error);
+  });
+};
+
+/**
+ * Save song for offline playback
+ * @param {string} url - URL of the audio file to cache
+ * @param {object} metadata - Song metadata (name, artist, image, etc.)
+ * @returns {Promise<boolean>} - Promise that resolves with true if saved successfully
+ */
+export const saveSongForOffline = async (url, metadata) => {
+  try {
+    // Fetch the audio file
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch audio file');
+    }
+    
+    // Get the audio data as blob
+    const audioBlob = await response.blob();
+    
+    // Store the audio blob in IndexedDB
+    await storeAudioInIndexedDB(url, audioBlob);
+    
+    // Store metadata in localStorage for offline access
+    const offlineSongs = JSON.parse(localStorage.getItem('offlineSongs') || '[]');
+    
+    // Check if song already exists
+    const songExists = offlineSongs.some(song => song.url === url);
+    
+    if (!songExists) {
+      offlineSongs.push({
+        url,
+        metadata,
+        savedAt: new Date().toISOString()
+      });
+      localStorage.setItem('offlineSongs', JSON.stringify(offlineSongs));
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error saving song for offline:', error);
+    return false;
+  }
+};
+      });
+      
+      // Set timeout for response
+      setTimeout(() => {
+        navigator.serviceWorker.removeEventListener('message', messageListener);
+        reject(new Error('Timeout: No response from service worker'));
+      }, 30000); // 30 seconds timeout
+    });
+  } catch (error) {
+    console.error('Error saving song for offline:', error);
+    return false;
+  }
+};
+
+/**
+ * Remove song from offline storage
+ * @param {string} url - URL of the audio file to remove
+ * @returns {Promise<boolean>} - Promise that resolves with true if removed successfully
+ */
+export const removeSongFromOffline = async (url) => {
+  if (!('serviceWorker' in navigator)) {
+    console.error('Service Worker not supported');
+    return false;
+  }
+
+  try {
+    // Remove metadata from localStorage
+    const offlineSongs = JSON.parse(localStorage.getItem('offlineSongs') || '[]')
+      .filter(song => song.url !== url);
+    localStorage.setItem('offlineSongs', JSON.stringify(offlineSongs));
+
+    // Send message to Service Worker to delete from cache
+    const registration = await navigator.serviceWorker.ready;
+    
+    return new Promise((resolve, reject) => {
+      // Set up message listener to get response
+      const messageListener = (event) => {
+        if (event.data && event.data.type === 'AUDIO_DELETE_STATUS' && event.data.url === url) {
+          navigator.serviceWorker.removeEventListener('message', messageListener);
+          
+          if (event.data.status === 'deleted' || event.data.status === 'delete_failed_not_found') {
+            resolve(true);
+          } else {
+            reject(new Error(event.data.error || 'Failed to remove song from cache'));
+          }
+        }
+      };
+      
+      // Listen for response from service worker
+      navigator.serviceWorker.addEventListener('message', messageListener);
+      
+      // Send delete request to service worker
+      registration.active.postMessage({
+        type: 'DELETE_AUDIO',
+        url,
+      });
+      
+      // Set timeout for response
+      setTimeout(() => {
+        navigator.serviceWorker.removeEventListener('message', messageListener);
+        reject(new Error('Timeout: No response from service worker'));
+      }, 10000); // 10 seconds timeout
+    });
+  } catch (error) {
+    console.error('Error removing song from offline:', error);
+    return false;
+  }
+};
+
+/**
+ * Check if a song is saved for offline playback
+ * @param {string} url - URL of the audio file to check
+ * @returns {boolean} - True if the song is available offline
+ */
+export const isSongAvailableOffline = (url) => {
+  try {
+    const offlineSongs = JSON.parse(localStorage.getItem('offlineSongs') || '[]');
+    return offlineSongs.some(song => song.url === url);
+  } catch (error) {
+    console.error('Error checking offline song status:', error);
+    return false;
+  }
+};
+
+/**
+ * Get all songs saved for offline playback
+ * @returns {Array} - Array of saved songs with their metadata
+ */
+export const getOfflineSongs = () => {
+  try {
+    return JSON.parse(localStorage.getItem('offlineSongs') || '[]');
+  } catch (error) {
+    console.error('Error getting offline songs:', error);
+    return [];
+  }
+};

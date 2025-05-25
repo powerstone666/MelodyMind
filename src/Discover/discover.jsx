@@ -91,7 +91,7 @@ function Discover() {
   );
 
   return (
-    <div className="overflow-y-auto h-screen w-full no-scrollbar pb-32 pt-4 bg-gradient-to-b from-black via-gray-900 to-black">
+    <div className="overflow-y-auto overflow-x-hidden h-screen w-full no-scrollbar pb-24 pt-4 bg-gradient-to-b from-black via-gray-900 to-black">
       {isAboveMedium ? (
         <>
           <Hero />

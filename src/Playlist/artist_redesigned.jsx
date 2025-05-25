@@ -64,7 +64,7 @@ function ArtistPage({ names }) {
   }
 
   return (
-    <div className="w-full h-screen pb-32 overflow-y-auto no-scrollbar bg-gradient-to-br from-deep-grey to-deep-blue">
+    <div className="w-full h-screen pb-24 overflow-y-auto no-scrollbar bg-gradient-to-br from-deep-grey to-deep-blue">
       <div className="sticky top-0 z-10 bg-gradient-to-br from-deep-grey to-deep-blue py-6 px-4 md:px-8 flex items-center justify-between mb-6 border-b border-gray-700">
         <h2 className="text-2xl font-bold text-white flex items-center">
           <FiUser className="mr-2 text-melody-pink-500" /> Popular Artists

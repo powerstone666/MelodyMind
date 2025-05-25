@@ -23,6 +23,7 @@ const Appwrapper = () => {
   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(parseInt(localStorage.getItem("currentHistoryIndex") || "0"));
   const [recommendations, setRecommendations] = useState([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  const [offlineSongs, setOfflineSongs] = useState(JSON.parse(localStorage.getItem("offlineSongs") || "[]"));
   
   // Save song history to localStorage whenever it changes
   useEffect(() => {
@@ -33,7 +34,13 @@ const Appwrapper = () => {
   useEffect(() => {
     localStorage.setItem("currentHistoryIndex", currentHistoryIndex.toString());
   }, [currentHistoryIndex]);
-    return (
+
+  // Save offline songs to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("offlineSongs", JSON.stringify(offlineSongs));
+  }, [offlineSongs]);
+
+  return (
     <Context.Provider value={{ 
       songid, setSongid, 
       search, setSearch,
@@ -50,7 +57,8 @@ const Appwrapper = () => {
       songHistory, setSongHistory,
       currentHistoryIndex, setCurrentHistoryIndex,
       recommendations, setRecommendations,
-      isLoadingRecommendations, setIsLoadingRecommendations
+      isLoadingRecommendations, setIsLoadingRecommendations,
+      offlineSongs, setOfflineSongs
     }}>
       <BrowserRouter>
         <AuthProvider>
@@ -66,3 +74,18 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Appwrapper />
   </React.StrictMode>
 );
+
+// Request notification permission on page load
+window.addEventListener('load', () => {
+  if ('Notification' in window) {
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+        } else {
+          console.log('Notification permission denied.');
+        }
+      });
+    }
+  }
+});

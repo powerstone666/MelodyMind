@@ -41,6 +41,7 @@ export const loginWithEmailAndPassword = async (email, password) => {
     
     // Save user data to localStorage
     localStorage.setItem("Users", JSON.stringify(userData));
+    localStorage.setItem('loginTimestamp', Date.now().toString()); // Add login timestamp
     
     // Record login timestamp in Firestore
     await updateUserLastLogin(user.uid);
@@ -80,6 +81,7 @@ export const signupWithEmailAndPassword = async (email, password, name) => {
     
     // Store in localStorage
     localStorage.setItem("Users", JSON.stringify(userData));
+    localStorage.setItem('loginTimestamp', Date.now().toString()); // Add login timestamp
     
     // Create user record in Firestore
     await createUserRecord(user.uid, email, name);
@@ -116,6 +118,7 @@ export const signInWithGoogle = async () => {
     
     // Store in localStorage
     localStorage.setItem("Users", JSON.stringify(userData));
+    localStorage.setItem('loginTimestamp', Date.now().toString()); // Add login timestamp
     
     // Check if the user already exists, if not, create a record
     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -146,6 +149,7 @@ export const logoutUser = async () => {
   try {
     await signOut(auth);
     localStorage.removeItem("Users");
+    localStorage.removeItem('loginTimestamp'); // Remove login timestamp
     return true;
   } catch (error) {
     throw error;

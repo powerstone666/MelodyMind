@@ -123,13 +123,13 @@ export const Searchsongs=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search',
+          url: 'https://saavn.dev/api/search/songs',
           params: { query: names ? names : `topsongs ${language}`,
           limit: 20
            }
       };
       const res = await axios.request(options);
-   
+      console.log(res.data.data)
       return res.data.data;
 
   } catch (error) {
@@ -274,20 +274,30 @@ export const searchSuggestion=async(songid)=>{
              }
           };
           const res = await axios.request(options);
-          return res;
-        }catch(error){
+          return res;        }catch(error){
           console.error('Error fetching data:', error);
         }
-    }  
-     export const newsearch=async(names)=>{
+    }      
+    export const newsearch=async(names, expectedSongName = null, expectedArtistName = null, expectedAlbumName = null)=>{
     try {
       // Validate input
+   
+      
       if (!names || typeof names !== 'string' || names === 'undefined') {
         console.error("Invalid query for song search:", names);
         return null;
       }
         // Trim and validate the search query
       let query = names.trim();
+      
+      // Include album name in search query if provided
+      if (expectedAlbumName && typeof expectedAlbumName === 'string' && expectedAlbumName.trim() !== '') {
+        const albumName = expectedAlbumName.trim();
+        // Only add album if it's not already in the query
+        if (!query.toLowerCase().includes(albumName.toLowerCase())) {
+          query += ` ${albumName}`;
+        }
+      }
       
       // Remove any quotes from the query
       query = query.replace(/["']/g, '');
@@ -300,16 +310,30 @@ export const searchSuggestion=async(songid)=>{
       // Add retries for API calls
       let attempts = 0;
       const maxAttempts = 2;
-      let res = null;
-      
-      while (attempts < maxAttempts) {
+      let res = null;      while (attempts < maxAttempts) {
         try {
           res = await Searchsongs(query);
-          if (res && res.songs && res.songs.results && res.songs.results.length > 0) {
+          console.log('Searchsongs API response structure:', JSON.stringify(res, null, 2).substring(0, 500) + '...');
+          
+          // Check for the new API structure
+          let searchResults = null;
+          if (res && res.results && res.results.length > 0) {
+            // New API structure: direct access to results
+            searchResults = res.results;
+        
+          } else if (res && res.songs && res.songs.results && res.songs.results.length > 0) {
+            // Old API structure: nested in songs.results
+            searchResults = res.songs.results;
+          
+          }
+          
+          if (searchResults && searchResults.length > 0) {
+            res.searchResults = searchResults; // Store results for later use
+        
             break; // Success, exit the loop
           }
-            // If we get here, the API returned successfully but with no results
           
+          // If we get here, the API returned successfully but with no results
           // Try with a simplified query on the second attempt
           if (attempts === 0 && query.includes(' ')) {
             // Extract just the first two words if the query is too complex
@@ -331,18 +355,138 @@ export const searchSuggestion=async(songid)=>{
       }
       
       // Validate results
-      if (!res || !res.songs || !res.songs.results || res.songs.results.length === 0) {
+      if (!res || !res.searchResults || res.searchResults.length === 0) {
         console.warn("No search results found for:", query);
         return null;
       }
       
-      return res.songs.results[0].id;
+      // If we have expected song/artist names, find the best match
+      if (expectedSongName && expectedArtistName) {
+        const bestMatch = findBestSongMatch(res.searchResults, expectedSongName, expectedArtistName);
+        if (bestMatch) {
+          console.log(`Found best match: "${bestMatch.name}" by "${bestMatch.artists.primary[0]?.name}" for expected: "${expectedSongName}" by "${expectedArtistName}"`);
+          return bestMatch.id;
+        }
+      }
+      
+      return res.searchResults[0].id;
     }
     catch (error) {
       console.error('Error fetching data:', error);
       return null;
     }
   }
+
+  // Helper function to find the best matching song from search results
+  const findBestSongMatch = (searchResults, expectedSongName, expectedArtistName) => {
+    if (!searchResults || !Array.isArray(searchResults) || searchResults.length === 0) {
+      return null;
+    }
+
+    // Normalize text for comparison
+    const normalizeText = (text) => {
+      if (!text || typeof text !== 'string') return '';
+      return text.toLowerCase()
+        .replace(/[^\w\s]/g, '') // Remove special characters
+        .replace(/\s+/g, ' ') // Normalize whitespace
+        .trim();
+    };
+
+    const expectedSong = normalizeText(expectedSongName);
+    const expectedArtist = normalizeText(expectedArtistName);
+
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const song of searchResults) {
+      if (!song || !song.name) continue;
+
+      const songName = normalizeText(song.name);
+      const artistName = song.artists?.primary?.[0]?.name ? normalizeText(song.artists.primary[0].name) : '';
+
+      // Calculate similarity scores
+      const songScore = calculateSimilarity(expectedSong, songName);
+      const artistScore = calculateSimilarity(expectedArtist, artistName);
+
+      // Weighted score: song name is more important than artist
+      const totalScore = (songScore * 0.7) + (artistScore * 0.3);
+
+      // Update best match if this score is better
+      if (totalScore > bestScore) {
+        bestScore = totalScore;
+        bestMatch = song;
+      }
+
+      // Early exit if we find a very good match
+      if (totalScore > 0.8) {
+        break;
+      }
+    }
+
+    // Only return the match if it's reasonably good (threshold of 0.3)
+    return bestScore >= 0.3 ? bestMatch : null;
+  };
+
+  // Calculate string similarity using a combination of methods
+  const calculateSimilarity = (str1, str2) => {
+    if (!str1 || !str2) return 0;
+    if (str1 === str2) return 1;
+
+    // Check for exact substring matches
+    if (str1.includes(str2) || str2.includes(str1)) {
+      return 0.8;
+    }
+
+    // Check for word overlap
+    const words1 = str1.split(' ').filter(w => w.length > 2);
+    const words2 = str2.split(' ').filter(w => w.length > 2);
+    
+    if (words1.length === 0 || words2.length === 0) return 0;
+
+    const commonWords = words1.filter(word => 
+      words2.some(w => w.includes(word) || word.includes(w))
+    );
+
+    const wordOverlapScore = commonWords.length / Math.max(words1.length, words2.length);
+
+    // Levenshtein distance for character-level similarity
+    const levenshteinScore = 1 - (levenshteinDistance(str1, str2) / Math.max(str1.length, str2.length));
+          
+    // Return the maximum of word overlap and character similarity
+    return Math.max(wordOverlapScore, levenshteinScore * 0.6);
+  };
+
+  // Simple Levenshtein distance implementation
+  const levenshteinDistance = (str1, str2) => {
+    const matrix = [];
+    const len1 = str1.length;
+    const len2 = str2.length;
+
+    if (len1 === 0) return len2;
+    if (len2 === 0) return len1;
+
+    // Initialize matrix
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [i];
+    }
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+
+    // Fill matrix
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,     // deletion
+          matrix[i][j - 1] + 1,     // insertion
+          matrix[i - 1][j - 1] + cost // substitution
+        );
+      }
+    }
+
+    return matrix[len1][len2];
+  };
 
 // Fetch playlists for a category (Quick Access)
 export const fetchPlaylistsByCategory = async (category) => {

@@ -26,68 +26,53 @@ function Profile() {
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
 
   // Fetch user data from Firestore  
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!Users || !Users.uid) {
-        setLoading(false);
-        navigate('/login', { state: { returnUrl: '/profile' } });
-        return;
-      }
+useEffect(() => {
+  const fetchUserData = async () => {
+    if (!Users || !Users.uid) {
+      setLoading(false);
+      navigate('/login', { state: { returnUrl: '/profile' } });
+      return;
+    }
 
-      try {
-        // Fetch extended profile data
-        const profileData = await fetchUserProfileData(Users.uid);
-         
-        if (profileData) {
-         
-          setUserData(profileData);
-          setDisplayName(profileData.displayName || '');
-        } else {
-          // If no Firestore data, use localStorage data
-          setUserData(Users);
-          setDisplayName(Users.displayName || '');
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        toast.error("Failed to load profile data");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      // Fetch extended profile data
+      const profileData = await fetchUserProfileData(Users.uid);
 
-    fetchUserData();
-  }, [Users]);
-        const likes = await fetchUser();
-        setLikedSongs(likes || []);
-
-        // Get user listening statistics
-        const stats = await getUserListeningStats(Users.uid);
-        setUserStats(stats);
-        
-        // Get daily play statistics
-        const dailyPlayStats = await getUserDailyPlayStats(Users.uid);
-        setDailyStats(dailyPlayStats);
-        setStatsLoading(false);
-
-        // Get recent activity
-        const activities = await getUserRecentActivity(Users.uid, 5);
-        setRecentActivity(activities.filter(activity => activity.type === 'played'));
-        setActivityLoading(false);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        toast.error("Failed to load profile data");
-        // Fallback to localStorage data
+      if (profileData) {
+        setUserData(profileData);
+        setDisplayName(profileData.displayName || '');
+      } else {
         setUserData(Users);
         setDisplayName(Users.displayName || '');
-        setActivityLoading(false);
-        setStatsLoading(false);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchUserData();
-  }, [Users]);
+      // Add other data fetching here:
+      const likes = await fetchUser();
+      setLikedSongs(likes || []);
+
+      const stats = await getUserListeningStats(Users.uid);
+      setUserStats(stats);
+
+      const dailyPlayStats = await getUserDailyPlayStats(Users.uid);
+      setDailyStats(dailyPlayStats);
+
+      const activities = await getUserRecentActivity(Users.uid, 5);
+      setRecentActivity(activities.filter(activity => activity.type === 'played'));
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      toast.error("Failed to load profile data");
+      setUserData(Users);
+      setDisplayName(Users.displayName || '');
+    } finally {
+      setLoading(false);
+      setStatsLoading(false);
+      setActivityLoading(false);
+    }
+  };
+
+  fetchUserData();
+}, [Users]);
+
 
   // Format timestamp to readable date
   const formatDate = (timestamp) => {
@@ -212,7 +197,7 @@ function Profile() {
 
   if (!Users) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen w-full p-4 text-white">
+      <div className="flex flex-col items-center justify-center h-screen w-full p-4 text-white pb-24 md:pb-32">
         <svg className="w-24 h-24 text-melody-pink-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
         </svg>
@@ -227,9 +212,10 @@ function Profile() {
       </div>
     );
   }  return (
-    <div className="flex flex-col md:flex-row min-h-screen w-full p-4 md:p-8 pb-28 md:pb-36 overflow-y-auto">
+    <div className="flex flex-col md:flex-row min-h-screen w-full p-4 md:p-8 pb-24 md:pb-32 overflow-y-auto">
       <div className="w-full h-full">
-        <div className="bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg rounded-lg overflow-hidden mb-28">
+        {/* Adjusted mb- for the inner container to work with outer padding */}
+        <div className="bg-gradient-to-br from-deep-grey to-deep-blue border border-gray-700 shadow-lg rounded-lg overflow-hidden mb-6 md:mb-8">
           {/* Profile Header */}
           <div className="relative h-48 bg-gradient-to-r from-melody-pink-800 to-purple-900">
             <div className="absolute -bottom-16 left-6 md:left-10">

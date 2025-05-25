@@ -20,6 +20,7 @@ import Signup from "../signup_redesigned";
 import Profile from "../profile_redesigned";
 import Likes from "../Library/likes";
 import Recents from "../Library/recents";
+import OfflineSongs from "../Library/OfflineSongs";
 
 function AppRoutes() {
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
@@ -41,11 +42,13 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+       <Route path="/offline" element={<OfflineSongs />} />
         {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/recently" element={<Recents />} />
         <Route path="/liked" element={<Likes />} />
         <Route path="/profile" element={<Profile />} />
+       
         {/* Add more protected routes here */}
       </Route>
       

@@ -13,6 +13,10 @@ import './custom-audioplayer.css';
 import { addSongToHistory, fetchRecommendations, navigateToNextSong, navigateToPrevSong } from "../utils/musicNavigation_fixed.js";
 import RecommendationIndicator from "../components/RecommendationIndicator";
 
+const HISTORY_TIMESTAMP_KEY = 'songHistoryLastUpdated';
+const MAX_HISTORY_AGE_DAYS = 5;
+const MAX_HISTORY_LENGTH = 50;
+
 function AudioPlayerComponent() {
   const isAboveMedium = useMediaQuery("(min-width:1025px)"); 
   const { 
@@ -41,6 +45,28 @@ function AudioPlayerComponent() {
   const recommendationTimeoutRef = useRef(null);
   const [playingRecommendation, setPlayingRecommendation] = useState(false);
   const [recommendationType, setRecommendationType] = useState('api'); // 'api' or 'gemini'
+
+  useEffect(() => {
+    const lastUpdated = localStorage.getItem(HISTORY_TIMESTAMP_KEY);
+    if (lastUpdated) {
+        const lastUpdatedDate = new Date(parseInt(lastUpdated, 10));
+        const fiveDaysAgo = new Date();
+        fiveDaysAgo.setDate(fiveDaysAgo.getDate() - MAX_HISTORY_AGE_DAYS);
+
+        if (lastUpdatedDate < fiveDaysAgo) {
+            setSongHistory([]);
+            setCurrentHistoryIndex(-1);
+            // Also clear the persisted songid so it doesn't reload into an empty history
+            localStorage.removeItem("songid"); 
+            setSongid(null); // Update context state
+            localStorage.removeItem(HISTORY_TIMESTAMP_KEY);
+            toast.info("Song history has been reset (older than 5 days).");
+        }
+    } else if (songHistory.length > 0) {
+        // If history exists but no timestamp (e.g., first run after this update), stamp it.
+        localStorage.setItem(HISTORY_TIMESTAMP_KEY, Date.now().toString());
+    }
+  }, [setSongHistory, setCurrentHistoryIndex, setSongid]); // Dependencies for context setters
 
   useEffect(() => {
     if ("mediaSession" in navigator && names) {
@@ -91,39 +117,40 @@ function AudioPlayerComponent() {
           songYear: songData.year
         };
 
-        // Check if the song we are fetching is already at the currentHistoryIndex
         const songIsAlreadyAtCurrentIndexInHistory = 
           songHistory[currentHistoryIndex] && songHistory[currentHistoryIndex].id === songid;
 
         if (songIsAlreadyAtCurrentIndexInHistory) {
-          // This is a history navigation (next/prev) where currentHistoryIndex was already updated by the caller.
-          // Or it's a re-fetch of the current song. No need to manipulate songHistory array itself.
+          // This is a history navigation or re-fetch of current song.
+          // No need to manipulate songHistory array itself.
+          // But we should update the timestamp if it's a re-fetch that might imply activity.
+          // However, primary timestamp update is on actual history change.
         } else {
-          // This is a new selection (e.g. clicked from a list), a recommendation, 
-          // or a jump in history not handled by prior setCurrentHistoryIndex.
           let updatedHistory = [...songHistory];
-          // currentHistoryIndex from context is the index of the song *before* this new one is effectively inserted.
           let insertionPointIndex = currentHistoryIndex; 
 
           const existingSongHistIndex = updatedHistory.findIndex(s => s.id === songInfo.id);
 
           if (existingSongHistIndex !== -1) {
-            // Song exists, remove it from its old position
             updatedHistory.splice(existingSongHistIndex, 1);
-            // If the removed song was before or at the point where we intend to insert,
-            // our insertionPointIndex needs to be adjusted because the array shifted.
             if (existingSongHistIndex <= insertionPointIndex) {
               insertionPointIndex--; 
             }
           }
 
-          // Add the new songInfo after the (potentially adjusted) insertionPointIndex.
-          // All songs after this point in the original history are effectively truncated.
           updatedHistory.splice(insertionPointIndex + 1, updatedHistory.length - (insertionPointIndex + 1), songInfo);
-          const newIndexForThisSong = insertionPointIndex + 1;
+          let newIndexForThisSong = insertionPointIndex + 1;
 
+          if (updatedHistory.length > MAX_HISTORY_LENGTH) {
+            const numToRemove = updatedHistory.length - MAX_HISTORY_LENGTH;
+            updatedHistory.splice(0, numToRemove); 
+            newIndexForThisSong -= numToRemove;
+            if (newIndexForThisSong < 0) newIndexForThisSong = 0; // Should not happen if MAX_HISTORY_LENGTH > 0
+          }
+          
           setSongHistory(updatedHistory);
           setCurrentHistoryIndex(newIndexForThisSong); 
+          localStorage.setItem(HISTORY_TIMESTAMP_KEY, Date.now().toString());
         }
         
         const user = JSON.parse(localStorage.getItem("Users"));
@@ -168,10 +195,11 @@ function AudioPlayerComponent() {
         setRecommendations(recs);
         if (source === 'gemini' && recs.length > 0) {
           recommendationTimeoutRef.current = setTimeout(async () => {
-            try {
-              const firstRec = recs[0];
-              const songName = firstRec.name || firstRec.song;
+            try {              const firstRec = recs[0];              const songName = firstRec.name || firstRec.song;
               const artistName = firstRec.artists || firstRec.artist;
+              const albumName = firstRec.movie || firstRec.album || '';
+              console.log('Recommendation object:', firstRec);
+              console.log('Extracted songName:', songName, 'artistName:', artistName, 'albumName:', albumName);
               if (!songName || !artistName) {
                 console.warn('Missing song info for recommendation search:', firstRec);
                 return;
@@ -181,20 +209,20 @@ function AudioPlayerComponent() {
                 console.error('Search query too short:', searchQuery);
                 return;
               }
-              const songId = await newsearch(searchQuery);
+              const songId = await newsearch(searchQuery, songName, artistName, albumName);
               if (songId) {
                 const updatedRecs = [...recs];
                 updatedRecs[0].id = songId;
                 setRecommendations(updatedRecs);
               } else {
                 console.warn('No song ID found for:', searchQuery);
-                if (recs.length > 1) {
-                  const nextRec = recs[1];
+                if (recs.length > 1) {                  const nextRec = recs[1];
                   const nextSongName = nextRec.name || nextRec.song;
                   const nextArtistName = nextRec.artists || nextRec.artist;
+                  const nextAlbumName = nextRec.movie || nextRec.album || '';
                   if (nextSongName && nextArtistName) {
                     const nextQuery = `${nextSongName} ${nextArtistName}`.trim();
-                    const nextSongId = await newsearch(nextQuery);
+                    const nextSongId = await newsearch(nextQuery, nextSongName, nextArtistName, nextAlbumName);
                     if (nextSongId) {
                       const newRecs = [...recs];
                       newRecs[0] = { ...nextRec, id: nextSongId };

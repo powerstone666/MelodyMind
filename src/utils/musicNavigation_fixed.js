@@ -1,4 +1,3 @@
-import { searchSuggestion } from "../saavnapi";
 import { getSongRecommendations } from "../gemini.js";
 
 /**
@@ -44,7 +43,7 @@ export const addSongToHistory = (song, currentHistory, currentIndex) => {
 };
 
 /**
- * Fetches recommendations using both API methods with fallback
+ * Fetches recommendations using Gemini AI
  * @param {String} songId - The ID of the song to get recommendations for
  * @param {String} songName - The name of the song
  * @param {String} artistName - The artist name
@@ -53,62 +52,29 @@ export const addSongToHistory = (song, currentHistory, currentIndex) => {
  * @returns {Array} - Array of recommended songs
  */
 export const fetchRecommendations = async (songId, songName, artistName, history, forceNewRecommendations = false) => {
-  const MAX_RETRIES = 2;
-  let retriesLeft = MAX_RETRIES;
-  let delay = 1000; // Start with a 1 second delay
-  
-  // Try with API first (faster and has direct IDs)
-  while (retriesLeft > 0) {
-    try {
-      const res = await searchSuggestion(songId);
-      if (res && res.data && res.data.length > 0) {
-        // Filter out any songs that are already in history
-        const filteredRecs = res.data.filter(song => 
-          !history.some(histSong => histSong.id === song.id)
-        );
-        
-        if (filteredRecs.length > 0) {
-          return {
-            recommendations: filteredRecs.map(song => ({
-              id: song.id,
-              name: song.name,
-              image: song.image[1].url,
-              artists: song.artists.primary[0].name,
-              type: 'api'
-            })),
-            source: 'api'
-          };
-        }
-      }
-      // If we get here, API provided no usable recommendations
-      break;
-    } catch (error) {
-      console.error(`Error fetching API recommendations (try ${MAX_RETRIES - retriesLeft + 1}):`, error);
-      retriesLeft--;
-      
-      if (retriesLeft > 0) {
-        // Wait before retrying with exponential backoff
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 2; // Double the delay for next retry
-      }
-    }
-  }
-  
-  // Fallback to Gemini AI recommendations
+  // Fallback to Gemini AI recommendations (now primary)
   try {
     if (songName && artistName && songName !== 'undefined' && artistName !== 'undefined') {
       console.log('Fetching Gemini recommendations for:', songName, artistName);
       
-      // If force new recommendations is enabled, modify the query slightly to get different results
-      let modifiedArtistName = artistName;
-      if (forceNewRecommendations) {
-        // Add a hint to get different recommendations
-        modifiedArtistName = `${artistName} (different style)`;
-      }
-      
-      const geminiRecs = await getSongRecommendations(songName, modifiedArtistName);
+      // Prepare a concise history summary for Gemini
+      const historySummary = history.slice(-10).map(song => ({ // Use last 10 songs for context
+        name: song.name,
+        artists: song.artists,
+        // Potentially add mood/tone if available in your song objects
+        // mood: song.mood, 
+        // year: song.songYear 
+      }));
+
+      const geminiRecs = await getSongRecommendations(
+        songName, 
+        artistName, 
+        historySummary, // Pass history summary
+        forceNewRecommendations
+      );
+
       if (geminiRecs && geminiRecs.length > 0) {
-        // Filter out any songs that match names in history
+        // Filter out any songs that match names and artists in the full history
         const filteredRecs = geminiRecs.filter(rec => 
           !history.some(histSong => 
             histSong.name && rec.song && histSong.name.toLowerCase() === rec.song.toLowerCase() &&
@@ -123,6 +89,7 @@ export const fetchRecommendations = async (songId, songName, artistName, history
               artists: rec.artist,
               movie: rec.movie || '',
               type: 'gemini'
+              // Potentially map mood/tone from Gemini response if provided
             })),
             source: 'gemini'
           };
