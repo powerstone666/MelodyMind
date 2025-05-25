@@ -65,7 +65,7 @@ export async function getSongRecommendations(song, artist, historySummary = [], 
   }
   
   const genAI = new GoogleGenerativeAI(API_KEY2);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Consider using a model that might be better for nuanced understanding if needed
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Consider using a model that might be better for nuanced understanding if needed
 
   let prompt = `You are a music recommendation expert. Recommend strictly 10 songs similar to "${trimmedSong}" by ${trimmedArtist}. 
 Consider the potential tone, emotions, and genre of the input song.`;
