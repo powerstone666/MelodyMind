@@ -5,7 +5,7 @@ import { addRecents } from "../Firebase/database";
 import { useState, useEffect } from "react";
 import { Context } from "../context.js"; // Updated import
 import useMediaQuery from "../useMedia";
-import { MelodyMusicsongs, Searchsongs, Searchsongs2 } from "../saavnapi";
+import { MelodyMusicsongs, Searchsongs3, Searchsongs2 } from "../saavnapi";
 import he from "he";
 import { Link, useNavigate } from "react-router-dom";
 function Result({ names }) {
@@ -23,7 +23,7 @@ function Result({ names }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await Searchsongs(names);
+        const res = await Searchsongs3(names);
         const res2 = await Searchsongs2(names);
         setMusicInfo(
           res2.results.map((song) => ({
