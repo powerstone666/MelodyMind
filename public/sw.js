@@ -8,7 +8,11 @@ const STATIC_CACHE_URLS = [
   '/offline',
   '/manifest.json',
   '/music icon2.png',
-  // Add other critical static assets
+  // Critical assets for immediate loading
+  '/src/main.jsx',
+  '/src/App.jsx',
+  '/src/App.css',
+  '/index.html'
 ];
 
 // Install event - cache static assets

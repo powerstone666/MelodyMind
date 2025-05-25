@@ -9,10 +9,19 @@ export const useOfflineDetection = () => {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [wasOffline, setWasOffline] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
+  const location = useLocation();  useEffect(() => {
     let timeoutId;
+    let connectivityInterval;
+
+    // Create a fetch with timeout to prevent hanging
+    const fetchWithTimeout = (url, options = {}, timeout = 5000) => {
+      return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Network timeout')), timeout)
+        )
+      ]);
+    };
 
     const handleOnline = () => {
       console.log('Network: Back online');
@@ -22,8 +31,8 @@ export const useOfflineDetection = () => {
         clearTimeout(timeoutId);
       }
       
-      // Double-check with actual network request
-      fetch('/manifest.json', { method: 'HEAD', cache: 'no-cache' })
+      // Double-check with actual network request with timeout
+      fetchWithTimeout('/manifest.json', { method: 'HEAD', cache: 'no-cache' }, 3000)
         .then(() => {
           console.log('Network: Confirmed online via fetch');
           setIsOffline(false);
@@ -53,29 +62,32 @@ export const useOfflineDetection = () => {
         sessionStorage.setItem('preOfflinePath', location.pathname);
       }
       
-      // Delay navigation to offline page to avoid false positives
-      timeoutId = setTimeout(() => {
-        // Double-check we're actually offline
-        fetch('/manifest.json', { method: 'HEAD', cache: 'no-cache' })
-          .then(() => {
-            console.log('Network: False offline event, still online');
-            setIsOffline(false);
-          })
-          .catch(() => {
-            console.log('Network: Confirmed offline, navigating to offline page');
-            if (location.pathname !== '/offline') {
-              navigate('/offline', { replace: true });
-            }
-          });
-      }, 1000); // 1 second delay
+      // Navigate to offline page immediately for better UX
+      if (location.pathname !== '/offline') {
+        navigate('/offline', { replace: true });
+      }
     };
 
-    // Initial check with actual network request
+    // Initial check with actual network request and fast timeout
     const checkInitialStatus = async () => {
+      // Set offline immediately if navigator says so
+      if (!navigator.onLine) {
+        console.log('Network: Navigator says offline, setting offline state');
+        setIsOffline(true);
+        if (location.pathname !== '/offline') {
+          sessionStorage.setItem('preOfflinePath', location.pathname);
+          navigate('/offline', { replace: true });
+        }
+        return;
+      }
+
       try {
-        await fetch('/manifest.json', { method: 'HEAD', cache: 'no-cache' });
+        // Quick network test with 2 second timeout
+        await fetchWithTimeout('/manifest.json', { method: 'HEAD', cache: 'no-cache' }, 2000);
+        console.log('Network: Initial check - online');
         setIsOffline(false);
-      } catch {
+      } catch (error) {
+        console.log('Network: Initial check - offline', error.message);
         setIsOffline(true);
         if (location.pathname !== '/offline') {
           sessionStorage.setItem('preOfflinePath', location.pathname);
@@ -92,9 +104,9 @@ export const useOfflineDetection = () => {
     checkInitialStatus();
 
     // Periodic connectivity check (every 30 seconds when online)
-    const connectivityInterval = setInterval(() => {
+    connectivityInterval = setInterval(() => {
       if (!isOffline) {
-        fetch('/manifest.json', { method: 'HEAD', cache: 'no-cache' })
+        fetchWithTimeout('/manifest.json', { method: 'HEAD', cache: 'no-cache' }, 3000)
           .catch(() => {
             console.log('Network: Periodic check failed, going offline');
             handleOffline();

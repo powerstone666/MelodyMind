@@ -15,15 +15,23 @@ function App() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  // Use enhanced offline detection hook
+    // Use enhanced offline detection hook
   const { isOffline, wasOffline } = useOfflineDetection();
-  // Hide loader on component mount
+  
+  // Hide loader on component mount with timeout fallback
   useEffect(() => {
     const loader = document.getElementById('loader');
     if (loader) {
       loader.style.display = 'none';
     }
+    
+    // Fallback timeout to ensure loading never gets stuck
+    const loadingTimeout = setTimeout(() => {
+      console.log('Loading timeout reached, forcing load completion');
+      setLoading(false);
+    }, 5000); // 5 second timeout
+    
+    return () => clearTimeout(loadingTimeout);
   }, []);
 
   // Handle path selection and localStorage
@@ -87,7 +95,6 @@ function App() {
     checkInitialAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   // Add this useEffect to hide the loader once the initial user check is done
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -107,8 +114,18 @@ function App() {
         loader.style.display = 'none';
       }
     });
+    
+    // Also set loading to false immediately if offline is detected
+    if (isOffline) {
+      setLoading(false);
+      const loader = document.getElementById('loader');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    }
+    
     return () => unsubscribe();
-  }, []);
+  }, [isOffline]);
 
   if (loading) {
     // Optionally, you can return a more integrated React-based loader here
