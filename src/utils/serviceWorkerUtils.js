@@ -95,6 +95,40 @@ export const saveSongForOffline = async (url, metadata) => {
     // Store the audio blob in IndexedDB
     await storeAudioInIndexedDB(url, audioBlob);
     
+    // Also try to cache via service worker for redundancy
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      try {
+        const channel = new MessageChannel();
+        
+        // Listen for response
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Service worker timeout'));
+          }, 10000);
+          
+          channel.port1.onmessage = (event) => {
+            clearTimeout(timeout);
+            if (event.data.status === 'cached') {
+              resolve();
+            } else {
+              reject(new Error(event.data.error || 'Failed to cache via service worker'));
+            }
+          };
+          
+          // Send message to service worker
+          navigator.serviceWorker.controller.postMessage({
+            type: 'CACHE_AUDIO',
+            url,
+            audioBlob
+          }, [channel.port2]);
+        });
+        
+        console.log('Audio also cached via service worker');
+      } catch (swError) {
+        console.warn('Service worker caching failed, but IndexedDB succeeded:', swError);
+      }
+    }
+    
     // Store metadata in localStorage for offline access
     const offlineSongs = JSON.parse(localStorage.getItem('offlineSongs') || '[]');
     
@@ -126,6 +160,39 @@ export const removeSongFromOffline = async (url) => {
   try {
     // Delete from IndexedDB
     await deleteAudioFromIndexedDB(url);
+    
+    // Also try to remove from service worker cache
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      try {
+        const channel = new MessageChannel();
+        
+        // Listen for response
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Service worker timeout'));
+          }, 10000);
+          
+          channel.port1.onmessage = (event) => {
+            clearTimeout(timeout);
+            if (event.data.status === 'deleted' || event.data.status === 'delete_failed_not_found') {
+              resolve();
+            } else {
+              reject(new Error(event.data.error || 'Failed to delete via service worker'));
+            }
+          };
+          
+          // Send message to service worker
+          navigator.serviceWorker.controller.postMessage({
+            type: 'DELETE_AUDIO',
+            url
+          }, [channel.port2]);
+        });
+        
+        console.log('Audio also removed from service worker cache');
+      } catch (swError) {
+        console.warn('Service worker deletion failed, but IndexedDB succeeded:', swError);
+      }
+    }
     
     // Remove metadata from localStorage
     const offlineSongs = JSON.parse(localStorage.getItem('offlineSongs') || '[]')

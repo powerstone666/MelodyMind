@@ -8,10 +8,22 @@ function OfflineSongs() {
   const { setSongid, setSpotify } = useContext(Context);
   const [offlineSongsList, setOfflineSongsList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const navigate = useNavigate();
-
   useEffect(() => {
     loadOfflineSongs();
+    
+    // Monitor network status
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const loadOfflineSongs = () => {
@@ -57,11 +69,38 @@ function OfflineSongs() {
       toast.error("Cannot play this song");
     }
   };
-
   return (
     <div className="min-h-screen pt-20 pb-60 bg-gradient-to-br from-deep-grey to-deep-blue">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-white mb-8 text-center">Offline Songs</h1>
+        {/* Header with network status */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-white text-center flex-1">
+            {isOffline ? 'Offline Music Library' : 'Offline Songs'}
+          </h1>
+          <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
+            isOffline 
+              ? 'bg-red-500/20 text-red-300 border border-red-500/30' 
+              : 'bg-green-500/20 text-green-300 border border-green-500/30'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${isOffline ? 'bg-red-500' : 'bg-green-500'}`}></div>
+            <span>{isOffline ? 'Offline Mode' : 'Online'}</span>
+          </div>
+        </div>
+
+        {/* Offline mode message */}
+        {isOffline && (
+          <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-center space-x-3 text-yellow-300">
+              <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p className="font-medium">You're currently offline</p>
+                <p className="text-sm text-yellow-400">You can still enjoy your saved offline songs below</p>
+              </div>
+            </div>
+          </div>
+        )}
         
         {loading ? (
           <div className="flex justify-center">
@@ -78,7 +117,10 @@ function OfflineSongs() {
             </div>
             <p className="text-gray-300 text-lg">No songs saved for offline playback</p>
             <p className="text-gray-400 mt-2">
-              Save songs for offline listening by tapping the cloud icon when viewing a song
+              {isOffline 
+                ? "Go online and save songs to enjoy them offline later"
+                : "Save songs for offline listening by tapping the cloud icon when viewing a song"
+              }
             </p>
           </div>
         ) : (
@@ -158,15 +200,27 @@ function OfflineSongs() {
               </div>
             ))}
           </div>
-        )} {/* End of conditional rendering for song list */}
-
-        <div className="mt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        )} {/* End of conditional rendering for song list */}        <div className="mt-8 text-center">
+          <p className="text-gray-400 text-sm flex items-center justify-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Offline songs are available even when you don't have an internet connection
+            <span>
+              {isOffline 
+                ? "Offline songs are available without internet connection"
+                : "Offline songs are available even when you don't have an internet connection"
+              }
+            </span>
           </p>
+          
+          {!isOffline && (
+            <button 
+              onClick={() => navigate('/')}
+              className="mt-4 px-6 py-2 bg-melody-pink-600 hover:bg-melody-pink-700 text-white rounded-lg transition-colors"
+            >
+              Browse More Music
+            </button>
+          )}
         </div>
       </div>
     </div>

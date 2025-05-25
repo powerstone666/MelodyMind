@@ -8,22 +8,71 @@ import { Link } from "react-router-dom";
 import { getLanguages } from "../saavnapi";
 import { auth } from "../Firebase/firebaseConfig";
 import { Button } from "../components/UI";
+import { toast } from "react-toastify";
 
 function Navbar() {
-  const { search, setSearch, setLanguage, languages, selected, setSelected } = useContext(Context);
+  const context = useContext(Context);
+  
+  // Defensive programming for Context
+  if (!context) {
+    console.error("Navbar: Context not available");
+    return (
+      <div className="p-4 text-center text-red-500">
+        Navigation temporarily unavailable. Please refresh the page.
+      </div>
+    );
+  }
+  
+  const { search, setSearch, setLanguage, languages, selected, setSelected } = context;
   const isAboveMedium = useMediaQuery("(min-width: 1025px)");
   const [isMenuToggled, setIsMenuToggled] = useState(false);
   const selectedStyle = `text-melody-pink-500 font-medium border-b-2 border-melody-pink-500`;
-  const localUser = JSON.parse(localStorage.getItem("Users"));
+  
+  // Safe localStorage parsing with error handling
+  let localUser = null;
+  try {
+    const userString = localStorage.getItem("Users");
+    localUser = userString ? JSON.parse(userString) : null;
+  } catch (error) {
+    console.error("Error parsing user data from localStorage:", error);
+    localStorage.removeItem("Users"); // Clean up corrupted data
+    localUser = null;
+  }
+  
+  // Safe toggle function with error handling
+  const handleMenuToggle = () => {
+    try {
+      setIsMenuToggled(prev => !prev);
+    } catch (error) {
+      console.error("Menu toggle error:", error);
+      toast.error("Navigation menu error occurred");
+    }
+  };
+    // Safe menu item click handler
+  const handleMenuItemClick = (path) => {
+    try {
+      localStorage.setItem("selected", path);
+      setSelected(path);
+      setIsMenuToggled(false);
+    } catch (error) {
+      console.error("Menu item click error:", error);
+      toast.error("Navigation error occurred");
+    }
+  };
   
   const searchquery = (e) => {
     setSearch(e.target.value);
   };
-  
-  const signout = async () => {
-    await auth.signOut(auth);
-    localStorage.removeItem("Users");
-    window.location.reload();
+    const signout = async () => {
+    try {
+      await auth.signOut(auth);
+      localStorage.removeItem("Users");
+      toast.success("Logged out successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out. Please try again.");
+    }
   };
   
   const handleClick = (e) => {
@@ -35,12 +84,17 @@ function Navbar() {
   const clearSearch = () => {
     setSearch("");
   };
-  
-  const handleLanguageChange = (event) => {
-    const selectedLanguage = event.target.value;
-    setLanguage(selectedLanguage);
-    localStorage.setItem("languages", selectedLanguage);
-    window.location.reload();
+    const handleLanguageChange = (event) => {
+    try {
+      const selectedLanguage = event.target.value;
+      setLanguage(selectedLanguage);
+      localStorage.setItem("languages", selectedLanguage);
+      toast.success(`Language changed to ${selectedLanguage}`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Language change error:", error);
+      toast.error("Failed to change language. Please try again.");
+    }
   };
   
   useEffect(() => {
@@ -207,10 +261,9 @@ function Navbar() {
                   <option className="bg-deep-grey" value="tamil">Tamil</option>
                   <option className="bg-deep-grey" value="telugu">Telugu</option>
                 </select>
-                
-                <button 
+                  <button 
                   className="p-2 rounded-full bg-deep-grey"
-                  onClick={() => setIsMenuToggled(!isMenuToggled)}
+                  onClick={handleMenuToggle}
                 >
                   <img src={isMenuToggled ? close : menubar} alt="menu" className="w-5 h-5" />
                 </button>
@@ -219,15 +272,10 @@ function Navbar() {
               {/* Mobile menu */}
             {isMenuToggled && (
               <div className="absolute right-0 top-full mt-2 bg-gray-900 border border-gray-800 rounded-lg shadow-xl p-4 w-56 z-50 animate-fadeIn">
-                <ul className="space-y-3">
-                  <Link to="/">
+                <ul className="space-y-3">                  <Link to="/">
                     <li 
                       className={`${selected === "/" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                      onClick={() => {
-                        localStorage.setItem("selected", "/");
-                        setSelected("/");
-                        setIsMenuToggled(false);
-                      }}
+                      onClick={() => handleMenuItemClick("/")}
                     >
                       Home
                     </li>
@@ -235,11 +283,7 @@ function Navbar() {
                       <Link to="/about">
                     <li 
                       className={`${selected === "/about" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                      onClick={() => {
-                        localStorage.setItem("selected", "/about");
-                        setSelected("/about");
-                        setIsMenuToggled(false);
-                      }}
+                      onClick={() => handleMenuItemClick("/about")}
                     >
                       About
                     </li>
@@ -247,35 +291,22 @@ function Navbar() {
                   <Link to="contact">
                     <li 
                       className={`${selected === "/contact" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                      onClick={() => {
-                        localStorage.setItem("selected", "/contact");
-                        setSelected("/contact");
-                        setIsMenuToggled(false);
-                      }}
+                      onClick={() => handleMenuItemClick("/contact")}
                     >
                       Contact
                     </li>
                   </Link>                  <Link to="mood">
                     <li 
                       className={`${selected === "/mood" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                      onClick={() => {
-                        localStorage.setItem("selected", "/mood");
-                        setSelected("/mood");
-                        setIsMenuToggled(false);
-                      }}
+                      onClick={() => handleMenuItemClick("/mood")}
                     >
                       Mood
                     </li>
                   </Link>
-                  
-                  <Link to="recently">
+                    <Link to="recently">
                     <li 
                       className={`${selected === "/recently" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                      onClick={() => {
-                        localStorage.setItem("selected", "/recently");
-                        setSelected("/recently");
-                        setIsMenuToggled(false);
-                      }}
+                      onClick={() => handleMenuItemClick("/recently")}
                     >
                       Recents
                     </li>
@@ -283,25 +314,16 @@ function Navbar() {
                       <Link to="offline">
                     <li 
                       className={`${selected === "/offline" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                      onClick={() => {
-                        localStorage.setItem("selected", "/offline");
-                        setSelected("/offline");
-                        setIsMenuToggled(false);
-                      }}
+                      onClick={() => handleMenuItemClick("/offline")}
                     >
                       Offline
                     </li>
                   </Link>
                     {localUser ? (
-                    <>
-                      <Link to="profile">
+                    <>                      <Link to="profile">
                         <li 
                           className={`${selected === "/profile" ? "text-melody-pink-500" : ""} hover:text-melody-pink-500 p-2 rounded transition-colors`}
-                          onClick={() => {
-                            localStorage.setItem("selected", "/profile");
-                            setSelected("/profile");
-                            setIsMenuToggled(false);
-                          }}
+                          onClick={() => handleMenuItemClick("/profile")}
                         >
                           Profile
                         </li>

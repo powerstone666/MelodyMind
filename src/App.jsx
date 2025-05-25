@@ -7,6 +7,7 @@ import "./App.css";
 import { validateAndRefreshToken, logoutUser } from "./Firebase/auth"; // Import logoutUser
 import { onAuthStateChanged } from "firebase/auth"; // Import onAuthStateChanged
 import { auth } from "./Firebase/firebaseConfig"; // Import auth
+import { useOfflineDetection } from "./hooks/useOfflineDetection"; // Import enhanced offline detection
 
 function App() {
   const { selected, setSelected, Users, setUsers } = useContext(Context);
@@ -14,37 +15,15 @@ function App() {
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isOffline, setIsOffline] = useState(!navigator.onLine);
-
+  
+  // Use enhanced offline detection hook
+  const { isOffline, wasOffline } = useOfflineDetection();
   // Hide loader on component mount
   useEffect(() => {
     const loader = document.getElementById('loader');
     if (loader) {
       loader.style.display = 'none';
     }
-  }, []);
-
-  // Robust online/offline status detection
-  useEffect(() => {
-    const handleOnline = () => {
-      console.log('App is online');
-      setIsOffline(false);
-    };
-    const handleOffline = () => {
-      console.log('App is offline');
-      setIsOffline(true);
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // Set initial state
-    setIsOffline(!navigator.onLine);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
   }, []);
 
   // Handle path selection and localStorage
@@ -136,15 +115,20 @@ function App() {
     // instead of relying solely on the HTML one, but the HTML one covers the initial load.
     return null; // Or your React loader component if you prefer
   }
-
   return (
     <>
       {isOffline && (
-        <div style={{ textAlign: 'center', padding: '10px', backgroundColor: '#ffc107', color: 'black' }}>
-          You are currently offline. Some features may be limited.
+        <div className="fixed top-0 left-0 w-full z-50 bg-yellow-500 text-black text-center py-2 px-4 shadow-lg">
+          <div className="flex items-center justify-center space-x-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.734 0L4.08 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span className="font-medium">You are currently offline</span>
+            <span className="text-sm">• Some features may be limited</span>
+          </div>
         </div>
       )}
-      <div className="flex">
+      <div className={`flex ${isOffline ? 'pt-12' : ''}`}>
         <Sidebar />
         <Landing />
       </div>
