@@ -12,6 +12,8 @@ import { addRecents } from "../Firebase/database";
 import './custom-audioplayer.css';
 import { addSongToHistory, fetchRecommendations, navigateToNextSong, navigateToPrevSong } from "../utils/musicNavigation_fixed.js";
 import RecommendationIndicator from "../components/RecommendationIndicator";
+import { useOfflineDetection } from "../hooks/useOfflineDetection";
+import { getOfflineSongUrl, isSongAvailableOffline } from "../utils/serviceWorkerUtils";
 
 const HISTORY_TIMESTAMP_KEY = 'songHistoryLastUpdated';
 const MAX_HISTORY_AGE_DAYS = 5;
@@ -19,6 +21,7 @@ const MAX_HISTORY_LENGTH = 50;
 
 function AudioPlayerComponent() {
   const isAboveMedium = useMediaQuery("(min-width:1025px)"); 
+  const { isOffline } = useOfflineDetection();
   const { 
     songid, 
     setSongid, 
@@ -45,6 +48,16 @@ function AudioPlayerComponent() {
   const recommendationTimeoutRef = useRef(null);
   const [playingRecommendation, setPlayingRecommendation] = useState(false);
   const [recommendationType, setRecommendationType] = useState('api'); // 'api' or 'gemini'
+  const [currentBlobUrl, setCurrentBlobUrl] = useState(null);
+
+  // Cleanup blob URLs to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (currentBlobUrl && currentBlobUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(currentBlobUrl);
+      }
+    };
+  }, [currentBlobUrl]);
 
   useEffect(() => {
     const lastUpdated = localStorage.getItem(HISTORY_TIMESTAMP_KEY);
@@ -102,10 +115,38 @@ function AudioPlayerComponent() {
         if (decodedName) setSpotify(artistName + " " + decodedName);
         setArtists(artistName);
         setArray(songData.album.name);
-        setImage(songData.image[1].url);
-        setNames(decodedName);
+        setImage(songData.image[1].url);        setNames(decodedName);
         const url = songData.downloadUrl[4].url;
-        setMusic(url);
+        
+        // Check if we should use offline version
+        let finalMusicUrl = url;
+        try {
+          // If offline or song is cached offline, try to get offline URL
+          if (isOffline || isSongAvailableOffline(url)) {
+            const offlineUrl = await getOfflineSongUrl(url);
+            if (offlineUrl) {
+              finalMusicUrl = offlineUrl;
+              console.log('Using offline cached audio for:', decodedName);
+            } else if (isOffline) {
+              // If offline and no cached version, show error
+              toast.error(`"${decodedName}" is not available offline. Please save it for offline playback when online.`);
+              return false;
+            }
+          }
+        } catch (offlineError) {
+          console.warn('Error checking offline audio:', offlineError);
+          if (isOffline) {
+            toast.error(`"${decodedName}" is not available offline. Please save it for offline playback when online.`);
+            return false;
+          }        }
+        
+        // Clean up previous blob URL if exists
+        if (currentBlobUrl && currentBlobUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(currentBlobUrl);
+        }
+        
+        setMusic(finalMusicUrl);
+        setCurrentBlobUrl(finalMusicUrl);
 
         const songInfo = {
           id: songid,
@@ -473,13 +514,20 @@ function AudioPlayerComponent() {
                       </svg>
                     </div>
                   </div>
-                </Link>
-                <div className="flex flex-col">
+                </Link>                <div className="flex flex-col">
                   <h1 className="text-sm font-semibold truncate max-w-[140px]">{names}</h1>
                   <p className="text-xs text-gray-400 truncate max-w-[140px]">{artists}</p>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                     {songHistory.length > 0 && (
                       <span>{currentHistoryIndex + 1} of {songHistory.length}</span>
+                    )}
+                    {music && music.startsWith('blob:') && (
+                      <span className="text-melody-pink-400 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                        </svg>
+                        Offline
+                      </span>
                     )}
                   </div>
                 </div>
@@ -490,16 +538,24 @@ function AudioPlayerComponent() {
                   <span className="nav-loading"></span>
                 </div>
                 <div className={`recommendation-ready ${recommendations.length > 0 ? 'visible' : ''}`} 
-                     style={{ top: '10px', right: '30%' }}></div>
-                <AudioPlayer
+                     style={{ top: '10px', right: '30%' }}></div>                <AudioPlayer
                   showSkipControls
                   onClickNext={handleNext}
                   onClickPrevious={handlePrev}
                   onEnded={handleNext}
                   onError={(e) => {
                     console.error("Audio playback error:", e);
-                    toast.error("Unable to play this song. Skipping to next...");
-                    setTimeout(handleNext, 1500);
+                    if (isOffline) {
+                      toast.error("Cannot play song in offline mode. Please check if the song is saved for offline playback.");
+                    } else {
+                      toast.error("Unable to play this song. Skipping to next...");
+                      setTimeout(handleNext, 1500);
+                    }
+                  }}
+                  onLoadStart={() => {
+                    if (isOffline && music && music.startsWith('blob:')) {
+                      console.log('Loading offline audio:', names);
+                    }
                   }}
                   src={music}
                   autoPlay={true}
@@ -524,13 +580,20 @@ function AudioPlayerComponent() {
             <div className="p-1">
               <div className="flex items-center justify-between mb-1 px-2">
                 <Link to="innersong" className="flex items-center gap-2" onClick={setdisplay}>
-                  <img src={image} alt={names} className="h-8 w-8 rounded-md" />
-                  <div className="flex-1 min-w-0">
+                  <img src={image} alt={names} className="h-8 w-8 rounded-md" />                  <div className="flex-1 min-w-0">
                     <h2 className="text-xs font-bold truncate max-w-[140px]">{names}</h2>
                     <p className="text-xs text-gray-400 truncate max-w-[140px]">{artists}</p>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 flex items-center gap-2">
                       {songHistory.length > 0 && (
                         <span>{currentHistoryIndex + 1}/{songHistory.length}</span>
+                      )}
+                      {music && music.startsWith('blob:') && (
+                        <span className="text-melody-pink-400 flex items-center gap-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                          </svg>
+                          Offline
+                        </span>
                       )}
                     </div>
                   </div>
@@ -541,8 +604,7 @@ function AudioPlayerComponent() {
                   Loading
                   <span className="nav-loading"></span>
                 </div>
-                <div className={`recommendation-ready ${recommendations.length > 0 ? 'visible' : ''}`}></div>
-                <AudioPlayer
+                <div className={`recommendation-ready ${recommendations.length > 0 ? 'visible' : ''}`}></div>                <AudioPlayer
                   src={music}
                   showSkipControls
                   onClickNext={handleNext}
@@ -550,8 +612,17 @@ function AudioPlayerComponent() {
                   onEnded={handleNext}
                   onError={(e) => {
                     console.error("Audio playback error:", e);
-                    toast.error("Unable to play this song. Skipping to next...");
-                    setTimeout(handleNext, 1500);
+                    if (isOffline) {
+                      toast.error("Cannot play song in offline mode. Please check if the song is saved for offline playback.");
+                    } else {
+                      toast.error("Unable to play this song. Skipping to next...");
+                      setTimeout(handleNext, 1500);
+                    }
+                  }}
+                  onLoadStart={() => {
+                    if (isOffline && music && music.startsWith('blob:')) {
+                      console.log('Loading offline audio:', names);
+                    }
                   }}
                   autoPlay={true}
                   showJumpControls={true}
