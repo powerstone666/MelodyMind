@@ -277,21 +277,24 @@ function Innersongs() {
           songId: songid,
           language: details.language
         };
-        
-        await saveSongForOffline(download, metadata);
+          await saveSongForOffline(download, metadata);
         setSavedOffline(true);
         toast.success("Song saved for offline playback");
         
-        // Record user activity if logged in
+        // Record user activity if logged in (optional)
         if (auth.currentUser) {
-          await recordUserActivity(
-            auth.currentUser.uid,
-            songid,
-            songName,
-            details.primaryArtists || "Unknown Artist",
-            "saved_offline",
-            image
-          );
+          try {
+            await recordUserActivity(
+              auth.currentUser.uid,
+              songid,
+              songName,
+              details.primaryArtists || "Unknown Artist",
+              "saved_offline",
+              image
+            );
+          } catch (error) {
+            console.log("User activity recording failed (non-critical):", error);
+          }
         }
       } catch (error) {
         console.error("Error saving song for offline:", error);

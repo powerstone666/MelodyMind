@@ -15,6 +15,15 @@ import RecommendationIndicator from "../components/RecommendationIndicator";
 import { useOfflineDetection } from "../hooks/useOfflineDetection";
 import { getOfflineSongUrl, isSongAvailableOffline } from "../utils/serviceWorkerUtils";
 
+// Utility function to ensure HTTPS URLs when app is served over HTTPS
+const ensureHttpsUrl = (url) => {
+  // If the current page is HTTPS and the URL is HTTP, convert it to HTTPS
+  if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+    return url.replace('http:', 'https:');
+  }
+  return url;
+};
+
 const HISTORY_TIMESTAMP_KEY = 'songHistoryLastUpdated';
 const MAX_HISTORY_AGE_DAYS = 5;
 const MAX_HISTORY_LENGTH = 50;
@@ -99,7 +108,7 @@ function AudioPlayerComponent() {
     }
   }, [names, array, image, artists]);
 
-  const fetchSongData = async () => {
+  const fetchSongData = async (forceOnline = false) => {
     if (!songid) return;
     setIsLoading(true);
     let retryCount = 0;
@@ -113,32 +122,118 @@ function AudioPlayerComponent() {
         const artistName = songData.artists.primary[0].name;
 
         if (decodedName) setSpotify(artistName + " " + decodedName);
-        setArtists(artistName);
-        setArray(songData.album.name);
-        setImage(songData.image[1].url);        setNames(decodedName);
-        const url = songData.downloadUrl[4].url;
+        setArtists(artistName);        setArray(songData.album.name);
+        setImage(songData.image[1].url);        
+        setNames(decodedName);
+        const originalUrl = songData.downloadUrl[4].url;
+        // Ensure HTTPS URL to avoid mixed content issues on HTTPS sites
+        const url = ensureHttpsUrl(originalUrl);
         
         // Check if we should use offline version
         let finalMusicUrl = url;
-        try {
-          // If offline or song is cached offline, try to get offline URL
-          if (isOffline || isSongAvailableOffline(url)) {
-            const offlineUrl = await getOfflineSongUrl(url);
-            if (offlineUrl) {
-              finalMusicUrl = offlineUrl;
-              console.log('Using offline cached audio for:', decodedName);
-            } else if (isOffline) {
-              // If offline and no cached version, show error
+        
+        if (!forceOnline) {          try {
+            // If offline or song is cached offline, try to get offline URL
+            // Check with both original and secure URL for compatibility
+            const isAvailableOffline = isSongAvailableOffline(originalUrl) || isSongAvailableOffline(url);
+            console.log('Song offline status:', { 
+              songName: decodedName, 
+              isOffline, 
+              isAvailableOffline, 
+              originalUrl: originalUrl,
+              secureUrl: url 
+            });
+            
+            if (isOffline || isAvailableOffline) {
+              console.log('Attempting to get offline URL for:', decodedName);
+              // Try secure URL first, then original URL for backward compatibility
+              let offlineUrl = await getOfflineSongUrl(url);
+              if (!offlineUrl && url !== originalUrl) {
+                offlineUrl = await getOfflineSongUrl(originalUrl);
+              }
+              
+              if (offlineUrl) {
+                finalMusicUrl = offlineUrl;
+                console.log('Successfully got offline URL:', { 
+                  songName: decodedName, 
+                  offlineUrl: offlineUrl.substring(0, 50) + '...',
+                  urlType: offlineUrl.startsWith('blob:') ? 'blob' : 'unknown'
+                });
+                  // Enhanced blob URL validation
+                try {
+                  const testResponse = await fetch(offlineUrl, { method: 'HEAD' });
+                  console.log('Blob URL validation:', { 
+                    ok: testResponse.ok, 
+                    status: testResponse.status,
+                    type: testResponse.headers.get('content-type'),
+                    size: testResponse.headers.get('content-length')
+                  });
+                  
+                  // Additional test: try to create an audio element to test if it can load
+                  const testAudio = new Audio();
+                  testAudio.src = offlineUrl;
+                  testAudio.preload = 'metadata';
+                  
+                  // Wait for loadedmetadata or error
+                  await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                      testAudio.remove();
+                      reject(new Error('Audio metadata load timeout'));
+                    }, 5000);
+                    
+                    testAudio.addEventListener('loadedmetadata', () => {
+                      clearTimeout(timeout);
+                      console.log('Audio metadata loaded successfully:', {
+                        duration: testAudio.duration,
+                        canPlay: !isNaN(testAudio.duration)
+                      });
+                      testAudio.remove();
+                      resolve();
+                    });
+                    
+                    testAudio.addEventListener('error', (e) => {
+                      clearTimeout(timeout);
+                      console.error('Audio load error:', e);
+                      testAudio.remove();
+                      reject(e);
+                    });
+                  });
+                  
+                } catch (testError) {
+                  console.warn('Blob URL validation failed:', testError);
+                  // If offline and blob validation fails, don't use it
+                  if (isOffline) {
+                    toast.error(`"${decodedName}" cached file appears corrupted. Please re-save it for offline playback when online.`);
+                    return false;
+                  }
+                  // If online, fall back to original URL
+                  finalMusicUrl = url;
+                }
+                
+              } else if (isOffline) {
+                // If offline and no cached version, show error
+                console.error('No offline version available for:', decodedName);
+                toast.error(`"${decodedName}" is not available offline. Please save it for offline playback when online.`);
+                return false;
+              } else {
+                console.log('Song is marked as offline available but no blob URL returned');
+              }
+            }
+          } catch (offlineError) {
+            console.error('Error checking offline audio:', offlineError);
+            if (isOffline) {
               toast.error(`"${decodedName}" is not available offline. Please save it for offline playback when online.`);
               return false;
-            }
-          }
-        } catch (offlineError) {
-          console.warn('Error checking offline audio:', offlineError);
-          if (isOffline) {
-            toast.error(`"${decodedName}" is not available offline. Please save it for offline playback when online.`);
-            return false;
-          }        }
+            }        }
+        } else {
+          console.log('Force online mode - using original URL:', url);
+        }
+        
+        console.log('Final music URL being set:', { 
+          songName: decodedName, 
+          urlType: finalMusicUrl.startsWith('blob:') ? 'blob' : finalMusicUrl.startsWith('http') ? 'http' : 'unknown',
+          url: finalMusicUrl.substring(0, 100) + (finalMusicUrl.length > 100 ? '...' : '')
+        });
         
         // Clean up previous blob URL if exists
         if (currentBlobUrl && currentBlobUrl.startsWith('blob:')) {
@@ -545,7 +640,23 @@ function AudioPlayerComponent() {
                   onEnded={handleNext}
                   onError={(e) => {
                     console.error("Audio playback error:", e);
-                    if (isOffline) {
+                    console.error("Audio error details:", {
+                      currentSrc: e.currentTarget?.currentSrc,
+                      networkState: e.currentTarget?.networkState,
+                      readyState: e.currentTarget?.readyState,
+                      error: e.currentTarget?.error
+                    });
+                    
+                    // If it's a blob URL that failed and we're not offline, try to reload with original URL
+                    if (music && music.startsWith('blob:') && !isOffline) {                      console.log('Blob URL failed, attempting to reload with original URL');
+                      toast.warning("Cached audio failed, trying online version...");
+                      // Force refetch without using offline version
+                      fetchSongData(true).catch(err => {
+                        console.error('Failed to refetch song:', err);
+                        toast.error("Unable to play this song. Skipping to next...");
+                        setTimeout(handleNext, 1500);
+                      });
+                    } else if (isOffline) {
                       toast.error("Cannot play song in offline mode. Please check if the song is saved for offline playback.");
                     } else {
                       toast.error("Unable to play this song. Skipping to next...");
@@ -612,7 +723,24 @@ function AudioPlayerComponent() {
                   onEnded={handleNext}
                   onError={(e) => {
                     console.error("Audio playback error:", e);
-                    if (isOffline) {
+                    console.error("Audio error details:", {
+                      currentSrc: e.currentTarget?.currentSrc,
+                      networkState: e.currentTarget?.networkState,
+                      readyState: e.currentTarget?.readyState,
+                      error: e.currentTarget?.error
+                    });
+                    
+                    // If it's a blob URL that failed and we're not offline, try to reload with original URL
+                    if (music && music.startsWith('blob:') && !isOffline) {
+                      console.log('Blob URL failed, attempting to reload with original URL');
+                      toast.warning("Cached audio failed, trying online version...");
+                      // Force refetch without using offline version
+                      fetchSongData().catch(err => {
+                        console.error('Failed to refetch song:', err);
+                        toast.error("Unable to play this song. Skipping to next...");
+                        setTimeout(handleNext, 1500);
+                      });
+                    } else if (isOffline) {
                       toast.error("Cannot play song in offline mode. Please check if the song is saved for offline playback.");
                     } else {
                       toast.error("Unable to play this song. Skipping to next...");

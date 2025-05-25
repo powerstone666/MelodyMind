@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Offline Audio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        audio {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #28a745; }
+        .error { background: #dc3545; }
+        .warning { background: #ffc107; color: black; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>MelodyMind Offline Audio Debug Tool</h1>
+        
+        <div class="status" id="status">Loading...</div>
+        
+        <h2>Test Controls</h2>
+        <button onclick="testIndexedDB()">Test IndexedDB</button>
+        <button onclick="listCachedSongs()">List Cached Songs</button>
+        <button onclick="testBlobCreation()">Test Blob Creation</button>
+        <button onclick="clearCache()">Clear Cache</button>
+        
+        <h2>Audio Test</h2>
+        <audio id="testAudio" controls></audio>
+        <button onclick="testOfflineAudio()">Test Offline Audio</button>
+        
+        <h2>Debug Log</h2>
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        let logElement = document.getElementById('log');
+        let statusElement = document.getElementById('status');
+        let audioElement = document.getElementById('testAudio');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const formattedMessage = `[${timestamp}] ${message}\n`;
+            logElement.textContent += formattedMessage;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function setStatus(message, type = 'info') {
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        // Initialize IndexedDB
+        async function initializeIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('MelodyMindOfflineDB', 1);
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('audioFiles')) {
+                        db.createObjectStore('audioFiles', { keyPath: 'url' });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        // Test IndexedDB connection
+        // Utility function to ensure HTTPS URLs
+        function ensureHttpsUrl(url) {
+            if (window.location.protocol === 'https:' && url.startsWith('http:')) {
+                return url.replace('http:', 'https:');
+            }
+            return url;
+        }
+
+        async function testIndexedDB() {
+            try {
+                log('Testing IndexedDB connection...');
+                const db = await initializeIndexedDB();
+                log('✅ IndexedDB connected successfully');
+                setStatus('IndexedDB working', 'success');
+            } catch (error) {
+                log(`❌ IndexedDB error: ${error.message}`);
+                setStatus('IndexedDB failed', 'error');
+            }
+        }
+
+        // List cached songs
+        async function listCachedSongs() {
+            try {
+                log('Listing cached songs...');
+                const db = await initializeIndexedDB();
+                
+                const transaction = db.transaction(['audioFiles'], 'readonly');
+                const store = transaction.objectStore('audioFiles');
+                const request = store.getAll();
+                
+                request.onsuccess = (event) => {
+                    const cachedSongs = event.target.result;
+                    log(`Found ${cachedSongs.length} cached songs:`);
+                    
+                    cachedSongs.forEach((song, index) => {
+                        log(`${index + 1}. URL: ${song.url.substring(0, 50)}...`);
+                        log(`   Blob size: ${(song.blob.size / 1024 / 1024).toFixed(2)} MB`);
+                        log(`   Blob type: ${song.blob.type}`);
+                        log(`   Cached: ${new Date(song.timestamp).toLocaleString()}`);
+                        log('');
+                    });
+                    
+                    if (cachedSongs.length === 0) {
+                        setStatus('No cached songs found', 'warning');
+                    } else {
+                        setStatus(`${cachedSongs.length} songs cached`, 'success');
+                    }
+                };
+                
+                request.onerror = (event) => {
+                    log(`❌ Error listing songs: ${event.target.error}`);
+                    setStatus('Failed to list songs', 'error');
+                };
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                setStatus('List failed', 'error');
+            }
+        }
+
+        // Test blob creation and audio playback
+        async function testBlobCreation() {
+            try {
+                log('Testing blob creation...');
+                const db = await initializeIndexedDB();
+                
+                const transaction = db.transaction(['audioFiles'], 'readonly');
+                const store = transaction.objectStore('audioFiles');
+                const request = store.getAll();
+                
+                request.onsuccess = async (event) => {
+                    const cachedSongs = event.target.result;
+                    
+                    if (cachedSongs.length === 0) {
+                        log('❌ No cached songs to test');
+                        setStatus('No songs to test', 'warning');
+                        return;
+                    }
+                    
+                    const firstSong = cachedSongs[0];
+                    log(`Testing blob creation for: ${firstSong.url.substring(0, 50)}...`);
+                    
+                    try {
+                        // Create blob URL
+                        const blobUrl = URL.createObjectURL(firstSong.blob);
+                        log(`✅ Blob URL created: ${blobUrl}`);
+                        
+                        // Test fetch on blob URL
+                        const response = await fetch(blobUrl, { method: 'HEAD' });
+                        log(`✅ Blob fetch test: ${response.ok ? 'Success' : 'Failed'}`);
+                        log(`   Status: ${response.status}`);
+                        log(`   Content-Type: ${response.headers.get('content-type')}`);
+                        log(`   Content-Length: ${response.headers.get('content-length')}`);
+                        
+                        // Test audio element
+                        const testAudio = new Audio();
+                        testAudio.src = blobUrl;
+                        testAudio.preload = 'metadata';
+                        
+                        await new Promise((resolve, reject) => {
+                            const timeout = setTimeout(() => {
+                                reject(new Error('Audio metadata load timeout'));
+                            }, 10000);
+                            
+                            testAudio.addEventListener('loadedmetadata', () => {
+                                clearTimeout(timeout);
+                                log(`✅ Audio metadata loaded successfully`);
+                                log(`   Duration: ${testAudio.duration} seconds`);
+                                log(`   Ready state: ${testAudio.readyState}`);
+                                resolve();
+                            });
+                            
+                            testAudio.addEventListener('error', (e) => {
+                                clearTimeout(timeout);
+                                log(`❌ Audio load error: ${e.message || 'Unknown error'}`);
+                                reject(e);
+                            });
+                        });
+                        
+                        // Set to main audio element for testing
+                        audioElement.src = blobUrl;
+                        setStatus('Blob test successful', 'success');
+                        
+                        // Clean up
+                        setTimeout(() => {
+                            URL.revokeObjectURL(blobUrl);
+                            log('🔄 Blob URL cleaned up');
+                        }, 60000); // Clean up after 1 minute
+                        
+                    } catch (blobError) {
+                        log(`❌ Blob test failed: ${blobError.message}`);
+                        setStatus('Blob test failed', 'error');
+                    }
+                };
+                
+                request.onerror = (event) => {
+                    log(`❌ Error accessing songs: ${event.target.error}`);
+                    setStatus('Access failed', 'error');
+                };
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                setStatus('Test failed', 'error');
+            }
+        }
+
+        // Test offline audio playback
+        async function testOfflineAudio() {
+            try {
+                log('Testing offline audio playback...');
+                
+                if (!audioElement.src) {
+                    log('❌ No audio source set. Run "Test Blob Creation" first.');
+                    setStatus('No audio source', 'warning');
+                    return;
+                }
+                
+                // Attempt to play
+                audioElement.currentTime = 0;
+                
+                const playPromise = audioElement.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        log('✅ Audio playback started successfully');
+                        setStatus('Audio playing', 'success');
+                        
+                        // Pause after 3 seconds
+                        setTimeout(() => {
+                            audioElement.pause();
+                            log('🔄 Audio paused after test');
+                        }, 3000);
+                        
+                    }).catch((error) => {
+                        log(`❌ Audio playback failed: ${error.message}`);
+                        setStatus('Playback failed', 'error');
+                    });
+                }
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                setStatus('Test failed', 'error');
+            }
+        }
+
+        // Clear cache
+        async function clearCache() {
+            try {
+                log('Clearing audio cache...');
+                const db = await initializeIndexedDB();
+                
+                const transaction = db.transaction(['audioFiles'], 'readwrite');
+                const store = transaction.objectStore('audioFiles');
+                const request = store.clear();
+                
+                request.onsuccess = () => {
+                    log('✅ Cache cleared successfully');
+                    setStatus('Cache cleared', 'success');
+                };
+                
+                request.onerror = (event) => {
+                    log(`❌ Error clearing cache: ${event.target.error}`);
+                    setStatus('Clear failed', 'error');
+                };
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                setStatus('Clear failed', 'error');
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', async () => {
+            log('🚀 Debug tool initialized');
+            await testIndexedDB();
+            await listCachedSongs();
+        });
+
+        // Audio event listeners
+        audioElement.addEventListener('loadstart', () => log('🎵 Audio load started'));
+        audioElement.addEventListener('loadeddata', () => log('✅ Audio data loaded'));
+        audioElement.addEventListener('canplay', () => log('✅ Audio can play'));
+        audioElement.addEventListener('play', () => log('▶️ Audio play event'));
+        audioElement.addEventListener('pause', () => log('⏸️ Audio pause event'));
+        audioElement.addEventListener('error', (e) => {
+            log(`❌ Audio error: ${e.message || 'Unknown error'}`);
+            if (e.target && e.target.error) {
+                log(`   Error code: ${e.target.error.code}`);
+                log(`   Error message: ${e.target.error.message}`);
+            }
+        });
+    </script>
+</body>
+</html>

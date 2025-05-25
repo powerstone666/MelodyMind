@@ -2,6 +2,15 @@
 const CACHE_NAME = 'melodymind-v1';
 const OFFLINE_URL = '/offline';
 
+// Utility function to ensure HTTPS URLs when app is served over HTTPS
+const ensureHttpsUrl = (url) => {
+  // If the service worker origin is HTTPS and the URL is HTTP, convert it to HTTPS
+  if (self.location.protocol === 'https:' && url.startsWith('http:')) {
+    return url.replace('http:', 'https:');
+  }
+  return url;
+};
+
 // Assets to cache for offline functionality
 const STATIC_CACHE_URLS = [
   '/',
@@ -85,7 +94,6 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
-
   // Handle other requests with cache-first strategy
   event.respondWith(
     caches.match(event.request)
@@ -95,38 +103,56 @@ self.addEventListener('fetch', (event) => {
           return cachedResponse;
         }
 
-        // Try to fetch from network
-        return fetch(event.request)
-          .then((response) => {
-            // Don't cache if response is not ok
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+        // For audio files, also try to match with HTTPS URL
+        if (event.request.url.includes('saavncdn.com') || event.request.url.includes('.mp3') || event.request.url.includes('.mp4')) {
+          const secureUrl = ensureHttpsUrl(event.request.url);
+          if (secureUrl !== event.request.url) {
+            return caches.match(secureUrl).then((secureResponse) => {
+              if (secureResponse) {
+                console.log('Service Worker: Found cached audio with HTTPS URL');
+                return secureResponse;
+              }
+              // Continue with normal fetch logic
+              return fetchFromNetwork(event.request);
+            });
+          }
+        }
 
-            // Clone response for caching
-            const responseToCache = response.clone();
-
-            // Cache the response for future use
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // If it's an image request that fails, return a placeholder
-            if (event.request.destination === 'image') {
-              return new Response(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ddd"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#999">Image</text></svg>',
-                { headers: { 'Content-Type': 'image/svg+xml' } }
-              );
-            }
-            // For other failed requests, return null
-            return null;
-          });
+        return fetchFromNetwork(event.request);
       })
   );
+
+  function fetchFromNetwork(request) {
+    // Try to fetch from network
+    return fetch(request)
+      .then((response) => {
+        // Don't cache if response is not ok
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+
+        // Clone response for caching
+        const responseToCache = response.clone();
+
+        // Cache the response for future use
+        caches.open(CACHE_NAME)
+          .then((cache) => {
+            cache.put(request, responseToCache);
+          });
+
+        return response;
+      })
+      .catch(() => {
+        // If it's an image request that fails, return a placeholder
+        if (request.destination === 'image') {
+          return new Response(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ddd"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#999">Image</text></svg>',
+            { headers: { 'Content-Type': 'image/svg+xml' } }
+          );
+        }        // For other failed requests, return null
+        return null;
+      });
+  }
 });
 
 // Handle offline audio storage messages
@@ -134,20 +160,23 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CACHE_AUDIO') {
     const { url, audioBlob } = event.data;
     
+    // Ensure HTTPS URL for consistent caching
+    const secureUrl = ensureHttpsUrl(url);
+    
     // Store audio in cache for offline playback
     caches.open(CACHE_NAME)
       .then((cache) => {
         const response = new Response(audioBlob, {
           headers: { 'Content-Type': 'audio/mpeg' }
         });
-        return cache.put(url, response);
+        return cache.put(secureUrl, response);
       })
       .then(() => {
         // Send success message back
         event.ports[0].postMessage({ 
           type: 'AUDIO_CACHE_STATUS', 
           status: 'cached',
-          url: url 
+          url: secureUrl 
         });
       })
       .catch((error) => {
@@ -155,26 +184,28 @@ self.addEventListener('message', (event) => {
         event.ports[0].postMessage({ 
           type: 'AUDIO_CACHE_STATUS', 
           status: 'cache_failed',
-          url: url,
+          url: secureUrl,
           error: error.message 
         });
       });
   }
-  
-  if (event.data && event.data.type === 'DELETE_AUDIO') {
+    if (event.data && event.data.type === 'DELETE_AUDIO') {
     const { url } = event.data;
+    
+    // Ensure HTTPS URL for consistent deletion
+    const secureUrl = ensureHttpsUrl(url);
     
     // Remove audio from cache
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.delete(url);
+        return cache.delete(secureUrl);
       })
       .then((deleted) => {
         // Send success message back
         event.ports[0].postMessage({ 
           type: 'AUDIO_DELETE_STATUS', 
           status: deleted ? 'deleted' : 'delete_failed_not_found',
-          url: url 
+          url: secureUrl 
         });
       })
       .catch((error) => {
@@ -182,7 +213,7 @@ self.addEventListener('message', (event) => {
         event.ports[0].postMessage({ 
           type: 'AUDIO_DELETE_STATUS', 
           status: 'delete_failed',
-          url: url,
+          url: secureUrl,
           error: error.message 
         });
       });
