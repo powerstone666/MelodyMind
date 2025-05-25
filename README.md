@@ -55,9 +55,6 @@ MelodyMind is a sophisticated, full-stack Progressive Web App (PWA) that combine
 
 ### **AI & APIs**
 - **face-api.js**: Real-time facial emotion detection
-- **Spotify Web API**: Music metadata and recommendations
-- **JioSaavn API**: Indian music content and streaming
-- **Last.fm API**: Music recommendations and user statistics
 - **Gemini AI**: Advanced recommendation processing
 
 ### **PWA Technologies**
@@ -157,9 +154,6 @@ MelodyMind/
 ### **API Keys Required**
 ```env
 REACT_APP_FIREBASE_API_KEY=your_firebase_key
-REACT_APP_SPOTIFY_CLIENT_ID=your_spotify_id
-REACT_APP_JIOSAAVN_API_KEY=your_jiosaavn_key
-REACT_APP_LASTFM_API_KEY=your_lastfm_key
 REACT_APP_GEMINI_API_KEY=your_gemini_key
 ```
 
@@ -221,7 +215,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 **Acknowledgments**
 
-- **Music APIs**: Spotify, JioSaavn, Last.fm for music data
 - **AI/ML**: Google's Gemini AI for advanced recommendations
 - **Computer Vision**: face-api.js for emotion detection
 - **Community**: Open source contributors and music enthusiasts
