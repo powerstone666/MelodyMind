@@ -12,11 +12,11 @@ function Landing() {
   const isAboveMedium = useMediaQuery("(min-width: 768px)");
 
   return (
-    <div className="w-full h-screen flex flex-col">
+    <div className="w-full min-h-screen flex flex-col overflow-hidden">
       <Navbar />
-      
-      <AppRoutes />
-     
+      <div className="flex-grow overflow-y-auto pb-24"> {/* Prevent overlap with audio player */}
+        <AppRoutes />
+      </div>
       {isAboveMedium ? (
         <div className="fixed bottom-0 w-full">
           <AudioPlayerComponent />

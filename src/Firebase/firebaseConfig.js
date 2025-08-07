@@ -7,13 +7,13 @@ import { getStorage } from "firebase/storage";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_apiKey,
-  authDomain: import.meta.env.VITE_authDomain,
-  projectId: import.meta.env.VITE_projectId,
-  storageBucket: import.meta.env.VITE_storageBucket,
-  messagingSenderId: import.meta.env.VITE_messagingSenderId,
-  appId: import.meta.env.VITE_appId,
-  measurementId: import.meta.env.VITE_measurementId
+  apiKey: "AIzaSyBGUD88ASUFPUhGBv9bHfXDj0V0dElR1PA",
+  authDomain: "e-learning-511b3.firebaseapp.com",
+  projectId: "e-learning-511b3",
+  storageBucket: "e-learning-511b3.firebasestorage.app",
+  messagingSenderId: "897437623693",
+  appId: "1:897437623693:web:3ebd514344100fc4ba09c4",
+  measurementId: "G-2DVEWXE8YD"
 };
 
 // Initialize Firebase

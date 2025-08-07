@@ -145,9 +145,11 @@ function App() {
           </div>
         </div>
       )}
-      <div className={`flex ${isOffline ? 'pt-12' : ''}`}>
+      <div className={`flex flex-col md:flex-row w-full min-h-screen ${isOffline ? 'pt-12' : ''}`}>
         <Sidebar />
-        <Landing />
+        <div className="flex-grow overflow-y-auto">
+          <Landing />
+        </div>
       </div>
     </>
   );
