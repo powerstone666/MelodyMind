@@ -14,19 +14,19 @@ export const MelodyMusicsongs=async(names)=>{
         const language=languages();
         const year = new Date().getFullYear();        // Enhanced search terms for different types of queries
         let searchTerm;
-        let apiEndpoint = 'https://saavn.dev/api/search/songs';
+        let apiEndpoint = 'https://saavn.sumit.co/api/search/songs';
 
         if (names && names.includes("New Release")) {            searchTerm = `latest releases ${year} ${language}`;
             // Try charts API for new releases
-            apiEndpoint = 'https://saavn.dev/api/charts';
+            apiEndpoint = 'https://saavn.sumit.co/api/charts';
         } else if (names && names.includes("Weekly Hits")) {
             searchTerm = `hit songs  ${language}`;
             // Use dedicated trending API for weekly hits
-            apiEndpoint = 'https://saavn.dev/api/trending';
+            apiEndpoint = 'https://saavn.sumit.co/api/trending';
         } else if (names && names.includes("Top Songs")) {
             searchTerm = `top songs ${year} ${language}`;
             // Try trending API for top songs
-            apiEndpoint = 'https://saavn.dev/api/trending';
+            apiEndpoint = 'https://saavn.sumit.co/api/trending';
         } else if (names && names.includes("new songs")) {
             searchTerm = `${names} ${language}`;
         } else {
@@ -63,7 +63,7 @@ export const MelodyMusicsongs=async(names)=>{
           // Default to search API if the specialized endpoints don't work
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/search/songs',
+            url: 'https://saavn.sumit.co/api/search/songs',
             params: { 
                 query: searchTerm,
                 limit: 50
@@ -75,13 +75,13 @@ export const MelodyMusicsongs=async(names)=>{
             // Try multiple approaches to get weekly hits
             try {
                 // First try with trending API
-                const trendingRes = await axios.get('https://saavn.dev/api/trending');
+                const trendingRes = await axios.get('https://saavn.sumit.co/api/trending');
                 if (trendingRes?.data?.data?.songs && Array.isArray(trendingRes.data.data.songs)) {
                     return trendingRes.data.data.songs;
                 }
                 
                 // If that fails, try with top charts
-                const chartsRes = await axios.get('https://saavn.dev/api/charts');
+                const chartsRes = await axios.get('https://saavn.sumit.co/api/charts');
                 if (chartsRes?.data?.data && Array.isArray(chartsRes.data.data) && chartsRes.data.data.length > 0) {
                     const topChart = chartsRes.data.data.find(chart => 
                         chart.title.toLowerCase().includes('weekly') || 
@@ -123,7 +123,7 @@ export const Searchsongs=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search/songs',
+          url: 'https://saavn.sumit.co/api/search/songs',
           params: { query: names ? names : `topsongs ${language}`,
           limit: 20
            }
@@ -141,7 +141,7 @@ export const Searchsongs2=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search/songs',
+          url: 'https://saavn.sumit.co/api/search/songs',
           params: { query: names ? names : `topsongs ${language}`,
           limit: 40
            }
@@ -159,7 +159,7 @@ export const Searchsongs3=async(names)=>{
       const language=languages();
       const options = {
           method: 'GET',
-          url: 'https://saavn.dev/api/search',
+          url: 'https://saavn.sumit.co/api/search',
           params: { query: names ? names : `topsongs ${language}`,
           
            }
@@ -176,7 +176,7 @@ export const searchResult=async(songid)=>{
     if(songid){
     const options = {
         method: 'GET',
-        url: `https://saavn.dev/api/songs/${songid}`
+        url: `https://saavn.sumit.co/api/songs/${songid}`
       };
       const res = await axios.request(options);
       return res;
@@ -186,7 +186,7 @@ export const searchResult=async(songid)=>{
 export const searchSuggestion=async(songid)=>{
     const options = {
         method: 'GET',
-        url: `https://saavn.dev/api/songs/${songid}/suggestions`,
+        url: `https://saavn.sumit.co/api/songs/${songid}/suggestions`,
         params: {limit: 20}
       };
     
@@ -206,7 +206,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/search/albums',
+            url: 'https://saavn.sumit.co/api/search/albums',
             params: {query: language,limit:50}
           };
         const res = await axios.request(options);
@@ -221,7 +221,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/albums',
+            url: 'https://saavn.sumit.co/api/albums',
             params: {id:id,limit:50}
           };
         const res = await axios.request(options);
@@ -235,7 +235,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: "GET",
-            url: "https://saavn.dev/api/search/artists",
+            url: "https://saavn.sumit.co/api/search/artists",
             params: { query:"Top Artists",limit:50 },
           };
           const res = await axios.request(options);
@@ -251,7 +251,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: "GET",
-            url: `https://saavn.dev/api/artists/${id}`,
+            url: `https://saavn.sumit.co/api/artists/${id}`,
             params: {limit:50 },
           };
           const res = await axios.request(options);
@@ -286,7 +286,7 @@ export const searchSuggestion=async(songid)=>{
         const language=languages();
         const options = {
             method: 'GET',
-            url: 'https://saavn.dev/api/search/songs',
+            url: 'https://saavn.sumit.co/api/search/songs',
             params: { query:mood+" songs "+language,
             limit: 10
              }
@@ -509,7 +509,7 @@ export const searchSuggestion=async(songid)=>{
 // Fetch playlists for a category (Quick Access)
 export const fetchPlaylistsByCategory = async (category) => {
   try {
-    const res = await axios.get('https://saavn.dev/api/search/playlists', {
+    const res = await axios.get('https://saavn.sumit.co/api/search/playlists', {
       params: { query: category, limit: 12 }
     });
     if (res?.data?.data?.results) {
@@ -525,7 +525,7 @@ export const fetchPlaylistsByCategory = async (category) => {
 // Fetch playlist details by ID
 export const fetchPlaylistDetails = async (playlistId) => {
   try {
-    const res = await axios.get('https://saavn.dev/api/playlists', {
+    const res = await axios.get('https://saavn.sumit.co/api/playlists', {
       params: { id: playlistId }
     });
     // Extract external URL if available
